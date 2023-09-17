@@ -121,7 +121,8 @@ class TesterMod(loader.Module):
             message, f"✅ Alias <code>{args}</code> has been deleted"
         )
 
-    async def aliases_cmd(self, app: Client, message: types.Message):
+    @loader.command()
+    async def aliases(self, app: Client, message: types.Message):
         """Show all aliases"""
         if aliases := self.all_modules.aliases:
             return await utils.answer(
@@ -134,7 +135,8 @@ class TesterMod(loader.Module):
             )
         else:
             return await utils.answer(message, "Алиасов нет")
-
+        
+    @loader.command()
     async def ping(self, app: Client, message: types.Message, args: str):
         """Checks the response rate of the user bot"""
         start = time.perf_counter_ns()
