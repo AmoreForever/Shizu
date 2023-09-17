@@ -1,0 +1,12 @@
+Pyrogram
+aiogram
+TgCrypto
+psutil
+loguru
+lightDB
+GitPython
+aiohttp
+pyyaml
+requests
+qrcode
+pykeyboard

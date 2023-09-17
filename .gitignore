@@ -1,0 +1,6 @@
+__pycache__/
+config.ini
+db.json
+shizu.session
+shizu.session-journal
+shizu.log
