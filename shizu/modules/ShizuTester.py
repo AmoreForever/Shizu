@@ -152,8 +152,6 @@ class TesterMod(loader.Module):
 
         logging.info("Trying to create folder")
         app.me = await app.get_me()
-
-        self_bot = await app.resolve_peer((await self.bot.bot.get_me()).username)
         folder_id = 250
         logs = []
         backup = []
@@ -204,7 +202,7 @@ class TesterMod(loader.Module):
                 filter=typ.DialogFilter(
                     id=folder_id,
                     title="Shizu",
-                    include_peers=[self_bot, logs, backup],
+                    include_peers=[logs, backup],
                     pinned_peers=[],
                     exclude_peers=[],
                     emoticon="❤️",
@@ -213,11 +211,6 @@ class TesterMod(loader.Module):
         )
 
         logging.info("Folder created")
-        await self.bot.bot.send_message(
-            logs_id,
-            "⚠️ <b>Don't touch this group otherwise the bot won't work correctly</b>",
-            parse_mode="html",
-        )
         self.db.set("shizu.folder", "folder", True)
         self.db.set("shizu.chat", "logs", logs_id)
         self.db.set("shizu.chat", "backup", backup_id)
