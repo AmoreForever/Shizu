@@ -8,7 +8,6 @@ import html
 import asyncio
 import re
 import time
-import nest_asyncio
 
 from typing import Union
 from aiogram.utils.exceptions import NetworkError, CantParseEntities, ChatNotFound
@@ -26,8 +25,6 @@ FORMAT_FOR_TGLOG = logging.Formatter(
     datefmt=None,
     style="%",
 )
-
-nest_asyncio.apply()
 
 
 def get_valid_level(level: Union[str, int]):
@@ -230,7 +227,6 @@ class Telegramhandler(logging.Handler):
         self.buffer = []
         self.handled_buffer = []
         self.msgs = []
-        self.bot = core.bot
         self.token = db.get("shizu.bot", "token")
         self.chat = db.get("shizu.chat", "logs")
         self.last_log_time = None
@@ -255,7 +251,7 @@ class Telegramhandler(logging.Handler):
         if current_time - self.last_log_time >= self.time_threshold:
             try:
                 asyncio.run(
-                    self.bot.send_message(
+                    core.bot.send_message(
                         self.chat,
                         "\n".join(self.msgs),
                         parse_mode="HTML",

@@ -17,7 +17,6 @@ else:
         import pyrogram
         from .version import __version__
         from . import main
-        from .utils import *
         from .logger import setup_logger
 
         setup_logger("INFO")
