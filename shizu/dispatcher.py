@@ -1,3 +1,4 @@
+import contextlib
 import logging
 import traceback
 import typing
@@ -88,18 +89,19 @@ class DispatcherManager:
                         + "🎈 "
                         + item.full_stack.splitlines()[-1]
                     )
-                    await app.inline_bot.send_message(
-                        app.db.get("shizu.chat", "logs", None),
-                        f"⛩ <b>Command <code>{prefix}{command}</code> failed with error:</b>\n\n"
-                        "🚇 <b>Traceback:</b>"
-                        f"{exc}\n",
-                        parse_mode="HTML",
-                    )
-                    await utils.answer(
-                        message,
-                        f"<emoji id=5019455638053323673>❌</emoji> <b>Command <code>{prefix}{command}</code> failed with error:</b>\n"
-                        f"<code>{error}</code>\n",
-                    )
+                    with contextlib.suppress(Exception):
+                        await app.inline_bot.send_message(
+                            app.db.get("shizu.chat", "logs", None),
+                            f"⛩ <b>Command <code>{prefix}{command}</code> failed with error:</b>\n\n"
+                            "🚇 <b>Traceback:</b>"
+                            f"{exc}\n",
+                            parse_mode="HTML",
+                        )
+                        await utils.answer(
+                            message,
+                            f"<emoji id=5019455638053323673>❌</emoji> <b>Command <code>{prefix}{command}</code> failed with error:</b>\n"
+                            f"<code>{error}</code>\n",
+                        )
         except Exception as error:
             item = lo.CustomException.from_exc_info(*sys.exc_info())
             exc = (
@@ -110,18 +112,19 @@ class DispatcherManager:
                 + item.full_stack.splitlines()[-1]
             )
 
-            await app.inline_bot.send_message(
-                app.db.get("shizu.chat", "logs", None),
-                f"⛩ <b>Command <code>{prefix}{command}</code> failed with error:</b>\n\n"
-                "🚇 <b>Traceback:</b>"
-                f"{exc}\n",
-                parse_mode="HTML",
-            )
-            await utils.answer(
-                message,
-                f"<emoji id=5019455638053323673>❌</emoji> <b>Command <code>{prefix}{command}</code> failed with error:</b>\n"
-                f"<code>{error}</code>\n",
-            )
+            with contextlib.suppress(Exception):
+                await app.inline_bot.send_message(
+                    app.db.get("shizu.chat", "logs", None),
+                    f"⛩ <b>Command <code>{prefix}{command}</code> failed with error:</b>\n\n"
+                    "🚇 <b>Traceback:</b>"
+                    f"{exc}\n",
+                    parse_mode="HTML",
+                )
+                await utils.answer(
+                    message,
+                    f"<emoji id=5019455638053323673>❌</emoji> <b>Command <code>{prefix}{command}</code> failed with error:</b>\n"
+                    f"<code>{error}</code>\n",
+                )
 
         return message
 
