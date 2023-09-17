@@ -219,7 +219,6 @@ async def answer(
 
 async def answer_inline(
     message: Union[Message, List[Message]],
-    bot: Union[str, int],
     query: str,
     chat_id: Union[str, int] = "",
 ) -> None:
@@ -227,9 +226,6 @@ async def answer_inline(
     Parameters:
         message (``program.types.Message`` | ``typing.List[pyrogram.types.Message]`):
     Message
-
-            bot (`str` | `int"):
-    Nickname or id of inline bot
 
             query (`str"):
     Parameters for the inline bot
@@ -244,7 +240,7 @@ async def answer_inline(
     app: Client = message._client
     message: Message
 
-    results = await app.get_inline_bot_results(bot, query)
+    results = await app.get_inline_bot_results((await app.inline_bot.get_me()).username, query)
 
     await app.send_inline_bot_result(
         chat_id or message.chat.id, results.query_id, results.results[0].id

@@ -133,4 +133,4 @@ class Help(loader.Module):
     async def support(self, app, message):
         """Support"""
         await message.delete()
-        await utils.answer_inline(message, self._bot.id, "support")
+        await utils.answer_inline(message, "support")
