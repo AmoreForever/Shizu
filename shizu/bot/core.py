@@ -52,7 +52,8 @@ class BotManager(
         if not self._token:
             logging.error("The token was not found. Attempt to recreate the token")
             token, bot_username = await self._find_bot()
-            if token is None or bot_username is None:
+            
+            if token is None and bot_username is None:
                 logging.warning("Не удалось найти бота")
                 logging.info("Создание бота...")
                 token, bot_username = await self._create_bot()
