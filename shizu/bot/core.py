@@ -51,19 +51,19 @@ class BotManager(
         """Loads the bot manager"""
         if not self._token:
             logging.error("The token was not found. Attempt to recreate the token")
-            # token, bot_username = await self._find_bot()
-            # if token is False:
-            #     logging.warning("Не удалось найти бота")
-            #     logging.info("Создание бота...") will be passed later 
+            token, bot_username = await self._find_bot()
+            if not token:
+                logging.warning("Не удалось найти бота")
+                logging.info("Создание бота...")
             token, bot_username = await self._create_bot()
-            self._token = token
-            self._bot_username = bot_username
-
-            if self._token is False:
+            
+            if not self._token:
                 error_text = "A user bot needs a bot. Solve the problem of creating a bot and start the user bot again"
 
                 logging.error(error_text)
                 return sys.exit(1)
+            self._token = token
+            self._bot_username = bot_username
 
             self._db.set("shizu.bot", "token", self._token)
             self._db.set("shizu.bot", "username", self._bot_username)
