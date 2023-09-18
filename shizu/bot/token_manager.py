@@ -1,7 +1,7 @@
 import logging
 import re
 from loguru import logger
-from typing import Union
+from typing import Tuple
 
 from pyrogram import errors, types
 
