@@ -135,7 +135,7 @@ class TesterMod(loader.Module):
             )
         else:
             return await utils.answer(message, "Алиасов нет")
-        
+
     @loader.command()
     async def ping(self, app: Client, message: types.Message, args: str):
         """Checks the response rate of the user bot"""

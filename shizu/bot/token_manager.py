@@ -49,7 +49,7 @@ class TokenManager(Item):
             logger.success("Found bot: %s", buttons_text[buttons[0]])
             resp = await conv.get_response()
             await resp.click(buttons[0])
-
+            print(resp.text)
             h2 = await conv.get_another_same()
             await h2.click(0)
 
@@ -130,3 +130,4 @@ class TokenManager(Item):
             print(token, bot_username)
 
             return token, bot_username
+        
