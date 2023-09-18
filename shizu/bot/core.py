@@ -50,21 +50,11 @@ class BotManager(
     async def load(self) -> Union[bool, NoReturn]:
         """Loads the bot manager"""
         if not self._token:
-            logging.error("The token was not found. Attempt to recreate the token")
-            token, bot_username = await self._find_bot()
-            
-            if token is None and bot_username is None:
-                logging.warning("Не удалось найти бота")
-                logging.info("Создание бота...")
-                token, bot_username = await self._create_bot()
-
-            if not self._token:
+            self._token, self._bot_username = await self._create_bot()
+            if self._token is False:
                 error_text = "A user bot needs a bot. Solve the problem of creating a bot and start the user bot again"
-
                 logging.error(error_text)
                 return sys.exit(1)
-            self._token = token
-            self._bot_username = bot_username
 
             self._db.set("shizu.bot", "token", self._token)
             self._db.set("shizu.bot", "username", self._bot_username)

@@ -1,5 +1,7 @@
 import logging
 import re
+import asyncio
+import time
 from loguru import logger
 from typing import Union
 from typing import Tuple
@@ -17,7 +19,7 @@ class TokenManager(Item):
 
     async def _find_bot(self) -> Union[Tuple[str, str], None]:
         """Find the bot"""
-        async with fsm.Conversation(self._app, "@BotFather", True) as conv:
+        async with fsm.Conversation(self._app, "@BotFather") as conv:
             logging.info("Checking for the presence of a bot...")
 
             try:
@@ -30,14 +32,14 @@ class TokenManager(Item):
             r = await conv.get_response()
 
             if not r.reply_markup:
-                return None  # Bot not found
+                return None, None
 
             data = r.reply_markup.inline_keyboard
             buttons_text = [button.text for row in data for button in row]
 
             if not buttons_text:
                 logger.error("The bot was not found, attempting to create a new bot...")
-                return None  # Bot not found
+                return None, None
 
             buttons = [
                 index
@@ -86,22 +88,21 @@ class TokenManager(Item):
                     seconds = response.text.split()[-2]
                     logger.error(f"Please repeat in {seconds} seconds")
 
-            bot_username = f"shizu_{utils.random_id(6)}_bot"
-
             await conv.ask(
                 f"🐙 Shizu UserBot of {utils.get_display_name(self._all_modules.me)[:45]}"
             )
             await conv.get_response()
-
+            
+            bot_username = f"shizu_{utils.random_id(6)}_bot"
+            
             await conv.ask(bot_username)
-
+            time.sleep(1)
             response = await conv.get_response()
-
+            
+            logger.error(response.text)
             search = re.search(r"(?<=<code>)(.*?)(?=</code>)", response.text.html)
             if not search:
-                logging.error(
-                    "An error occurred when creating the bot. @BotFather's response:"
-                )
+                logging.error("Произошла ошибка при создании бота. Ответ @BotFather:")
                 return logging.error(response.text)
 
             token = search[0]
@@ -126,5 +127,6 @@ class TokenManager(Item):
             await conv.get_response()
 
             logger.success(f"Bot successfully created @{bot_username}")
+            print(token, bot_username)
 
             return token, bot_username
