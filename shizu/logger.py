@@ -7,6 +7,7 @@ import json
 import html
 import asyncio
 import re
+import nest_asyncio
 import time
 
 from typing import Union
@@ -17,6 +18,8 @@ from loguru import logger
 
 from .database import db
 from .bot import core
+
+nest_asyncio.apply()
 
 FORMAT_FOR_FILES = "[{level}] {name}: {message}"
 
@@ -258,8 +261,8 @@ class Telegramhandler(logging.Handler):
                         disable_web_page_preview=True,
                     )
                 )
-            except:
-                pass
+            except Exception as error:
+                logging.error(error)
 
             self.msgs.clear()
             self.last_log_time = current_time

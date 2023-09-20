@@ -104,7 +104,7 @@ async def create_chat(
     description=None,
     supergroup: bool = False,
     inline_bot: bool = False,
-    promote: bool = False,
+    promote: bool = False
 ):
     """
     Create a chat in the Telegram app.
