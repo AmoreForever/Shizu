@@ -7,7 +7,16 @@ import json
 import html
 import asyncio
 import re
-import nest_asyncio
+try:
+    import uvloop
+    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+except ImportError:
+    pass
+try:
+    import nest_asyncio
+    nest_asyncio.apply()
+except ImportError:
+    pass
 import time
 
 from typing import Union
@@ -18,8 +27,6 @@ from loguru import logger
 
 from .database import db
 from .bot import core
-
-nest_asyncio.apply()
 
 FORMAT_FOR_FILES = "[{level}] {name}: {message}"
 
