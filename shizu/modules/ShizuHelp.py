@@ -84,7 +84,7 @@ class Help(loader.Module):
 
                 if commands or inline:
                     module_emoji = (
-                        "<emoji id=5100862156123931478>◾️</emoji>"
+                        "<emoji id=5100862156123931478>▪️</emoji>"
                         if module.name.startswith("Shizu")
                         else "<emoji id=5100652175172830068>▫️</emoji>"
                     )

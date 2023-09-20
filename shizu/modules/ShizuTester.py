@@ -155,42 +155,27 @@ class TesterMod(loader.Module):
         logging.info("Trying to create folder")
         app.me = await app.get_me()
         folder_id = 250
-        logs = []
-        backup = []
-        async for dialog in app.get_dialogs():
-            try:
-                if "Shizu-logs" in dialog.chat.title:
-                    logs_id = dialog.chat.id
+        logs_id = (
+            await utils.create_chat(
+                app,
+                "Shizu-logs",
+                "📫 Shizu-logs do not delete this group, otherwise bot will be broken",
+                True,
+                True,
+                True,
+            )
+        ).id
 
-                if "Shizu-backup" in dialog.chat.title:
-                    backup_id = dialog.chat.id
-
-            except:
-                pass
-
-        if not logs_id:
-            logs_id = (
-                await utils.create_chat(
-                    app,
-                    "Shizu-logs",
-                    "📫 Shizu-logs do not delete this group, otherwise bot will be broken",
-                    True,
-                    True,
-                    True,
-                )
-            ).id
-
-        if not backup_id:
-            backup_id = (
-                await utils.create_chat(
-                    app,
-                    "Shizu-backup",
-                    "📫 Backup-logs do not delete this group, otherwise bot will be broken",
-                    True,
-                    True,
-                    True,
-                )
-            ).id
+        backup_id = (
+            await utils.create_chat(
+                app,
+                "Shizu-backup",
+                "📫 Backup-logs do not delete this group, otherwise bot will be broken",
+                True,
+                True,
+                True,
+            )
+        ).id
 
         logs = await app.resolve_peer(logs_id)
         backup = await app.resolve_peer(backup_id)

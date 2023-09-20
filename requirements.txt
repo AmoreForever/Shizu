@@ -1,5 +1,5 @@
 Pyrogram
-aiogram
+aiogram==2.25.1
 TgCrypto
 psutil
 loguru
@@ -10,3 +10,4 @@ pyyaml
 requests
 qrcode
 pykeyboard
+meval
