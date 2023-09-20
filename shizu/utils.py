@@ -123,10 +123,12 @@ async def create_chat(
 
     chat = None
     title = f"shizu-{random_id(10)}" if title is None else title
-        
 
     if not supergroup:
-        chat = await app.create_group(title, "me",)
+        chat = await app.create_group(
+            title,
+            "me",
+        )
     else:
         if description is None:
             description = "This is a supergroup created by Shizu"
@@ -211,7 +213,7 @@ async def answer(
                 await message._client.send_photo(chat_id, response, **kwargs)
             )
         else:
-            await message.delete() 
+            await message.delete()
             messages.append(await message.reply_photo(response, **kwargs))
 
     return messages[0]
@@ -240,7 +242,9 @@ async def answer_inline(
     app: Client = message._client
     message: Message
 
-    results = await app.get_inline_bot_results((await app.inline_bot.get_me()).username, query)
+    results = await app.get_inline_bot_results(
+        (await app.inline_bot.get_me()).username, query
+    )
 
     await app.send_inline_bot_result(
         chat_id or message.chat.id, results.query_id, results.results[0].id

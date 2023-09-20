@@ -324,7 +324,7 @@ class ModulesManager:
             value.userbot = "Shizu"
             value.get_mod = self.get_module
             value.prefix = self._db.get("shizu.loader", "prefixes", ["."])
-            
+
             instance = value()
             instance.shizu = True
             instance.command_handlers = get_command_handlers(instance)

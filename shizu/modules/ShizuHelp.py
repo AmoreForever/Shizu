@@ -134,3 +134,4 @@ class Help(loader.Module):
         """Support"""
         await message.delete()
         await utils.answer_inline(message, "support")
+ 

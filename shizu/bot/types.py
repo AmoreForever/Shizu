@@ -24,7 +24,7 @@ class Item:
         update_type: Union[Message, InlineQuery, CallbackQuery],
     ) -> bool:
         """Checking filters"""
-        if (custom_filters := getattr(func, "_filters", None)):
+        if custom_filters := getattr(func, "_filters", None):
             coro = custom_filters(module, self._app, update_type)
             if inspect.iscoroutine(coro):
                 coro = await coro

@@ -287,3 +287,4 @@ def setup_logger(level: Union[str, int]):
         "pyrogram.methods.utilities.idle",
     ]:
         logger.disable(ignore)
+    logging.captureWarnings(True)

@@ -25,8 +25,7 @@ async def main():
         id_ = (await app.get_me()).id
         db.set("shizu.me", "me", id_)
 
-
-    if (restart := db.get("shizu.updater", "restart")):
+    if restart := db.get("shizu.updater", "restart"):
         restarted_text = (
             f"<emoji id=5017470156276761427>🔄</emoji> <b>The reboot was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The reboot took <code>{round(time.time())-int(restart['start'])}</code> seconds"
             if restart["type"] == "restart"
@@ -34,17 +33,13 @@ async def main():
         )
 
         try:
-            await app.edit_message_text(
-                restart["chat"],
-                restart["id"],
-                restarted_text
-            )
+            await app.edit_message_text(restart["chat"], restart["id"], restarted_text)
         except Exception:
             await app.inline_bot.send_message(
                 app.db.get("shizu.me", "me", None),
-                '🔄 The reboot was successful!\n'
+                "🔄 The reboot was successful!\n"
                 f'⌛️ The reboot took <code>{round(time.time())-int(restart["start"])}</code> seconds'
-                '\n\nℹ️ <b>Userbot cannot edit that message due to an error thats why I am sending it to you instead :)</b>',
+                "\n\nℹ️ <b>Userbot cannot edit that message due to an error thats why I am sending it to you instead :)</b>",
                 parse_mode="HTML",
             )
         db.pop("shizu.updater", "restart")

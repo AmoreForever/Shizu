@@ -34,7 +34,6 @@ class Auth:
         cfg.read("./config.ini")
         self.app = Client(
             name=session_name,
-            
             api_id=cfg.get("pyrogram", "api_id"),
             api_hash=cfg.get("pyrogram", "api_hash"),
             device_model="Shizu",

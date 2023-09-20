@@ -41,11 +41,7 @@ class TokenManager(Item):
                 logger.error("The bot was not found, attempting to create a new bot...")
                 return None, None
 
-            buttons = [
-                index
-                for index, item in enumerate(buttons_text)
-                if "shizu" in item.lower()
-            ]
+            buttons = [i for i in buttons_text if "shizu" in i]
             logger.success("Found bot: %s", buttons_text[buttons[0]])
             resp = await conv.get_response()
             await resp.click(buttons[0])
@@ -127,7 +123,6 @@ class TokenManager(Item):
             await conv.get_response()
 
             logger.success(f"Bot successfully created @{bot_username}")
-            print(token, bot_username)
+            await self._app.send_message(bot_username, "/start")
 
             return token, bot_username
-        
