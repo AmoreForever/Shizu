@@ -8,7 +8,10 @@ import sys
 import html
 import asyncio
 import re
-import uvloop
+try:
+    import uvloop
+except ImportError:
+    uvloop = None
 
 import time
 import nest_asyncio
@@ -254,20 +257,21 @@ class Telegramhandler(logging.Handler):
         self.msgs.append(f"<code>{FORMAT_FOR_TGLOG.format(record)}</code>")
 
         if current_time - self.last_log_time >= self.time_threshold:
-            try:
-                asyncio.run(
-                    core.bot.send_message(
-                        self.chat,
-                        "\n".join(self.msgs),
-                        parse_mode="HTML",
-                        disable_web_page_preview=True,
-                    )
-                )
-            except Exception as error:
-                logging.error(error)
+            asyncio.run(self._send_messages())
 
-            self.msgs.clear()
-            self.last_log_time = current_time
+    async def _send_messages(self):
+        try:
+            await core.bot.send_message(
+                self.chat,
+                "\n".join(self.msgs),
+                parse_mode="HTML",
+                disable_web_page_preview=True,
+            )
+        except Exception as error:
+            logging.error(error)
+
+        self.msgs.clear()
+
 
 
 def override_text(exception: Exception) -> typing.Optional[str]:
