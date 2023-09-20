@@ -4,20 +4,14 @@ import os
 import typing
 import contextlib
 import json
+import sys
 import html
 import asyncio
 import re
-try:
-    import uvloop
-    asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-except ImportError:
-    pass
-try:
-    import nest_asyncio
-    nest_asyncio.apply()
-except ImportError:
-    pass
+import uvloop
+
 import time
+import nest_asyncio
 
 from typing import Union
 from aiogram.utils.exceptions import NetworkError, CantParseEntities, ChatNotFound
@@ -36,6 +30,7 @@ FORMAT_FOR_TGLOG = logging.Formatter(
     style="%",
 )
 
+nest_asyncio.apply() if sys.platform == "win32" else asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 def get_valid_level(level: Union[str, int]):
     return int(level) if level.isdigit() else getattr(logging, level.upper(), None)
