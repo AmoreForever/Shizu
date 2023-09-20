@@ -80,8 +80,7 @@ class BotManager(
             self._callback_handler, lambda _: True
         )
 
-        asyncio.ensure_future(
-            self._dp.start_polling())
+        asyncio.ensure_future(self._dp.start_polling())
 
         self.bot.manager = self
         return True

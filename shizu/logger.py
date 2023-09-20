@@ -1,29 +1,30 @@
+# █ █ █ █▄▀ ▄▀█ █▀▄▀█ █▀█ █▀█ █ █
+# █▀█ █ █ █ █▀█ █ ▀ █ █▄█ █▀▄ █▄█
+
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# 👤 https://t.me/hikamoru
+
+
 import logging
+import requests
 import traceback
 import os
 import typing
 import contextlib
 import json
-import sys
 import html
-import asyncio
 import re
-try:
-    import uvloop
-except ImportError:
-    uvloop = None
-
 import time
-import nest_asyncio
+
 
 from typing import Union
-from aiogram.utils.exceptions import NetworkError, CantParseEntities, ChatNotFound
+from aiogram.utils.exceptions import NetworkError
 from loguru._better_exceptions import ExceptionFormatter
 from loguru._colorizer import Colorizer
 from loguru import logger
 
 from .database import db
-from .bot import core
 
 FORMAT_FOR_FILES = "[{level}] {name}: {message}"
 
@@ -33,10 +34,14 @@ FORMAT_FOR_TGLOG = logging.Formatter(
     style="%",
 )
 
-nest_asyncio.apply() if sys.platform == "win32" else asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
-
 def get_valid_level(level: Union[str, int]):
     return int(level) if level.isdigit() else getattr(logging, level.upper(), None)
+
+def send_message(message: str, chat_id: int):
+    try:
+        requests.post(f"https://api.telegram.org/bot{db.get('shizu.bot', 'token')}/sendMessage", data={"chat_id": chat_id, "text": message, "parse_mode": "HTML"}, timeout=10)
+    except NetworkError:
+        pass
 
 
 class CustomException:
@@ -253,26 +258,17 @@ class Telegramhandler(logging.Handler):
 
         if self.last_log_time is None:
             self.last_log_time = current_time
-
+            
+        
         self.msgs.append(f"<code>{FORMAT_FOR_TGLOG.format(record)}</code>")
-
-        if current_time - self.last_log_time >= self.time_threshold:
-            asyncio.run(self._send_messages())
-
-    async def _send_messages(self):
-        try:
-            await core.bot.send_message(
-                self.chat,
+        
+        if current_time - self.last_log_time >= self.time_threshold and self.msgs:
+            send_message(
                 "\n".join(self.msgs),
-                parse_mode="HTML",
-                disable_web_page_preview=True,
+                self.chat
             )
-        except Exception as error:
-            logging.error(error)
-
-        self.msgs.clear()
-
-
+            self.msgs.clear()
+            self.last_log_time = current_time
 
 def override_text(exception: Exception) -> typing.Optional[str]:
     """Returns error-specific description if available, else `None`"""
@@ -288,6 +284,7 @@ def setup_logger(level: Union[str, int]):
     level = get_valid_level(level) or 20
     handler = MemoryHandler(level)
     tg = Telegramhandler(level)
+    logging.getLogger().addHandler(tg)
     logging.basicConfig(handlers=[handler, tg], level=level, force=True)
 
     for ignore in [
