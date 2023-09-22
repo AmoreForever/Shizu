@@ -4,8 +4,8 @@ import re
 import os
 import logging
 
-if sys.version_info < (3, 9, 0):
-    print("Требуется Python 3.9 или выше")
+if sys.version_info < (3, 8, 0):
+    logging.warning("🚫 Error: you are using Python version < 3.8")
     sys.exit(1)
 
 elif __package__ != "shizu":
@@ -32,11 +32,14 @@ else:
     except ModuleNotFoundError as module:
         missing_module = re.search(r"No module named '(.*)'", str(module))[1]
         logging.warning("🚫 Error: you are missing the python module %s", missing_module)
-
         print(
             "🔁 Trying to install it automatically...\n"
             "⌛ Attempting dependencies installation... Just wait."
         )
+        try:
+            os.popen(f"pip3 install {missing_module}").read()
+        except:
+            pass    
         os.popen("pip3 install -r requirements.txt").read()
         print("👍 Dependencies installed")
         print("🔁 Retrying to run bot again please wait..")

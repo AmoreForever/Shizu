@@ -25,11 +25,11 @@ class ShizuSecurityMod(loader.Module):
         reply = message.reply_to_message
         users = self.db.get("shizu.me", "owners", [])
         if not reply:
-            return await message.edit("There is no reply to the user's message")
+            return await utils.answer(message, "There is no reply to the user's message")
         if reply.from_user.id == (await app.get_me()).id:
-            return await message.edit("You can't give ownership to yourself")
+            return await utils.answer(message, "You can't give ownership to yourself")
         if reply.from_user.id in users:
-            return await message.edit("This user is already an owner")
+            return await utils.answer(message, "This user is already an owner")
         users.append(reply.from_user.id)
         self.db.set("shizu.me", "owners", users)
         await utils.answer(

@@ -1,7 +1,12 @@
+# █ █ █ █▄▀ ▄▀█ █▀▄▀█ █▀█ █▀█ █ █
+# █▀█ █ █ █ █▀█ █ ▀ █ █▄█ █▀▄ █▄█
+
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# 👤 https://t.me/hikamoru
+
 import contextlib
 import logging
-import traceback
-import typing
 import sys
 import inspect
 from inspect import getfullargspec, iscoroutine

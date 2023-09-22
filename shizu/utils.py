@@ -1,3 +1,10 @@
+# █ █ █ █▄▀ ▄▀█ █▀▄▀█ █▀█ █▀█ █ █
+# █▀█ █ █ █ █▀█ █ ▀ █ █▄█ █▀▄ █▄█
+
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# 👤 https://t.me/hikamoru
+
 import asyncio
 import functools
 import random
@@ -6,6 +13,7 @@ import typing
 import logging
 import os
 import contextlib
+import git
 import aiohttp
 from types import FunctionType
 from typing import Any, List, Literal, Tuple, Union
@@ -370,3 +378,26 @@ async def paste_neko(code: str):
         return "Pasting failed"
     else:
         return f"nekobin.com/{result['result']['key']}.py"
+
+def get_git_hash() -> typing.Union[str, bool]:
+    """
+    Get current Shizu git hash
+    :return: Git commit hash
+    """ # taken from Hikka
+    try:
+        return git.Repo().head.commit.hexsha
+    except Exception:
+        return False
+    
+def get_commit_url() -> str:
+    """
+    Get current Shizu git commit url
+    :return: Git commit url
+    """ # taken from Hikka
+    try:
+        hash_ = get_git_hash()
+        return (
+            f'<a href="https://github.com/AmoreForever/Shizu/commit/{hash_}">#{hash_[:7]}</a>'
+        )
+    except Exception:
+        return "Unknown"

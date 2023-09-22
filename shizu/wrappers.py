@@ -28,8 +28,6 @@ class WrapModuleToAsync:
     def __init__(self, mod: ModuleType):
         for attr in dir(mod):
             item = getattr(mod, attr)
-
-            # Проверяем полученный атрибут на асинхронность, если он не асинхронный, то обворачиваем
             if (
                 callable(item)
                 and not iscoroutinefunction(item)
