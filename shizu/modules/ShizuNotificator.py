@@ -14,7 +14,6 @@ from pyrogram import Client
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 
-
 @loader.module("ShizuNotificator", "hikamoru")
 class ShizuNotificator(loader.Module):
     """Notify about new commits in the repo by sending a message to the bot """
