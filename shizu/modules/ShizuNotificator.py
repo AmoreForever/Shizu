@@ -83,7 +83,7 @@ class ShizuNottificator(loader.Module):
         
     @loader.loop(interval=60, autostart=True)
     async def check_updst(self) -> None:
-        self.pending = self.get_latest()
+        self._pending = self.get_latest()
         self._notified = None
         if self._pending not in {utils.get_git_hash(), self._notified}:
             await self.bot.bot.send_animation(
