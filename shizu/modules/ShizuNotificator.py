@@ -74,10 +74,11 @@ class ShizuNottificator(loader.Module):
             self.strings["updaing"]
             )
         os.system("git pull")
-        a = await self.bot.bot.send_message(
+        await self.bot.bot.send_message(
             self.tg_id,
             '🧑‍🔬 Restart...'
         )
+        
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
         return sys.exit(0)
         
