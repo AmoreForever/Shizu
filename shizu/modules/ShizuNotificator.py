@@ -16,16 +16,15 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQu
 
 
 @loader.module("ShizuNotificator", "hikamoru")
-class ShizuNottificator(loader.Module):
-    """
-    Notify about new commits in the repo by sending a message to the bot 
-    """
+class ShizuNotificator(loader.Module):
+    """Notify about new commits in the repo by sending a message to the bot """
     
     strings = {
         'more': "<b>... and more {}</b>",
         'update_required': "🆕 <b>Shizu Update available!</b>\n\nNew Shizu version released.\n🔮 <b>Shizu <s>{}</s> -> {}</b>\n\n{}",
         'updaing': "🔄 Updating...",
     }
+    _notified = None
     
     def update_keyboard(self):
         markup = InlineKeyboardMarkup()
@@ -82,22 +81,16 @@ class ShizuNottificator(loader.Module):
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
         return sys.exit(0)
         
-    @loader.loop(interval=60, autostart=True)
+    @loader.loop(interval=20, autostart=True)
     async def check_updst(self) -> None:
         self._pending = self.get_latest()
-        self._notified = None
         if self._pending not in {utils.get_git_hash(), self._notified}:
             await self.bot.bot.send_animation(
                 self.tg_id,
                 "https://t.me/hikamoru_assets/28",
                 caption=self.strings["update_required"].format(
                     utils.get_git_hash()[:6],
-                    '<a href="https://github.com/AmoreForever/Shizu/compare/{}...{}">{}</a>'
-                    .format(
-                        utils.get_git_hash()[:12],
-                        self.get_latest()[:12],
-                        self.get_latest()[:6],
-                    ),
+                    f'<a href="https://github.com/AmoreForever/Shizu/compare/{utils.get_git_hash()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
                     self.get_changelog(),
                 ),
                 reply_markup=self.update_keyboard(),
