@@ -7,6 +7,8 @@ from aiogram.types import (
     InlineQueryResultArticle,
     InputTextMessageContent,
     Message,
+    InlineKeyboardMarkup, 
+    InlineKeyboardButton
 )
 
 from .. import utils
@@ -24,8 +26,13 @@ class Events(Item):
                 return
             await message.answer_photo(
                 open("assets/Shizu.jpg", "rb"),
-                caption='🐙 <b>Shizu – Your Secret Telegram Weapon! With plugin support and effortless setup, this bot unlocks a world of possibilities in Telegram. Dive in and experience the extraordinary!</b>\n\n<a href="https://github.com/AmoreForever/Shizu">🌍 Github</a>',
-            )
+                caption='🐙 <b>Shizu – Your Secret Telegram Weapon! With plugin support and effortless setup, this bot unlocks a world of possibilities in Telegram. Dive in and experience the extraordinary!</b>\n\n🧑‍💻 <b>hikamoru.t.me</b>',
+                reply_markup=InlineKeyboardMarkup().add(
+                    InlineKeyboardButton(
+                        text="🌍 Github", url="https://github.com/AmoreForever/Shizu"
+                        )
+                    )
+                )
         for func in self._all_modules.message_handlers.values():
             if not await self._check_filters(func, func.__self__, message):
                 continue
