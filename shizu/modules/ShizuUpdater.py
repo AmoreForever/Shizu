@@ -75,8 +75,9 @@ class UpdateMod(loader.Module):
                 photo=open("assets/Shizu.jpg", "rb"),
                 caption=started_text,
                 parse_mode="HTML",
-            ) will be fixed in the future
-
+            )
+        except Exception:
+            pass
         last = None
 
         try:
