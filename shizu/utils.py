@@ -344,7 +344,7 @@ def get_platform() -> str:
     elif IS_GOORM:
         platform = "<emoji id=5174797724612035575>🍊</emoji> Goorm"
     else:
-        platform = "<emoji id=5866334008123591985>🖥️</emoji> VDS"
+        platform = "<emoji id=5868375062481997528>🖥️</emoji> VDS"
 
     return platform
 
