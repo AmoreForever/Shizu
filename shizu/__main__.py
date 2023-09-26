@@ -4,8 +4,9 @@ import re
 import os
 import logging
 
-if sys.version_info < (3, 8, 0) or not os.environ.get("GOORM"):
-    logging.warning("🚫 Error: you are using Python version < 3.8")
+
+if sys.version_info < (3, 7, 0):
+    logging.warning("🚫 Error: you are using Python version < 3.7")
     sys.exit(1)
 
 elif __package__ != "shizu":
@@ -38,7 +39,7 @@ else:
         print("👍 Dependencies installed")
         print("🔁 Retrying to run bot again please wait..")
         asyncio.run(main.main())
-        
+
 
 if __name__ == "__main__":
     asyncio.run(main.main())

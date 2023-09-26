@@ -57,25 +57,25 @@ class UpdateMod(loader.Module):
         me = await app.get_me()
         _me = await bot.get_me()
 
-        # started_text = (
-        #     f"🐙 <b>Your <u>Shizu</u> started</b> <code>v{'.'.join(map(str, __version__))}</code>\n\n"
-        #     f"🌳 <b>Branch:</b> <code>{branch}</code>\n"
-        # )
-        # try:
-        #     await self._bot.send_photo(
-        #         chat_id=self.db.get("shizu.chat", "logs", None),
-        #         photo=open("assets/Shizu.jpg", "rb"),
-        #         caption=started_text,
-        #         parse_mode="HTML",
-        #     )
-        # except ChatNotFound:
-        #     await utils.invite_bot(app, self.db.get("shizu.chat", "logs", None))
-        #     await self._bot.send_photo(
-        #         chat_id=self.db.get("shizu.chat", "logs", None),
-        #         photo=open("assets/Shizu.jpg", "rb"),
-        #         caption=started_text,
-        #         parse_mode="HTML",
-        #     ) will be fixed in the future
+        started_text = (
+            f"🐙 <b>Your <u>Shizu</u> started</b> <code>v{'.'.join(map(str, __version__))}</code>\n\n"
+            f"🌳 <b>Branch:</b> <code>{branch}</code>\n"
+        )
+        try:
+            await self._bot.send_photo(
+                chat_id=self.db.get("shizu.chat", "logs", None),
+                photo=open("assets/Shizu.jpg", "rb"),
+                caption=started_text,
+                parse_mode="HTML",
+            )
+        except ChatNotFound:
+            await utils.invite_bot(app, self.db.get("shizu.chat", "logs", None))
+            await self._bot.send_photo(
+                chat_id=self.db.get("shizu.chat", "logs", None),
+                photo=open("assets/Shizu.jpg", "rb"),
+                caption=started_text,
+                parse_mode="HTML",
+            ) will be fixed in the future
 
         last = None
 
