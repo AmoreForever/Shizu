@@ -10,10 +10,13 @@ import os
 import time
 import atexit
 import sys
+import logging
 from .. import utils, loader, version
 from pyrogram import Client
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
+
+logger = logging.getLogger(__name__)
 
 @loader.module("ShizuNotificator", "hikamoru")
 class ShizuNotificator(loader.Module):
@@ -21,7 +24,7 @@ class ShizuNotificator(loader.Module):
     
     strings = {
         'more': "<b>... and more {}</b>",
-        'update_required': "📬 <b>Shizu Update available!</b>\n\nNew Shizu version released.\n🔮 <b>Shizu <s>{}</s> -> {}</b>\n\n{}",
+        'update_required': "📬 <b>Shizu Update available!</b>\n\nNew Shizu version released.\n🔮 <b>Shizu <s>{}</s> -> {}</b>",
         'updaing': "🔄 Updating...",
     }
     _notified = None
@@ -86,6 +89,7 @@ class ShizuNotificator(loader.Module):
     @loader.loop(interval=20, autostart=True)
     async def check_updst(self) -> None:
         last_ = self.db.get("shizu.updater", "commit_last", "")
+        logger.info(f"Last commit: {last_} | Latest commit: {self.get_latest()}")
         if last_ == self.get_latest():
             return 
         await self.bot.bot.send_message(
@@ -93,7 +97,6 @@ class ShizuNotificator(loader.Module):
             self.strings["update_required"].format(
                 utils.get_git_hash()[:6],
                 f'<a href="https://github.com/AmoreForever/Shizu/compare/{utils.get_git_hash()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
-                self.get_changelog(),
             ),
             reply_markup=self.update_keyboard(),
         )

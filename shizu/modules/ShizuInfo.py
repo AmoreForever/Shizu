@@ -45,8 +45,7 @@ class InformationMod(loader.Module):
             f"<emoji id=5449918202718985124>🌳</emoji> <b>Branch</b>: <code>{version.branch}</code>\n"
             f"<emoji id=5445096582238181549>🦋</emoji> <b>Version</b>: <code>{'.'.join(map(str, version.__version__))}</code>\n\n"
             f"<emoji id=6334316848741352906>⌨️</emoji> <b>Prefix</b>: <code>{prefix}</code>\n"
-            f"<emoji id=4920293845440135699>💻</emoji> <b>OS</b>: <code>{utils.get_platform()[2:]}</code>\n"
-            
+            f"{utils.get_platform()}"
         )
     
     @loader.command()
