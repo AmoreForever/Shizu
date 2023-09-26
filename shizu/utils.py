@@ -324,6 +324,7 @@ def get_platform() -> str:
     IS_TERMUX = "com.termux" in os.environ.get("PREFIX", "")
     IS_DOCKER = "DOCKER" in os.environ
     IS_WIN = "WINDIR" in os.environ
+    IS_GOORM = "GOORM" in os.environ
     IS_WSL = False
 
     with contextlib.suppress(Exception):
@@ -333,15 +334,17 @@ def get_platform() -> str:
             IS_WSL = True
 
     if IS_TERMUX:
-        platform = "📱 Termux"
+        platform = "<emoji id=5865981429963296202>📱</emoji> Termux"
     elif IS_DOCKER:
-        platform = "🐳 Docker"
+        platform = "<emoji id=5314447198967046292>🐳</emoji> Docker"
     elif IS_WSL:
-        platform = "🧱 WSL"
+        platform = "<emoji id=5865981429963296202>🧱</emoji> WSL"
     elif IS_WIN:
-        platform = "💻 Windows"
+        platform = "<emoji id=5866334008123591985>💻</emoji> Windows"
+    elif IS_GOORM:
+        platform = "<emoji id=5174797724612035575>🍊</emoji> Goorm"
     else:
-        platform = "🖥️ VDS"
+        platform = "<emoji id=5866334008123591985>🖥️</emoji> VDS"
 
     return platform
 

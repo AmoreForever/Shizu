@@ -7,6 +7,7 @@
 
 import git
 import os
+import time
 import atexit
 import sys
 from .. import utils, loader, version
@@ -20,7 +21,7 @@ class ShizuNotificator(loader.Module):
     
     strings = {
         'more': "<b>... and more {}</b>",
-        'update_required': "🆕 <b>Shizu Update available!</b>\n\nNew Shizu version released.\n🔮 <b>Shizu <s>{}</s> -> {}</b>\n\n{}",
+        'update_required': "📬 <b>Shizu Update available!</b>\n\nNew Shizu version released.\n🔮 <b>Shizu <s>{}</s> -> {}</b>\n\n{}",
         'updaing': "🔄 Updating...",
     }
     _notified = None
@@ -56,6 +57,7 @@ class ShizuNotificator(loader.Module):
             res += self.strings["more"].format(len(diff.splitlines()) - 10)
 
         return res
+        
     
     def get_latest(self) -> str:
         try:
@@ -72,28 +74,32 @@ class ShizuNotificator(loader.Module):
             self.strings["updaing"]
             )
         os.system("git pull")
-        await self.bot.bot.send_message(
+        msg = await self.bot.bot.send_message(
             self.tg_id,
             '🧑‍🔬 Restart...'
         )
-        
+        self.db.set("shizu.updater", "restart", {
+            "start": time.time(),
+            "type": "botupdate",
+            "chat": msg.chat.id,
+            "id": msg.id
+        })
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
         return sys.exit(0)
         
     @loader.loop(interval=20, autostart=True)
     async def check_updst(self) -> None:
-        self._pending = self.get_latest()
-        if self._pending not in {utils.get_git_hash(), self._notified}:
-            await self.bot.bot.send_animation(
-                self.tg_id,
-                "https://t.me/hikamoru_assets/28",
-                caption=self.strings["update_required"].format(
-                    utils.get_git_hash()[:6],
-                    f'<a href="https://github.com/AmoreForever/Shizu/compare/{utils.get_git_hash()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
-                    self.get_changelog(),
-                ),
-                reply_markup=self.update_keyboard(),
-            )
-
-            self._notified = self._pending
-            self.db.set("ignore_permanent", False)
+        last_ = self.db.get("shizu.updater", "commit_last", "")
+        if last_ == self.get_latest():
+            return 
+        await self.bot.bot.send_animation(
+            self.tg_id,
+            "https://x0.at/UY1s.mp4",
+            caption=self.strings["update_required"].format(
+                utils.get_git_hash()[:6],
+                f'<a href="https://github.com/AmoreForever/Shizu/compare/{utils.get_git_hash()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
+                self.get_changelog(),
+            ),
+            reply_markup=self.update_keyboard(),
+        )
+        self.db.set("shizu.updater", "commit_last", self.get_latest())

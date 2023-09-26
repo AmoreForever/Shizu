@@ -37,9 +37,6 @@ async def check_filters(
     elif message.chat.id == db.get("shizu.me", "me"):
         return True
 
-    elif message.from_user.id in db.get("shizu.me", "owners", []):
-        return True
-
     elif not message.outgoing:
         return False
     return True

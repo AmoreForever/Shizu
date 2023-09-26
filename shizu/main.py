@@ -8,10 +8,11 @@
 import contextlib
 import logging
 import time
+import git
 
 from pyrogram.methods.utilities.idle import idle
 
-from . import auth, database, loader
+from . import auth, database, loader, utils
 from .bot import core
 
 
@@ -31,15 +32,29 @@ async def main():
     if not me:
         id_ = (await app.get_me()).id
         db.set("shizu.me", "me", id_)
+        
+    g_commit_last = db.get("shizu.updater", "commit_last", None)
+    if not g_commit_last:
+        db.set("shizu.updater", "commit_last", str(utils.get_git_hash()))
 
     if restart := db.get("shizu.updater", "restart"):
-        restarted_text = (
-            f"<emoji id=5017470156276761427>🔄</emoji> <b>The reboot was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The reboot took <code>{round(time.time())-int(restart['start'])}</code> seconds"
-            if restart["type"] == "restart"
-            else f"<emoji id=5258420634785947640>🔄</emoji> <b>The update was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The update took <code>{round(time.time())-int(restart['start'])}</code> seconds"
-        )
+        if restart["type"] == "restart":
+            restarted_text = (
+                f"<emoji id=5017470156276761427>🔄</emoji> <b>The reboot was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The reboot took <code>{round(time.time())-int(restart['start'])}</code> seconds"
+            )
+        else:
+            restarted_text = (
+                f"<emoji id=5258420634785947640>🔄</emoji> <b>The update was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The update took <code>{round(time.time())-int(restart['start'])}</code> seconds"
+            )
+
 
         try:
+            if restart['type'] == "botupdate":
+                return await app.inline_bot.edit_message(
+                    db.get("shizu.updater", "restart", None)["chat"],
+                    db.get("shizu.updater", "restart", None)["id"],
+                    restarted_text
+                )
             await app.edit_message_text(restart["chat"], restart["id"], restarted_text)
         except Exception:
             await app.inline_bot.send_message(
