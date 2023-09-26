@@ -69,10 +69,6 @@ class ShizuNotificator(loader.Module):
         
     @loader.on_bot(lambda self, app, call: call.data == "update")
     async def update_callback_handler(self, app: Client, call: CallbackQuery):
-        await self.bot.bot.send_message(
-            self.tg_id,
-            self.strings["updaing"]
-            )
         os.system("git pull")
         msg = await self.bot.bot.send_message(
             self.tg_id,
@@ -92,10 +88,9 @@ class ShizuNotificator(loader.Module):
         last_ = self.db.get("shizu.updater", "commit_last", "")
         if last_ == self.get_latest():
             return 
-        await self.bot.bot.send_animation(
+        await self.bot.bot.send_message(
             self.tg_id,
-            "https://x0.at/UY1s.mp4",
-            caption=self.strings["update_required"].format(
+            self.strings["update_required"].format(
                 utils.get_git_hash()[:6],
                 f'<a href="https://github.com/AmoreForever/Shizu/compare/{utils.get_git_hash()[:12]}...{self.get_latest()[:12]}">{self.get_latest()[:6]}</a>',
                 self.get_changelog(),
