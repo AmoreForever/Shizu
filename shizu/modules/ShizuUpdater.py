@@ -33,7 +33,6 @@ from .. import loader, utils
 from ..version import __version__, branch
 
 from loguru import logger
-
 from aiogram import Bot
 from aiogram.utils.exceptions import (
     CantParseEntities,

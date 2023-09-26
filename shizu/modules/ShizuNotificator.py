@@ -73,15 +73,15 @@ class ShizuNotificator(loader.Module):
     @loader.on_bot(lambda self, app, call: call.data == "update")
     async def update_callback_handler(self, app: Client, call: CallbackQuery):
         os.system("git pull")
-        msg = await self.bot.bot.send_message(
-            self.tg_id,
-            '🧑‍🔬 Restart...'
+        await app.send_message(
+            call.message.chat.id,
+            self.strings["updaing"],
         )
         self.db.set("shizu.updater", "restart", {
-            "start": time.time(),
-            "type": "botupdate",
-            "chat": msg.chat.id,
-            "id": msg.id
+            "chat": call.message.chat.id,
+            "id": call.message.id,
+            "start": str(round(time.time())),
+            "type": "update",
         })
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
         return sys.exit(0)
@@ -89,7 +89,6 @@ class ShizuNotificator(loader.Module):
     @loader.loop(interval=20, autostart=True)
     async def check_updst(self) -> None:
         last_ = self.db.get("shizu.updater", "commit_last", "")
-        logger.info(f"Last commit: {last_} | Latest commit: {self.get_latest()}")
         if last_ == self.get_latest():
             return 
         await self.bot.bot.send_message(
@@ -100,4 +99,5 @@ class ShizuNotificator(loader.Module):
             ),
             reply_markup=self.update_keyboard(),
         )
+        logging.info("send updst")
         self.db.set("shizu.updater", "commit_last", self.get_latest())
