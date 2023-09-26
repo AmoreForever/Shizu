@@ -50,6 +50,7 @@ async def main():
 
         try:
             if restart['type'] == "botupdate":
+                logging.info("Shizu is updated...")
                 return await app.inline_bot.edit_message(
                     db.get("shizu.updater", "restart", None)["chat"],
                     db.get("shizu.updater", "restart", None)["id"],
