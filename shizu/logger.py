@@ -38,10 +38,8 @@ def get_valid_level(level: Union[str, int]):
     return int(level) if level.isdigit() else getattr(logging, level.upper(), None)
 
 def send_message(message: str, chat_id: int):
-    try:
+    with contextlib.suppress(NetworkError):
         requests.post(f"https://api.telegram.org/bot{db.get('shizu.bot', 'token')}/sendMessage", data={"chat_id": chat_id, "text": message, "parse_mode": "HTML"}, timeout=10)
-    except NetworkError:
-        pass
 
 
 class CustomException:

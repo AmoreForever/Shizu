@@ -8,7 +8,6 @@
 import contextlib
 import logging
 import time
-import git
 
 from pyrogram.methods.utilities.idle import idle
 
@@ -47,24 +46,17 @@ async def main():
                 f"<emoji id=5258420634785947640>🔄</emoji> <b>The update was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The update took <code>{round(time.time())-int(restart['start'])}</code> seconds"
             )
 
-
         try:
-            if restart['type'] == "botupdate":
-                logging.info("Shizu is updated...")
-                return await app.inline_bot.edit_message(
-                    db.get("shizu.updater", "restart", None)["chat"],
-                    db.get("shizu.updater", "restart", None)["id"],
-                    restarted_text
-                )
             await app.edit_message_text(restart["chat"], restart["id"], restarted_text)
         except Exception:
             await app.inline_bot.send_message(
                 app.db.get("shizu.me", "me", None),
                 "🔄 The reboot was successful!\n"
                 f'⌛️ The reboot took <code>{round(time.time())-int(restart["start"])}</code> seconds'
-                "\n\nℹ️ <b>Userbot cannot edit that message due to an error thats why I am sending it to you instead :)</b>",
+                "\n\nℹ️ <b>Userbot couldn't edit that message due to an error thats why I am sending it to you instead :)</b>",
                 parse_mode="HTML",
             )
+        logging.info("Successfully started!")
         db.pop("shizu.updater", "restart")
 
     await idle()

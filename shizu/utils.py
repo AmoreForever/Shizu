@@ -18,8 +18,6 @@ import aiohttp
 from types import FunctionType
 from typing import Any, List, Literal, Tuple, Union
 
-# from . import __main__
-
 from pyrogram.types import Chat, Message, User
 from pyrogram import Client
 
@@ -224,7 +222,7 @@ async def answer(
             await message.delete()
             messages.append(await message.reply_photo(response, **kwargs))
 
-    return messages[0]
+    return messages[0] if len(messages) == 1 else messages[-1]
 
 
 async def answer_inline(

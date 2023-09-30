@@ -15,7 +15,7 @@ import zipfile
 import sys
 
 from datetime import datetime
-from pyrogram import Client, types
+from pyrogram import Client, types, enums
 
 from .. import loader, utils
 
@@ -75,7 +75,7 @@ class BackupMod(loader.Module):
             "shizu.updater",
             "restart",
             {
-                "chat": message.chat.id,
+                "chat": message.chat.username if message.chat.type == enums.ChatType.BOT else message.chat.id,
                 "id": ms.id,
                 "start": time.time(),
                 "type": "restart",

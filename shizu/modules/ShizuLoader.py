@@ -75,7 +75,7 @@ class Loader(loader.Module):
             else "🔸"
         )
         modules_repo = self.db.get(
-            "shizu.loader", "repo", "https://github.com/sh1tn3t/sub-modules"
+            "shizu.loader", "repo", "https://github.com/AmoreForever/ShizuMods"
         )
         api_result = await get_git_raw_link(modules_repo)
         if not api_result:
@@ -96,8 +96,7 @@ class Loader(loader.Module):
 
         if not args:
             text = (
-                f'📥 List of available modules with <ahref="{modules_repo}">repository</a>:\n\n'
-                + "<code>all</code> - loads all modules\n"
+                f'<emoji id=5974220038956124904>📥</emoji> <b>List of available modules with <a href="{modules_repo}">repository</a></b>:\n\n'
                 + "\n".join(map("<code>{}</code>".format, modules))
             )
             return await utils.answer(message, text, disable_web_page_preview=True)

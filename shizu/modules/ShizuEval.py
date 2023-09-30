@@ -8,27 +8,22 @@
 
 import sys
 import re
-import os
 import logging
 from meval import meval
-from pyrogram import Client, types, enums
+from pyrogram import Client, types
 
 from .. import loader, utils, logger
 
-log = logging.getLogger(__name__)
 
-
-class ForbiddenAction(Exception):
+class DeleteAccountIsForbidden(Exception):
     """For prohibited actions"""
-
-    def __init__(self, message):
+    def __init__(self, message):  
         super().__init__(message)
 
 
 @loader.module(name="ShizuEval", author="hikamoru")
 class EvaluatorMod(loader.Module):
     """Выполняет python-код"""
-    
         
 
     @loader.command()
@@ -39,7 +34,8 @@ class EvaluatorMod(loader.Module):
         try:
             delete_account_re = re.compile(r"DeleteAccount", re.IGNORECASE)
             if delete_account_re.search(args):
-                raise ForbiddenAction("Shizu does't allow deleting accounts.")
+                logging.error("DO NOT TRY TO DELETE ACCOUNT, IF YOU WHAT YOU MAY DO IT HERE: https://my.telegram.org/auth")
+                raise DeleteAccountIsForbidden('DeleteAccount is forbidden')
             result = await meval(args, globals(), **self.getattrs(app, message))
             return await utils.answer(
                 message,

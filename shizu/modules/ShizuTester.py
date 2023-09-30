@@ -40,7 +40,8 @@ from .. import loader, utils
 class TesterMod(loader.Module):
     """Execute activities based on userbot self-testing"""
 
-    async def logs_cmd(self, app: Client, message: types.Message, args: str):
+    @loader.command()
+    async def logs(self, app: Client, message: types.Message, args: str):
         """To get logs. Usage: logs (verbosity level)"""
         lvl = 40  # ERROR
 

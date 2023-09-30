@@ -32,14 +32,8 @@ from subprocess import check_output
 from .. import loader, utils
 from ..version import __version__, branch
 
-from loguru import logger
 from aiogram import Bot
-from aiogram.utils.exceptions import (
-    CantParseEntities,
-    CantInitiateConversation,
-    BotBlocked,
-    ChatNotFound,
-)
+from aiogram.utils.exceptions import ChatNotFound
 
 
 @loader.module(name="ShizuUpdater", author="shizu")
@@ -54,7 +48,6 @@ class UpdateMod(loader.Module):
 
     async def on_load(self, app: Client):
         bot: Bot = self.bot.bot
-        me = await app.get_me()
         _me = await bot.get_me()
 
         started_text = (
@@ -78,37 +71,6 @@ class UpdateMod(loader.Module):
             )
         except Exception:
             pass
-        last = None
-
-        try:
-            last = check_output("git log -1", shell=True).decode().split()[1].strip()
-            diff = check_output("git rev-parse HEAD", shell=True).decode().strip()
-
-            if last != diff:
-                await bot.send_message(
-                    me.id,
-                    f"✔ Update available (<a href='https://github.com/AmoreForever/Shizu/commit/{last}'>{last[:6]}...</a>)",
-                )
-        except CantInitiateConversation:
-            logger.error(
-                f"Updater | You have blocked the bot, please unblock the bot ({_me.username})"
-            )
-        except BotBlocked:
-            logger.error(
-                f"Updater | You have not started a dialogue with the bot, please write to the bot /start ({_me.username})"
-            )
-
-        except CantParseEntities:
-            await bot.send_message(
-                me.id,
-                f"✔ Update available (https://github.com/AmoreForever/Shizu/commit/{last})",
-            )
-        except Exception as error:
-            await bot.send_message(
-                me.id,
-                "❌ An error occurred while checking for an available update.\n"
-                f"❌ Please make sure that you have the GIT {error} command running",
-            )
 
     @loader.command()
     async def update(self, app: Client, message: types.Message):
@@ -125,7 +87,7 @@ class UpdateMod(loader.Module):
                 "shizu.updater",
                 "restart",
                 {
-                    "chat": message.chat.id,
+                    "chat": message.chat.username if message.chat.type == enums.ChatType.BOT else message.chat.id,
                     "id": message.id,
                     "start": str(round(time.time())),
                     "type": "update",
@@ -150,7 +112,7 @@ class UpdateMod(loader.Module):
             "shizu.updater",
             "restart",
             {
-                "chat": message.chat.id,
+                "chat": message.chat.username if message.chat.type == enums.ChatType.BOT else message.chat.id,
                 "id": ms.id,
                 "start": time.time(),
                 "type": "restart",
