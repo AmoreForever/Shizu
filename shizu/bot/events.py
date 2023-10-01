@@ -7,7 +7,7 @@ from aiogram.types import (
     InlineQueryResultArticle,
     InputTextMessageContent,
     Message,
-    InlineKeyboardMarkup, 
+    InlineKeyboardMarkup,
     InlineKeyboardButton
 )
 
@@ -15,6 +15,11 @@ from .. import utils
 from .types import Item
 from .. import database
 
+TEXT = (
+    "🌘 <b><a href='https://github.com/AmoreForever/Shizu'>Shizu Userbot</a></b>\n\n\n"
+    "💫 A userbot can be characterized as a <b>third-party software application</b> that engages with the Telegram API in order to execute <b>automated operations on behalf of an end user</b>. These userbots possess the capability to streamline a variety of tasks, encompassing activities such as <b>dispatching messages, enrolling in channels, retrieving media files, and more</b>.\n\n"
+    "😎 Diverging from conventional Telegram bots, <b>userbots operate within the confines of a user's account</b> rather than within a dedicated bot account. This particular distinction empowers userbots with enhanced accessibility to a broader spectrum of functionalities and a heightened degree of flexibility in executing actions.\n\n"
+    )
 
 class Events(Item):
     """Обработчик событий"""
@@ -26,13 +31,18 @@ class Events(Item):
                 return
             await message.answer_photo(
                 open("assets/Shizu.jpg", "rb"),
-                caption='🐙 <b>Shizu – Your Secret Telegram Weapon! With plugin support and effortless setup, this bot unlocks a world of possibilities in Telegram. Dive in and experience the extraordinary!</b>\n\n🧑‍💻 <b>hikamoru.t.me</b>',
+                caption="🐙 <b>Shizu – Your Secret Telegram Weapon! With plugin support and effortless setup, this bot unlocks a world of possibilities in Telegram. Dive in and experience the extraordinary!</b>\n\n🧑‍💻 <b>hikamoru.t.me</b>",
                 reply_markup=InlineKeyboardMarkup().add(
                     InlineKeyboardButton(
                         text="🌍 Github", url="https://github.com/AmoreForever/Shizu"
-                        )
                     )
-                )
+                ),
+            )
+        if message.text == '/userbot':
+            if message.chat.type != "private":
+                return False
+            await message.answer(TEXT, parse_mode="HTML", disable_web_page_preview=True)
+        
         for func in self._all_modules.message_handlers.values():
             if not await self._check_filters(func, func.__self__, message):
                 continue

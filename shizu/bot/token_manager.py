@@ -1,12 +1,11 @@
 import logging
 import re
-import asyncio
 import time
 from loguru import logger
 from typing import Union
 from typing import Tuple
 
-from pyrogram import errors, types
+from pyrogram import errors
 
 from .. import fsm, utils
 from .types import Item
@@ -88,13 +87,13 @@ class TokenManager(Item):
                 f"🐙 Shizu UserBot of {utils.get_display_name(self._all_modules.me)[:45]}"
             )
             await conv.get_response()
-            
+
             bot_username = f"shizu_{utils.random_id(6)}_bot"
-            
+
             await conv.ask(bot_username)
             time.sleep(1)
             response = await conv.get_response()
-            
+
             logger.error(response.text)
             search = re.search(r"(?<=<code>)(.*?)(?=</code>)", response.text.html)
             if not search:
@@ -125,4 +124,4 @@ class TokenManager(Item):
             logger.success(f"Bot successfully created @{bot_username}")
             await self._app.send_message(bot_username, "/start")
 
-            return token, bot_username  
+            return token, bot_username

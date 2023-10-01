@@ -34,12 +34,10 @@ else:
         print(
             "🔁 Trying to install it automatically...\n"
             "⌛ Attempting dependencies installation... Just wait."
-        )  
+        )
         os.popen("pip3 install -r requirements.txt").read()
         print("👍 Dependencies installed")
         print("🔁 Retrying to run bot again please wait..")
-        asyncio.run(main.main())
 
 
-if __name__ == "__main__":
-    asyncio.run(main.main())
+asyncio.run(main.main())

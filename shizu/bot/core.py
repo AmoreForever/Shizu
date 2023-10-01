@@ -3,11 +3,10 @@ import asyncio
 import contextlib
 import sys
 
-from aiogram import Bot, Dispatcher, exceptions
+from aiogram import Bot, Dispatcher, exceptions, types as aiotypes
 from pyrogram import Client
 
 from typing import Union, NoReturn
-from loguru import logger
 
 from .events import Events
 from .token_manager import TokenManager
@@ -17,18 +16,13 @@ from .. import database, types
 with contextlib.suppress(Exception):
     bot = Bot(token=database.db.get("shizu.bot", "token", None), parse_mode="html")
     dp = Dispatcher(bot)
-    
-class BotManager(
-    Events,
-    TokenManager
-):
+
+
+class BotManager(Events, TokenManager):
     """Bot manager"""
 
     def __init__(
-        self,
-        app: Client,
-        db: database.Database,
-        all_modules: types.ModulesManager
+        self, app: Client, db: database.Database, all_modules: types.ModulesManager
     ) -> None:
         """Initializing a class
 
@@ -70,14 +64,15 @@ class BotManager(
 
         self._dp = Dispatcher(self.bot)
         self._dp.register_message_handler(
-            self._message_handler, lambda _: True,
-            content_types=["any"]
+            self._message_handler, lambda _: True, content_types=["any"]
         )
-        self._dp.register_inline_handler(
-            self._inline_handler, lambda _: True
-        )
-        self._dp.register_callback_query_handler(
-            self._callback_handler, lambda _: True
+        self._dp.register_inline_handler(self._inline_handler, lambda _: True)
+        self._dp.register_callback_query_handler(self._callback_handler, lambda _: True)
+        await self._dp.bot.set_my_commands(
+            [
+                aiotypes.BotCommand("start", "start"),
+                aiotypes.BotCommand("userbot", "little info about userbot"),
+            ]
         )
 
         asyncio.ensure_future(self._dp.start_polling())

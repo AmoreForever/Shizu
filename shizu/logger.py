@@ -34,12 +34,18 @@ FORMAT_FOR_TGLOG = logging.Formatter(
     style="%",
 )
 
+
 def get_valid_level(level: Union[str, int]):
     return int(level) if level.isdigit() else getattr(logging, level.upper(), None)
 
+
 def send_message(message: str, chat_id: int):
     with contextlib.suppress(NetworkError):
-        requests.post(f"https://api.telegram.org/bot{db.get('shizu.bot', 'token')}/sendMessage", data={"chat_id": chat_id, "text": message, "parse_mode": "HTML"}, timeout=10)
+        requests.post(
+            f"https://api.telegram.org/bot{db.get('shizu.bot', 'token')}/sendMessage",
+            data={"chat_id": chat_id, "text": message, "parse_mode": "HTML"},
+            timeout=10,
+        )
 
 
 class CustomException:
@@ -256,17 +262,14 @@ class Telegramhandler(logging.Handler):
 
         if self.last_log_time is None:
             self.last_log_time = current_time
-            
-        
+
         self.msgs.append(f"<code>{FORMAT_FOR_TGLOG.format(record)}</code>")
-        
+
         if current_time - self.last_log_time >= self.time_threshold and self.msgs:
-            send_message(
-                "\n".join(self.msgs),
-                self.chat
-            )
+            send_message("\n".join(self.msgs), self.chat)
             self.msgs.clear()
             self.last_log_time = current_time
+
 
 def override_text(exception: Exception) -> typing.Optional[str]:
     """Returns error-specific description if available, else `None`"""

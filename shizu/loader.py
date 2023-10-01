@@ -304,7 +304,19 @@ class ModulesManager:
         module = module_from_spec(spec)
         sys.modules[module.__name__] = module
         spec.loader.exec_module(module)
-
+        cmodules = [
+            "ShizuBackuper",
+            "ShizuHelp",
+            "ShizuLoader",
+            "ShizuTerminal",
+            "ShizuTester",
+            "ShizuUpdater",
+            "ShizuEval",
+            "ShizuModulesHelper",
+            "ShizuStart",
+            "ShizuInfo",
+            "ShizuTranslater"
+        ]
         instance = None
         for key, value in vars(module).items():
             if not inspect.isclass(value) or not issubclass(value, Module):
@@ -322,6 +334,7 @@ class ModulesManager:
             value.me = self.me
             value.tg_id = self.me.id
             value.userbot = "Shizu"
+            value.cmodules = cmodules
             value.get_mod = self.get_module
             value.prefix = self._db.get("shizu.loader", "prefixes", ["."])
 

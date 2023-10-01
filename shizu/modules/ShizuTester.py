@@ -46,13 +46,12 @@ class TesterMod(loader.Module):
         lvl = 40  # ERROR
 
         if args and not (lvl := logger.get_valid_level(args)):
-            return await utils.answer(message, "Invalid verbosity level")
+            return await message.answer("Invalid verbosity level")
 
         handler = logging.getLogger().handlers[0]
         logs = ("\n".join(handler.dumps(lvl))).encode("utf-8")
         if not logs:
-            return await utils.answer(
-                message,
+            return await message.answer(
                 f"❕ You don't have any logs at verbosity  {lvl} ({logging.getLevelName(lvl)})",
             )
 
@@ -60,8 +59,7 @@ class TesterMod(loader.Module):
         logs.name = "shizu.log"
 
         await message.delete()
-        return await utils.answer(
-            message,
+        return await message.answer(
             logs,
             doc=True,
             caption=f"🐙 Shizu logs with verbosity {lvl} ({logging.getLevelName(lvl)})",
@@ -71,37 +69,35 @@ class TesterMod(loader.Module):
     async def setprefix(self, app: Client, message: types.Message, args: str):
         """To change the prefix, you can have several pieces separated by a space. Usage: setprefix (prefix) [prefix, ...]"""
         if not (args := args.split()):
-            return await utils.answer(message, "❔ Which prefix should I change to?")
+            return await message.answer("❔ Which prefix should I change to?")
 
         self.db.set("shizu.loader", "prefixes", list(set(args)))
         prefixes = ", ".join(f"<code>{prefix}</code>" for prefix in args)
-        return await utils.answer(message, f"✅ Prefix has been changed to {prefixes}")
+        return await message.answer(f"✅ Prefix has been changed to {prefixes}")
 
     @loader.command()
     async def addalias(self, app: Client, message: types.Message, args: str):
         """Add an alias. Usage: addalias (new alias) (command)"""
         if not (args := args.lower().split(maxsplit=1)):
-            return await utils.answer(message, "❔ Which alias should I add?")
+            return await message.answer("❔ Which alias should I add?")
 
         if len(args) != 2:
-            return await utils.answer(
-                message,
+            return await message.answer(
                 "❌ The arguments are incorrect."
                 "✅ Correct: addalias <new alias> <command>",
             )
 
         aliases = self.all_modules.aliases
         if args[0] in aliases:
-            return await utils.answer(message, "❌ Тsuch an alias already exists")
+            return await message.answer("❌ Тsuch an alias already exists")
 
         if not self.all_modules.command_handlers.get(args[1]):
-            return await utils.answer(message, "❌ There is no such command")
+            return await message.answer("❌ There is no such command")
 
         aliases[args[0]] = args[1]
         self.db.set("shizu.loader", "aliases", aliases)
 
-        return await utils.answer(
-            message,
+        return await message.answer(
             f"✅ Alias <code>{args[0]}</code> for the command <code>{args[1]}</code> has been added",
         )
 
@@ -109,25 +105,22 @@ class TesterMod(loader.Module):
     async def delalias(self, app: Client, message: types.Message, args: str):
         """Delete the alias. Usage: delalas (alias)"""
         if not (args := args.lower()):
-            return await utils.answer(message, "❔ Which alias should I delete?")
+            return await message.answer("❔ Which alias should I delete?")
 
         aliases = self.all_modules.aliases
         if args not in aliases:
-            return await utils.answer(message, "❌ There is no such alias")
+            return await message.answer("❌ There is no such alias")
 
         del aliases[args]
         self.db.set("shizu.loader", "aliases", aliases)
 
-        return await utils.answer(
-            message, f"✅ Alias <code>{args}</code> has been deleted"
-        )
+        return await message.answer(f"✅ Alias <code>{args}</code> has been deleted")
 
     @loader.command()
     async def aliases(self, app: Client, message: types.Message):
         """Show all aliases"""
         if aliases := self.all_modules.aliases:
-            return await utils.answer(
-                message,
+            return await message.answer(
                 "🗄 List of all aliases:\n"
                 + "\n".join(
                     f"• <code>{alias}</code> ➜ {command}"
@@ -135,16 +128,15 @@ class TesterMod(loader.Module):
                 ),
             )
         else:
-            return await utils.answer(message, "Алиасов нет")
+            return await message.answer("Алиасов нет")
 
     @loader.command()
     async def ping(self, app: Client, message: types.Message, args: str):
         """Checks the response rate of the user bot"""
         start = time.perf_counter_ns()
-        await utils.answer(message, "<emoji id=5267444331010074275>▫️</emoji>")
+        await message.answer("<emoji id=5267444331010074275>▫️</emoji>")
         ping = round((time.perf_counter_ns() - start) / 10**6, 3)
-        await utils.answer(
-            message,
+        await message.answer(
             f"<emoji id=5220226955206467824>⚡️</emoji> <b>Telegram Response Rate:</b> <code>{ping}</code> <b>ms</b>",
         )
 

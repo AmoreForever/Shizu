@@ -5,7 +5,6 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-
 from .. import loader, utils
 from pyrogram import Client
 
@@ -32,7 +31,7 @@ class ShizuStart(loader.Module):
 3️⃣ Type <code>.dlmod (link)</code> to load module from link
 4️⃣ Type <code>.loadmod</code> with reply to file to install module from it
 5️⃣ Type <code>.unloadmod (ModuleName)</code> to unload module ModuleName
-    """  
+    """
 
     async def on_load(self, app: Client):
         if not self.db.get("shizu.me", "started", None):

@@ -39,18 +39,16 @@ class ModulesLinkMod(loader.Module):
     async def ml(self, app: Client, message: types.Message, args: str):
         """Get a link or a module file. Usage: ml <module name or command>"""
         if not args:
-            return await utils.answer(
-                message,
+            return await message.answer(
                 "<emoji id=5190748314026385859>🤷‍♂️</emoji> No arguments are specified (module name or command)",
             )
 
-        m = await utils.answer(
-            message, "<emoji id=5188311512791393083>🔎</emoji> <b>Module search...</b>"
+        m = await message.answer(
+            "<emoji id=5188311512791393083>🔎</emoji> <b>Module search...</b>"
         )
 
         if not (module := self.all_modules.get_module(args, True, True)):
-            return await utils.answer(
-                message,
+            return await message.answer(
                 "<emoji id=5346063050233360577>😮</emoji> <b>Couldn't find the module</b>",
             )
 
@@ -74,4 +72,4 @@ class ModulesLinkMod(loader.Module):
         )
 
         await m.delete()
-        return await utils.answer(message, source_code, doc=True, caption=caption)
+        return await message.answer(source_code, doc=True, caption=caption)

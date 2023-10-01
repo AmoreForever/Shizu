@@ -110,7 +110,7 @@ async def create_chat(
     description=None,
     supergroup: bool = False,
     inline_bot: bool = False,
-    promote: bool = False
+    promote: bool = False,
 ):
     """
     Create a chat in the Telegram app.
@@ -275,6 +275,15 @@ def run_sync(func: FunctionType, *args, **kwargs) -> asyncio.Future:
     )
 
 
+async def answer_eor(message: Message, *args, **kwargs) -> Message:
+    att = (
+        message.edit_text
+        if bool(message.from_user and message.from_user.is_self or message.outgoing)
+        else (message.reply_to_message or message).reply_text
+    )
+    return await att(*args, **kwargs)
+
+
 def get_display_name(entity: Union[User, Chat]) -> str:
     """Получить отображаемое имя
 
@@ -380,25 +389,157 @@ async def paste_neko(code: str):
     else:
         return f"nekobin.com/{result['result']['key']}.py"
 
+
 def get_git_hash() -> typing.Union[str, bool]:
     """
     Get current Shizu git hash
     :return: Git commit hash
-    """ # taken from Hikka
+    """
     try:
         return git.Repo().head.commit.hexsha
     except Exception:
         return False
-    
+
+
 def get_commit_url() -> str:
     """
     Get current Shizu git commit url
     :return: Git commit url
-    """ # taken from Hikka
+    """
     try:
         hash_ = get_git_hash()
-        return (
-            f'<a href="https://github.com/AmoreForever/Shizu/commit/{hash_}">#{hash_[:7]}</a>'
-        )
+        return f'<a href="https://github.com/AmoreForever/Shizu/commit/{hash_}">#{hash_[:7]}</a>'
     except Exception:
         return "Unknown"
+
+
+tr_langs = [
+    "af",
+    "am",
+    "ar",
+    "as",
+    "az",
+    "ba",
+    "bg",
+    "bn",
+    "bo",
+    "bs",
+    "ca",
+    "cs",
+    "cy",
+    "da",
+    "de",
+    "dsb",
+    "dv",
+    "el",
+    "en",
+    "es",
+    "et",
+    "eu",
+    "fa",
+    "fi",
+    "fil",
+    "fj",
+    "fo",
+    "fr",
+    "fr-CA",
+    "ga",
+    "gl",
+    "gom",
+    "gu",
+    "ha",
+    "he",
+    "hi",
+    "hr",
+    "hsb",
+    "ht",
+    "hu",
+    "hy",
+    "id",
+    "ig",
+    "ikt",
+    "is",
+    "it",
+    "iu",
+    "iu-Latn",
+    "ja",
+    "ka",
+    "kk",
+    "km",
+    "kmr",
+    "kn",
+    "ko",
+    "ku",
+    "ky",
+    "ln",
+    "lo",
+    "lt",
+    "lug",
+    "lv",
+    "lzh",
+    "mai",
+    "mg",
+    "mi",
+    "mk",
+    "ml",
+    "mn-Cyrl",
+    "mn-Mong",
+    "mr",
+    "ms",
+    "mt",
+    "mww",
+    "my",
+    "nb",
+    "ne",
+    "nl",
+    "nso",
+    "nya",
+    "or",
+    "otq",
+    "pa",
+    "pl",
+    "prs",
+    "ps",
+    "pt",
+    "pt-PT",
+    "ro",
+    "ru",
+    "run",
+    "rw",
+    "sd",
+    "si",
+    "sk",
+    "sl",
+    "sm",
+    "sn",
+    "so",
+    "sq",
+    "sr-Cyrl",
+    "sr-Latn",
+    "st",
+    "sv",
+    "sw",
+    "ta",
+    "te",
+    "th",
+    "ti",
+    "tk",
+    "tlh-Latn",
+    "tn",
+    "to",
+    "tr",
+    "tt",
+    "ty",
+    "ug",
+    "uk",
+    "ur",
+    "uz",
+    "vi",
+    "xh",
+    "yo",
+    "yua",
+    "yue",
+    "zh-Hans",
+    "zh-Hant",
+    "zu",
+]

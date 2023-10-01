@@ -43,7 +43,7 @@ async def check_filters(
 
 
 class DispatcherManager:
-    """Менеджер диспетчера"""
+    """Manager of dispatcher"""
 
     def __init__(self, app: Client, modules: "loader.ModulesManager") -> None:
         self.app = app
@@ -99,8 +99,7 @@ class DispatcherManager:
                             f"{exc}\n",
                             parse_mode="HTML",
                         )
-                        await utils.answer(
-                            message,
+                        await message.answer(
                             f"<emoji id=5019455638053323673>❌</emoji> <b>Command <code>{prefix}{command}</code> failed with error:</b>\n"
                             f"<code>{error}</code>\n",
                         )
@@ -122,8 +121,7 @@ class DispatcherManager:
                     f"{exc}\n",
                     parse_mode="HTML",
                 )
-                await utils.answer(
-                    message,
+                await message.answer(
                     f"<emoji id=5019455638053323673>❌</emoji> <b>Command <code>{prefix}{command}</code> failed with error:</b>\n"
                     f"<code>{error}</code>\n",
                 )

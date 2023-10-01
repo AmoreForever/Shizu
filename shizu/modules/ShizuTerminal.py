@@ -44,16 +44,13 @@ def bash_exec(args: str):
 @loader.module(name="ShizuTerminal", author="shizu")
 class TerminalMod(loader.Module):
     """Terminal"""
-    
+
     @loader.command()
     async def terminal(self, app: Client, message: types.Message, args: str):
-        await utils.answer(
-            message, "<emoji id=5325822763447884498>💠</emoji> <b>wait...</b>"
-        )
+        await message.answer("<emoji id=5325822763447884498>💠</emoji> <b>wait...</b>")
         output = await bash_exec(args)
 
-        await utils.answer(
-            message,
+        await message.answer(
             f"<emoji id=5472111548572900003>⌨️</emoji> <b>Команда:</b> <code>{args.strip()}</code>\n"
             f"💾 <b>Вывод:</b>\n<code>"
             f"{output}"

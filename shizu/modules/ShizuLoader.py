@@ -79,13 +79,12 @@ class Loader(loader.Module):
         )
         api_result = await get_git_raw_link(modules_repo)
         if not api_result:
-            return await utils.answer(message, "❌ Invalid repository link.\n")
+            return await message.answer("❌ Invalid repository link.\n")
 
         raw_link = api_result
         modules = await utils.run_sync(requests.get, f"{raw_link}all.txt")
         if modules.status_code != 200:
-            return await utils.answer(
-                message,
+            return await message.answer(
                 (
                     f'❌ The all.txt file was not found in the <a href="{modules_repo}">repository</a>'
                 ),
@@ -99,7 +98,7 @@ class Loader(loader.Module):
                 f'<emoji id=5974220038956124904>📥</emoji> <b>List of available modules with <a href="{modules_repo}">repository</a></b>:\n\n'
                 + "\n".join(map("<code>{}</code>".format, modules))
             )
-            return await utils.answer(message, text, disable_web_page_preview=True)
+            return await message.answer(text, disable_web_page_preview=True)
 
         error_text: str = None
         module_name: str = None
@@ -113,8 +112,7 @@ class Loader(loader.Module):
             if r.status_code != 200:
                 raise requests.exceptions.ConnectionError
 
-            await utils.answer(
-                message,
+            await message.answer(
                 "<emoji id=5280506417478903827>🛡</emoji> Analyzing the module..",
             )
             module_name = await self.all_modules.load_module(r.text, r.url)
@@ -132,7 +130,7 @@ class Loader(loader.Module):
             error_text = "❌ An unexpected error has occurred. See the logs for details"
 
         if error_text:
-            return await utils.answer(message, error_text)
+            return await message.answer(error_text)
 
         self.db.set(
             "shizu.loader",
@@ -141,8 +139,7 @@ class Loader(loader.Module):
         )
 
         if not (module := self.all_modules.get_module(module_name, True)):
-            return await utils.answer(
-                message,
+            return await message.answer(
                 "<b><emoji id=5465665476971471368>❌</emoji> There is no such module</b>",
             )
 
@@ -167,8 +164,7 @@ class Loader(loader.Module):
             if module.author
             else ""
         )
-        return await utils.answer(
-            message,
+        return await message.answer(
             header + command_descriptions + "\n" + inline_descriptions + "\n" + footer,
         )
 
@@ -187,57 +183,38 @@ class Loader(loader.Module):
         )
 
         if not file:
-            return await utils.answer(message, "❌ Нет реплая на файл")
+            return await message.answer("❌ Нет реплая на файл")
 
-        await utils.answer(
-            message,
+        await message.answer(
             "<emoji id=5215493819641895305>🚛</emoji> <b>Loading the module..</b>",
         )
         file = await reply.download()
 
-        modules = [
-            "ShizuBackuper",
-            "ShizuHelp",
-            "ShizuLoader",
-            "ShizuTerminal",
-            "ShizuTester",
-            "ShizuUpdater",
-            "ShizuEval",
-            "ShizuModulesHelper",
-            "ShizuStart",
-            "ShizuSecurty",
-        ]
-
-        for mod in modules:
+        for mod in self.cmodules:
             if file == mod:
-                return await utils.answer(
-                    message, "❌ It is not allowed to load core modules"
-                )
+                return await message.answer("❌ It is not allowed to load core modules")
 
         try:
             with open(file, "r", encoding="utf-8") as file:
                 module_source = file.read()
         except UnicodeDecodeError:
-            return await utils.answer(message, "❌ Incorrect file encoding")
-        await utils.answer(
-            message, "<emoji id=5280506417478903827>🛡</emoji> Analyzing the module.."
+            return await message.answer("❌ Incorrect file encoding")
+        await message.answer(
+            "<emoji id=5280506417478903827>🛡</emoji> Analyzing the module.."
         )
 
         module_name = await self.all_modules.load_module(module_source)
 
         if module_name is True:
-            return await utils.answer(
-                message, "✅ Dependencies are installed. Reboot required"
-            )
+            return await message.answer("✅ Dependencies are installed. Reboot required")
 
         if not module_name:
-            return await utils.answer(
-                message, "❌ Failed to load the module. See the logs for details"
+            return await message.answer(
+                "❌ Failed to load the module. See the logs for details"
             )
 
         if module_name == "DAR":
-            return await utils.answer(
-                message,
+            return await message.answer(
                 "<emoji id=5203929938024999176>🛡</emoji> <b><u>Shizu</u> protected your account from</b> <code>DeleteAccount</code>.\n<emoji id=5404380425416090434>ℹ️</emoji> <b>This module contains a dangerous code that can delete your account.</b>",
             )
 
@@ -246,8 +223,7 @@ class Loader(loader.Module):
             file.write(module_source)
 
         if not (module := self.all_modules.get_module(module_name, True)):
-            return await utils.answer(
-                message,
+            return await message.answer(
                 "<b><emoji id=5465665476971471368>❌</emoji> There is no such module</b>",
             )
 
@@ -272,8 +248,7 @@ class Loader(loader.Module):
             if module.author
             else ""
         )
-        return await utils.answer(
-            message,
+        return await message.answer(
             header + command_descriptions + "\n" + inline_descriptions + "\n" + footer,
         )
 
@@ -281,28 +256,13 @@ class Loader(loader.Module):
     async def unloadmod(self, app: Client, message: types.Message, args: str):
         """Unload the module. Usage: unloadmod <module name>"""
         if not (module_name := self.all_modules.unload_module(args)):
-            return await utils.answer(message, "❌ Incorrect module name")
+            return await message.answer("❌ Incorrect module name")
 
-        modules = [
-            "ShizuBackuper",
-            "ShizuHelp",
-            "ShizuLoader",
-            "ShizuTerminal",
-            "ShizuTester",
-            "ShizuUpdater",
-            "ShizuEval",
-            "ShizuModulesHelper",
-            "ShizuStart",
-            "ShizuSecurty",
-        ]
-
-        if module_name in modules:
-            return await utils.answer(
-                message,
+        if module_name in self.cmodules:
+            return await message.answer(
                 "<emoji id=5364241851500997604>⚠️</emoji> You cannot unload the core modules",
             )
 
-        return await utils.answer(
-            message,
+        return await message.answer(
             f"<emoji id=6334471265700546607>🧹</emoji> Module <code>{module_name}</code> unloaded",
         )

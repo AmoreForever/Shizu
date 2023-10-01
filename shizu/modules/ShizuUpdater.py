@@ -40,12 +40,6 @@ from aiogram.utils.exceptions import ChatNotFound
 class UpdateMod(loader.Module):
     """Updates itself"""
 
-    def __init__(self):
-        value = self.db.get("Updater", "sendOnUpdate")
-
-        if value is None:
-            value = True
-
     async def on_load(self, app: Client):
         bot: Bot = self.bot.bot
         _me = await bot.get_me()
@@ -76,43 +70,48 @@ class UpdateMod(loader.Module):
     async def update(self, app: Client, message: types.Message):
         """Updates itself"""
         try:
-            await utils.answer(message, "Update attempt...")
+            await message.answer("Update attempt...")
             check_output("git stash", shell=True).decode()
             output = check_output("git pull", shell=True).decode()
             if "Already up to date." in output:
-                return await utils.answer(
-                    message, "You have the latest version installed ✔"
+                return await message.answer(
+                    message,
+                    "<emoji id=5188420746694633417>🌗</emoji> <b>You have the latest version installed</b>.",
                 )
             self.db.set(
                 "shizu.updater",
                 "restart",
                 {
-                    "chat": message.chat.username if message.chat.type == enums.ChatType.BOT else message.chat.id,
+                    "chat": message.chat.username
+                    if message.chat.type == enums.ChatType.BOT
+                    else message.chat.id,
                     "id": message.id,
                     "start": str(round(time.time())),
                     "type": "update",
                 },
             )
 
-            await utils.answer(message, "🔁 Update...")
+            await message.answer("🔁 Update...")
 
             logging.info("Обновление...")
             atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
             return sys.exit(0)
         except Exception as error:
-            await utils.answer(message, f"An error occurred: {error}")
+            await message.answer(f"An error occurred: {error}")
 
     @loader.command()
     async def restart(self, app: Client, message: types.Message):
         """Rebooting the user bot"""
-        ms = await utils.answer(
-            message, "<b><emoji id=5328274090262275771>🔁</emoji> Rebooting...</b>"
+        ms = await message.answer(
+            "<b><emoji id=5328274090262275771>🔁</emoji> Rebooting...</b>"
         )
         self.db.set(
             "shizu.updater",
             "restart",
             {
-                "chat": message.chat.username if message.chat.type == enums.ChatType.BOT else message.chat.id,
+                "chat": message.chat.username
+                if message.chat.type == enums.ChatType.BOT
+                else message.chat.id,
                 "id": ms.id,
                 "start": time.time(),
                 "type": "restart",
