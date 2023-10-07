@@ -12,6 +12,7 @@ import string
 import typing
 
 import logging
+import io
 import os
 import contextlib
 import git
@@ -225,6 +226,12 @@ async def answer(
         message = message[0]
 
     if isinstance(response, str) and not any([doc, photo]):
+        if len(response) > 4096:
+            app.me = await app.get_me()
+            out = io.BytesIO(response.encode("utf-8"))  
+            out.name = "output.txt"
+            messages.append(await app.send_document(message.chat.id, out, caption="📁 Output was too long thos i send it as file", **kwargs))
+        
         outputs = [response[i : i + 4096] for i in range(0, len(response), 4096)]
         if chat_id:
             messages.append(
@@ -238,8 +245,6 @@ async def answer(
                     else message.reply
                 )(outputs[0], **kwargs)
             )
-        for output in outputs[1:]:
-            messages.append(await messages[0].reply(output, **kwargs))
 
     elif doc:
         app.me = await app.get_me()
@@ -260,7 +265,7 @@ async def answer(
             await message.delete()
             messages.append(await message.reply_photo(response, **kwargs))
 
-    return messages[0] if len(messages) == 1 else messages[-1]
+    return messages[0] if len(messages) == 1 else messages[-1] 
 
 
 async def answer_inline(

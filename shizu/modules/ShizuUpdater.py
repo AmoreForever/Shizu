@@ -98,7 +98,6 @@ class UpdateMod(loader.Module):
             output = check_output("git pull", shell=True).decode()
             if "Already up to date." in output:
                 return await message.answer(
-                    message,
                     self.strings("last_"),
                 )
             self.db.set(
