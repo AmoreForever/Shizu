@@ -25,20 +25,43 @@ import os
 import sys
 import time
 import atexit
-import logging
 
 from pyrogram import Client, types, enums
 from subprocess import check_output
 from .. import loader, utils
 from ..version import __version__, branch
 
-from aiogram import Bot
+from aiogram import Bot 
 from aiogram.utils.exceptions import ChatNotFound
 
 
 @loader.module(name="ShizuUpdater", author="shizu")
 class UpdateMod(loader.Module):
     """Updates itself"""
+
+    strings = {
+        "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>You have the latest version installed</b>.",
+        "update_": "🔁 Update...",
+        "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Rebooting...</b>",
+    }
+
+    strings_ru = {
+        "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>У вас установлена последняя версия</b>.",
+        "update_": "🔁 Обновление...",
+        "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Перезагрузка...</b>",
+    }
+
+    strings_uz = {
+        "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>Shizu botningizning yangi versiyasi</b>.",
+        "update_": "🔁 Yangilash...",
+        "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Qayta yuklash...</b>",
+    }
+
+    strings_jp = {
+        "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>最新バージョンがインストールされています</b>.",
+        "update_": "🔁 更新...",
+        "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> 再起動...</b>",
+    }
 
     async def on_load(self, app: Client):
         bot: Bot = self.bot.bot
@@ -76,7 +99,7 @@ class UpdateMod(loader.Module):
             if "Already up to date." in output:
                 return await message.answer(
                     message,
-                    "<emoji id=5188420746694633417>🌗</emoji> <b>You have the latest version installed</b>.",
+                    self.strings("last_"),
                 )
             self.db.set(
                 "shizu.updater",
@@ -91,9 +114,8 @@ class UpdateMod(loader.Module):
                 },
             )
 
-            await message.answer("🔁 Update...")
+            await message.answer(self.strings("update_"))
 
-            logging.info("Обновление...")
             atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
             return sys.exit(0)
         except Exception as error:
@@ -102,9 +124,7 @@ class UpdateMod(loader.Module):
     @loader.command()
     async def restart(self, app: Client, message: types.Message):
         """Rebooting the user bot"""
-        ms = await message.answer(
-            "<b><emoji id=5328274090262275771>🔁</emoji> Rebooting...</b>"
-        )
+        ms = await message.answer(self.strings("reboot_"))
         self.db.set(
             "shizu.updater",
             "restart",
@@ -117,6 +137,6 @@ class UpdateMod(loader.Module):
                 "type": "restart",
             },
         )
-        logging.info("Rebooting...")
+
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
         return sys.exit(0)

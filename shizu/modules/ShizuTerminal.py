@@ -51,8 +51,8 @@ class TerminalMod(loader.Module):
         output = await bash_exec(args)
 
         await message.answer(
-            f"<emoji id=5472111548572900003>⌨️</emoji> <b>Команда:</b> <code>{args.strip()}</code>\n"
-            f"💾 <b>Вывод:</b>\n<code>"
+            f"<emoji id=5472111548572900003>⌨️</emoji> <b>Command:</b> <code>{args.strip()}</code>\n"
+            f"💾 <b>Output:</b>\n<code>"
             f"{output}"
             f"</code>",
         )

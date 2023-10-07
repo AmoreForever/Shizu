@@ -24,7 +24,7 @@ class DeleteAccountIsForbidden(Exception):
 
 @loader.module(name="ShizuEval", author="hikamoru")
 class EvaluatorMod(loader.Module):
-    """Выполняет python-код"""
+    """Execute python code"""
 
     @loader.command()
     async def eval(self, app: Client, message: types.Message):
@@ -45,6 +45,7 @@ class EvaluatorMod(loader.Module):
                 f"<emoji id=5021905410089550576>✅</emoji> <b>Result:</b>\n"
                 f"<code>{result}</code>",
             )
+
         except Exception:
             item = logger.CustomException.from_exc_info(*sys.exc_info())
             exc = (

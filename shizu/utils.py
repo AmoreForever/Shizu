@@ -10,12 +10,14 @@ import functools
 import random
 import string
 import typing
+
 import logging
 import os
 import contextlib
 import git
 import aiohttp
 from types import FunctionType
+from urllib.parse import urlparse
 from typing import Any, List, Literal, Tuple, Union
 
 from pyrogram.types import Chat, Message, User
@@ -35,6 +37,25 @@ logging.basicConfig(
 
 db = database.db
 
+def get_lang_flag(countrycode: str) -> str:
+    """
+    Gets an emoji of specified countrycode
+    :param countrycode: 2-letter countrycode
+    :return: Emoji flag
+    """
+    if (
+        len(
+            code := [
+                c
+                for c in countrycode.lower()
+                if c in string.ascii_letters + string.digits
+            ]
+        )
+        == 2
+    ):
+        return "".join([chr(ord(c.upper()) + (ord("🇦") - ord("A"))) for c in code])
+
+    return countrycode
 
 def get_full_command(
     message: Message,
@@ -150,6 +171,23 @@ async def create_chat(
 
     return chat
 
+def check_url(url: str) -> bool:
+    """Checks url for validity"""
+    try:
+        return bool(urlparse(url).netloc)
+    except Exception:
+        return False
+
+def get_base_dir() -> str:
+    """Get directory of this file"""
+    from . import __main__
+
+    return get_dir(__main__.__file__)
+
+
+def get_dir(mod: str) -> str:
+    """Get directory of given module"""
+    return os.path.abspath(os.path.dirname(os.path.abspath(mod)))
 
 async def answer(
     message: Union[Message, List[Message]],
@@ -256,6 +294,11 @@ async def answer_inline(
         chat_id or message.chat.id, results.query_id, results.results[0].id
     )
 
+def rand(size: int, /) -> str:
+    """Return random string of len `size`"""
+    return "".join(
+        [random.choice("abcdefghijklmnopqrstuvwxyz1234567890") for _ in range(size)]
+    )
 
 def run_sync(func: FunctionType, *args, **kwargs) -> asyncio.Future:
     """Runs asynchronously non-asink function

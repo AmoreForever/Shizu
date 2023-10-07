@@ -18,6 +18,42 @@ from .. import loader, utils
 class ShizuGpt(loader.Module):
     """ChatGPT AI API interaction"""
 
+    strings = {
+        "set": "<emoji id=5021905410089550576>✅</emoji> <b>GPT key has been set</b>",
+        "what": "<emoji id=5789703785743912485>❔</emoji> What should I set?",
+        "what_ask": "<emoji id=5789703785743912485>❔</emoji> What should I ask?",
+        "no_token": "<emoji id=5789703785743912485>❔</emoji> Token not set.",
+        "pending": "<emoji id=5819167501912640906>❔</emoji> <b>Your Question was:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Answer: </b> Wait...",
+        "answer": "<emoji id=5819167501912640906>❔</emoji> <b>Your Question was:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Answer:</b> {}",
+    }
+
+    strings_ru = {
+        "set": "<emoji id=5021905410089550576>✅</emoji> <b>GPT ключ установлен</b>",
+        "what": "<emoji id=5789703785743912485>❔</emoji> Что нужно установить?",
+        "what_ask": "<emoji id=5789703785743912485>❔</emoji> Что нужно задать?",
+        "no_token": "<emoji id=5789703785743912485>❔</emoji> Токен не установлен.",
+        "pending": "<emoji id=5819167501912640906>❔</emoji> <b>Ваш вопрос:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Ответ:</b> Ожидание...",
+        "answer": "<emoji id=5819167501912640906>❔</emoji> <b>Ваш вопрос:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Ответ:</b> {}",
+    }
+
+    strings_uz = {
+        "set": "<emoji id=5021905410089550576>✅</emoji> <b>GPT kalit ornatildi</b>",
+        "what": "<emoji id=5789703785743912485>❔</emoji> Nma ornatishim kerak?",
+        "what_ask": "<emoji id=5789703785743912485>❔</emoji> Nma qoldiring?",
+        "no_token": "<emoji id=5789703785743912485>❔</emoji> Token not set.",
+        "pending": "<emoji id=5819167501912640906>❔</emoji> <b>Yozuv:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Javob:</b> O'qiyapman...",
+        "answer": "<emoji id=5819167501912640906>❔</emoji> <b>Yozuv:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Javob:</b> {}",
+    }
+
+    strings_jp = {
+        "set": "<emoji id=5021905410089550576>✅</emoji> <b>GPTキーが設定されました</b>",
+        "what": "<emoji id=5789703785743912485>❔</emoji> 何を設定する必要がありますか？",
+        "what_ask": "<emoji id=5789703785743912485>❔</emoji> 何を尋ねる必要がありますか？",
+        "no_token": "<emoji id=5789703785743912485>❔</emoji> トークンが設定されていません。",
+        "pending": "<emoji id=5819167501912640906>❔</emoji> <b>あなたの質問は:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>答え:</b> 待ってください...",
+        "answer": "<emoji id=5819167501912640906>❔</emoji> <b>あなたの質問は:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>答え:</b> {}",
+    }
+
     async def _make_request(
         self,
         method: str,
@@ -77,35 +113,21 @@ class ShizuGpt(loader.Module):
         """Set GPT key"""
         if args := message.get_args_raw():
             self.db.set("shizu.gpt", "token", args)
-            await message.answer(
-                "<emoji id=5021905410089550576>✅</emoji> <b>GPT key has been set</b>"
-            )
+            await message.answer(self.strings("set"))
         else:
-            return await message.answer(
-                "<emoji id=5789703785743912485>❔</emoji> What should I set?"
-            )
+            return await message.answer(self.strings("what"))
 
     @loader.command()
     async def gpt(self, app: Client, message: types.Message):
         """Ask question to GPT"""
         args = message.get_args_raw()
         if not args:
-            return await message.answer(
-                "<emoji id=5789703785743912485>❔</emoji> What should I ask?"
-            )
+            return await message.answer(self.strings("what_ask"))
         token = self.db.get("shizu.gpt", "token", None)
         if not token:
-            return await message.answer(
-                "<emoji id=5789703785743912485>❔</emoji> Token not set."
-            )
-        await message.answer(
-            "<emoji id=5819167501912640906>❔</emoji> <b>Your Question was:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Answer: </b> Wait...".format(
-                args
-            )
-        )
+            return await message.answer(self.strings("no_token"))
+        await message.answer(self.strings("pending").format(args))
         answer = await self._get_chat_completion(args, token)
         await message.answer(
-            "<emoji id=5819167501912640906>❔</emoji> <b>Your Question was:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Answer:</b> {}".format(
-                args, self._process_code_tags(answer)
-            )
+            self.strings("answer").format(args, self._process_code_tags(answer))
         )

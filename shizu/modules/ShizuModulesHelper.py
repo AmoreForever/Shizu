@@ -35,21 +35,45 @@ from .. import loader, utils
 class ModulesLinkMod(loader.Module):
     """Link or file of the installed module"""
 
+    strings = {
+        "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> No arguments are specified (module name or command)",
+        "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Module search...</b>",
+        "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Couldn't find the module</b>",
+    }
+
+    strings_ru = {
+        "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> Нет аргументов (имя модуля или команда)",
+        "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Поиск модуля...</b>",
+        "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Не удалось найти модуль</b>",
+    }
+
+    strings_uz = {
+        "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> Yozuv mavjud emas",
+        "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Qidiruv...</b>",
+        "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Qidiruv topilmadi</b>",
+    }
+
+    strings_jp = {
+        "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> 引数がありません（モジュール名またはコマンド）",
+        "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>モジュール検索...</b>",
+        "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>モジュールが見つかりませんでした</b>",
+    }
+
     @loader.command()
     async def ml(self, app: Client, message: types.Message, args: str):
         """Get a link or a module file. Usage: ml <module name or command>"""
         if not args:
             return await message.answer(
-                "<emoji id=5190748314026385859>🤷‍♂️</emoji> No arguments are specified (module name or command)",
+                self.strings("what_"),
             )
 
         m = await message.answer(
-            "<emoji id=5188311512791393083>🔎</emoji> <b>Module search...</b>"
+            self.strings("search_"),
         )
 
         if not (module := self.all_modules.get_module(args, True, True)):
             return await message.answer(
-                "<emoji id=5346063050233360577>😮</emoji> <b>Couldn't find the module</b>",
+                self.strings("nope_"),
             )
 
         get_module = inspect.getmodule(module)

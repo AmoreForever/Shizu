@@ -8,6 +8,7 @@
 import os
 import io
 import json
+import time
 import atexit
 import logging
 import time
@@ -26,6 +27,50 @@ LOADED_MODULES_DIR = os.path.join(os.getcwd(), "shizu/modules")
 class BackupMod(loader.Module):
     """With this module you can make backups of mods and the entire userbot"""
 
+    strings = {
+        "backup": "👉 <b>Database backup</b>\n🕔 <b>{}</b>",
+        "done": "<emoji id=5260416304224936047>✅</emoji> Backup created\nCheck backup in <b>backups chat</b>",
+        "restoring": "<emoji id=5370706614800097423>🧐</emoji> <b>Restoring database...</</b>",
+        "invalid": "<emoji id=5413472879771658264>❌</emoji> Invalid file format",
+        "loaded": "<emoji id=5870888735041655084>📁</emoji> <b>Backup successfully loaded</b>",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Restarting...</b>",
+        "enabled": "<emoji id=5260416304224936047>✅</emoji> <b>Autobackup <u>enabled</u></b>",
+        "disabled": "<emoji id=5260416304224936047>✅</emoji> <b>Autobackup <u>disabled</u></b>",
+    }
+
+    strings_ru = {
+        "backup": "👉 <b>Бэкап базы</b>\n🕔 <b>{}</b>",
+        "done": "<emoji id=5260416304224936047>✅</emoji> Бэкап создан\nПроверьте бэкап в <b>бэкаповом чате</b>",
+        "restoring": "<emoji id=5370706614800097423>🧐</emoji> <b>Восстановление базы...</</b>",
+        "invalid": "<emoji id=5413472879771658264>❌</emoji> Недопустимый формат",
+        "loaded": "<emoji id=5870888735041655084>📁</emoji> <b>Бэкап успешно загружен</b>",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Перезапуск...</b>",
+        "enabled": "<emoji id=5260416304224936047>✅</emoji> <b>Автобэкап <u>включен</u></b>",
+        "disabled": "<emoji id=5260416304224936047>✅</emoji> <b>Автобэкап <u>отключен</u></b>",
+    }
+
+    strings_uz = {
+        "backup": "👉 <b>Bazani bekapi</b>\n🕔 <b>{}</b>",
+        "done": "<emoji id=5260416304224936047>✅</emoji> Bekap yaratildi\nYuklab olish <b>backups chat</b>",
+        "restoring": "<emoji id=5370706614800097423>🧐</emoji> <b>Yozish...</</b>",
+        "invalid": "<emoji id=5413472879771658264>❌</emoji> Xatolik",
+        "loaded": "<emoji id=5870888735041655084>📁</emoji> <b>Bekap yuklandi</b>",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Restart...</b>",
+        "enabled": "<emoji id=5260416304224936047>✅</emoji> <b>Autobekap <u>aktiv</u></b>",
+        "disabled": "<emoji id=5260416304224936047>✅</emoji> <b>Autobekap <u>deaktiv</u></b>",
+    }
+
+    strings_jp = {
+        "backup": "👉 <b>データベースのバックアップ</b>\n🕔 <b>{}</b>",
+        "done": "<emoji id=5260416304224936047>✅</emoji> バックアップが作成されました\nバックアップを確認する <b>backups chat</b>",
+        "restoring": "<emoji id=5370706614800097423>🧐</emoji> <b>データベースの復元...</</b>",
+        "invalid": "<emoji id=5413472879771658264>❌</emoji> 無効なファイル形式",
+        "loaded": "<emoji id=5870888735041655084>📁</emoji> <b>バックアップが正常にロードされました</b>",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> 再起動...</b>",
+        "enabled": "<emoji id=5260416304224936047>✅</emoji> <b>自動バックアップ <u>有効</u></b>",
+        "disabled": "<emoji id=5260416304224936047>✅</emoji> <b>自動バックアップ <u>無効</u></b>",
+    }
+
     @loader.command()
     async def backupdb(self, app: Client, message: types.Message):
         """Create database backup [will be sent in backups chat]"""
@@ -34,11 +79,11 @@ class BackupMod(loader.Module):
         await app.inline_bot.send_document(
             app.db.get("shizu.chat", "backup"),
             document=txt,
-            caption=f"👉 <b>Database backup</b>\n🕔 <b>{datetime.now().strftime('%d-%m-%Y %H:%M')}</b>",
+            caption=self.strings("backup").format(
+                datetime.now().strftime("%d-%m-%Y %H:%M")
+            ),
         )
-        await message.answer(
-            "<emoji id=5260416304224936047>✅</emoji> Backup created\nCheck backup in <b>backups chat</b>",
-        )
+        await message.answer(self.strings("done"))
 
     @loader.command()
     async def restoredb(self, app: Client, message: types.Message):
@@ -46,30 +91,24 @@ class BackupMod(loader.Module):
         reply = message.reply_to_message
         if not reply or not reply.document:
             return await message.answer("❌ Нет файла")
-        await message.answer(
-            "<emoji id=5370706614800097423>🧐</emoji> <b>Restoring database...</</b>",
-        )
+        await message.answer(self.strings("restoring"))
         file = await app.download_media(reply.document)
         decoded_text = json.loads(io.open(file, "r", encoding="utf-8").read())
         if not file.endswith(".json"):
-            return await message.answer(
-                "<emoji id=5413472879771658264>❌</emoji> Invalid file format"
-            )
+            return await message.answer(self.strings("invalid"))
         self.db.reset()
         self.db.update(**decoded_text)
         self.db.save()
         await app.send_message(
             message.chat.id,
-            "<emoji id=5870888735041655084>📁</emoji> <b>Backup successfully loaded</b>",
+            self.strings("loaded"),
         )
 
         def restart() -> None:
-            """Запускает загрузку юзербота"""
+            """Start userbot"""
             os.execl(sys.executable, sys.executable, "-m", "shizu")
 
-        ms = await message.answer(
-            "<b><emoji id=5328274090262275771>🔁</emoji> Restarting...</b>"
-        )
+        ms = await message.answer()
         self.db.set(
             "shizu.updater",
             "restart",
@@ -91,23 +130,23 @@ class BackupMod(loader.Module):
         """Enable/disable autobackup it will backup database everyday"""
         if not self.db.get("shizu.backuper", "autobackup", None):
             self.db.set("shizu.backuper", "autobackup", True)
-            await message.answer(
-                "<emoji id=5260416304224936047>✅</emoji> <b>Autobackup <u>enabled</u></b>"
-            )
+            await message.answer(self.strings("enabled"))
         else:
             self.db.set("shizu.backuper", "autobackup", None)
-            await message.answer(
-                "<emoji id=5260416304224936047>✅</emoji> <b>Autobackup <u>disabled</u></b>"
-            )
+            await message.answer()
 
-    @loader.loop(interval=86000, autostart=True)
+    @loader.loop(interval=3, autostart=True)
     async def autobackupmods(self):
         if not self.db.get("shizu.backuper", "autobackup", None):
+            return
+        if time.strftime("%H:%M") != "00:00":
             return
         txt = io.BytesIO(json.dumps(self.db).encode("utf-8"))
         txt.name = f"shizu-{datetime.now().strftime('%d-%m-%Y-%H-%M')}.json"
         await self._bot.send_document(
             self.db.get("shizu.chat", "backup"),
             document=txt,
-            caption=f"👉 <b>Database backup</b>\n🕔 <b>{datetime.now().strftime('%d-%m-%Y %H:%M')}</b>",
+            caption=self.strings("backup").format(
+                datetime.now().strftime("%d-%m-%Y %H:%M")
+            ),
         )

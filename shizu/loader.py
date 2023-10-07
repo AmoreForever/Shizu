@@ -36,11 +36,13 @@ from importlib.util import module_from_spec, spec_from_file_location
 from types import FunctionType
 from typing import Any, Callable, Dict, List, Union
 
+
 import requests
 from loguru import logger
 from pyrogram import Client, filters, types
 from . import bot, database, dispatcher, utils
 from .types import InfiniteLoop
+from .translater import Strings, Translator
 
 VALID_URL = r"[-[\]_.~:/?#@!$&'()*+,;%<=>a-zA-Z0-9]+"
 VALID_PIP_PACKAGES = re.compile(
@@ -108,6 +110,7 @@ class StringLoader(SourceLoader):
 
 def get_command_handlers(instance: Module) -> Dict[str, FunctionType]:
     """Returns a dictionary of command names with their corresponding functions"""
+
     return {
         method_name.replace("_cmd", "").replace("cmd", "").lower(): method
         for method_name, method in inspect.getmembers(instance, inspect.ismethod)
@@ -115,6 +118,11 @@ def get_command_handlers(instance: Module) -> Dict[str, FunctionType]:
         or method_name.endswith("_cmd")
         or method_name.endswith("cmd")
     }
+
+
+def return_aliases(instance: Module) -> Dict[str, str]:
+    """Returns a dictionary of aliases"""
+    return instance.aliases
 
 
 def get_watcher_handlers(instance: Module) -> List[FunctionType]:
@@ -214,16 +222,9 @@ def iter_attrs(obj: typing.Any, /) -> typing.List[typing.Tuple[str, typing.Any]]
     return ((attr, getattr(obj, attr)) for attr in dir(obj))
 
 
-def command(
-    docs: str = None, *args, **kwargs
-) -> Callable[[FunctionType], FunctionType]:
-    def decorator(func: FunctionType) -> FunctionType:
-        if docs:
-            func.__doc__ = docs
-
+def command() -> Callable[[Callable], Callable]:
+    def decorator(func: Callable) -> Callable:
         func.is_command = True
-        func.__dict__.update(kwargs)
-
         return func
 
     return decorator
@@ -315,7 +316,7 @@ class ModulesManager:
             "ShizuModulesHelper",
             "ShizuStart",
             "ShizuInfo",
-            "ShizuTranslater"
+            "ShizuTranslater",
         ]
         instance = None
         for key, value in vars(module).items():
@@ -442,9 +443,15 @@ class ModulesManager:
         for module_name in self.modules:
             await self.send_on_load(module_name)
 
-    async def send_on_load(self, module: Module) -> bool:
+    async def send_on_load(
+        self, module: Module, translator: "Translator" = None
+    ) -> bool:
         """Used to perform the function after loading the module"""
         for _, method in iter_attrs(module):
+            if hasattr(method, "strings"):
+                method.strings = Strings(method, translator, self._db)
+                method.translator = translator
+
             if isinstance(method, InfiniteLoop):
                 setattr(method, "module_instance", module)
 

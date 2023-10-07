@@ -21,6 +21,14 @@ from .. import loader, utils
 class Help(loader.Module):
     """[module] - Show help"""
 
+    strings = {"available": "{} <b>{} modules available</b>\n{}"}
+
+    strings_ru = {"available": "{} <b>{} модулей доступно</b>\n{}"}
+
+    strings_uz = {"available": "{} <b>{} modullar mavjud</b>\n{}"}
+
+    strings_jp = {"available": "{} <b>利用可能な {} のモジュールがあります</b>\n{}"}
+
     async def support_inline_handler(self, app: Client, inline_query: InlineQuery):
         """Responds to inline queries"""
         message = InputTextMessageContent("✨ Do you need help? don't be shy :)")
@@ -98,8 +106,9 @@ class Help(loader.Module):
             help_emoji = "<emoji id=6334457642064283339>🐙</emoji>"
 
             return await message.answer(
-                f"{help_emoji} <b>{len(self.all_modules.modules)-1} modules available</b>\n"
-                f"{text}",
+                self.strings("available").format(
+                    help_emoji, len(self.all_modules.modules) - 1, text
+                )
             )
 
         if not (module := self.all_modules.get_module(args.lower(), True, True)):

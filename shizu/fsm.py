@@ -30,8 +30,6 @@ from pyrogram import Client, types
 
 
 class Conversation:
-    """Диалог с пользователем. Отправка сообщений и ожидание ответа"""
-
     def __init__(
         self, app: Client, chat_id: Union[str, int], purge: bool = False
     ) -> None:
@@ -143,7 +141,7 @@ class Conversation:
         return response
 
     async def get_another_same(self) -> types.Message:
-        """Возвращает ответ"""
+        """Returns a response"""
         responses = self.app.get_chat_history(self.chat_id, limit=1)
         async for response in responses:
             if response.from_user.is_self:

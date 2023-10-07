@@ -33,12 +33,98 @@ from .. import logger
 
 from pyrogram import Client, types
 from pyrogram.raw import functions, types as typ
-from .. import loader, utils
+from .. import loader, utils, translater
 
 
 @loader.module(name="ShizuTester", author="shizu")
 class TesterMod(loader.Module):
     """Execute activities based on userbot self-testing"""
+
+    strings = {
+        "incorrect_language": "❕ <b>Incorrect language. Shizu support only 3 languages</b> [<code>uz</code>, <code>ru</code>, <code>gb</code>, <code>jp</code>].",
+        "language_saved": "{} Language saved",
+        "no_logs_": "❕ You don't have any logs at verbosity  {} ({})",
+        "invalid_verb": "Invalid verbosity level",
+        "which_alias": "❔ Which alias should I add?",
+        "ch_prefix": "❔ Which prefix should I change to?",
+        "prefix_changed": "✅ Prefix has been changed to {}",
+        "inc_args": "❌ The arguments are incorrect.\n✅ Correct: addalias <new alias> <command>",
+        "alias_already": "❌ Such an alias already exists",
+        "no_command": "❌ There is no such command",
+        "alias_done": "✅ Alias <code>{}</code> for the command <code>{}</code> has been added",
+        "which_delete": "❔ Which alias should I delete?",
+        "no_such_alias": "❌ There is no such alias",
+        "alias_removed": "✅ Alias <code>{}</code> has been deleted",
+    }
+
+    strings_ru = {
+        "incorrect_language": "❕ <b>Неправильный язык. Shizu поддерживается только 3 языка</b> [<code>uz</code>, <code>ru</code>, <code>gb</code>, <code>jp</code>].",
+        "language_saved": "{} Язык сохранен",
+        "no_logs_": "❕ У вас нет логов с уровнем {} ({})",
+        "invalid_verb": "Недопустимый уровень вывода",
+        "which_alias": "❔ Какой алиас добавить?",
+        "ch_prefix": "❔ Какое префикс поставить?",
+        "prefix_changed": "✅ Префикс изменен на {}",
+        "inc_args": "❌ Параметры некорректны.\n✅ Правильно: addalias <новый алиас> <команда>",
+        "alias_already": "❌ Такой алиас уже существует",
+        "no_command": "❌ Такой команды не существует",
+        "alias_done": "✅ Алиас <code>{}</code> для команды <code>{}</code> добавлен",
+        "which_delete": "❔ Какой алиас удалить?",
+        "no_such_alias": "❌ Такой алиас не существует",
+        "alias_removed": "✅ Алиас <code>{}</code> удален",
+    }
+
+    strings_uz = {
+        "incorrect_language": "❕ <b>Bu til mavjud emas</b> [<code>uz</code>, <code>ru</code>, <code>gb</code>, <code>jp</code>].",
+        "language_saved": "{} Til saqlandi",
+        "no_logs_": "❕ <b>Shu xil xatolik mavjud emas</b> ({})",
+        "invalid_verb": "Bunday xil xatolik yoq",
+        "which_alias": "❔ Kanday alias qo'shmoqchisiz?",
+        "ch_prefix": "❔ Qaysi prefiksni o'rnatmoqchisiz?",
+        "prefix_changed": "✅ Prefix {} ga ozgardi",
+        "inc_args": "❌ Parametrlar xato.\n✅ Tog'ri: addalias <yeni alias> <komanda>",
+        "alias_already": "❌ Bu alias mavjud",
+        "no_command": "❌ Bu komanda mavjud emas",
+        "alias_done": "✅ Alias <code>{}</code> bu komanda uchun yaratildi <code>{}</code>",
+        "which_delete": "❔ Kanday alias o'chirmoqchisiz?",
+        "no_such_alias": "❌ Bu alias mavjud emas",
+        "alias_removed": "✅ Alias <code>{}</code> o'chirildi",
+    }
+
+    strings_jp = {
+        "incorrect_language": "❕ <b>言語が間違っています</b> [<code>uz</code>, <code>ru</code>, <code>gb</code>, <code>jp</code>].",
+        "language_saved": "{} 言語が保存されました",
+        "no_logs_": "❕ <b>このようなエラーはありません</b> ({})",
+        "invalid_verb": "このようなエラーはありません",
+        "which_alias": "❔ どのエイリアスを追加しますか？",
+        "ch_prefix": "❔ どのプレフィックスを設定しますか？",
+        "prefix_changed": "✅ プレフィックスが変更されました {}",
+        "inc_args": "❌ パラメーターが間違っています。\n✅ 正しい: addalias <新しいエイリアス> <コマンド>",
+        "alias_already": "❌ このようなエイリアスは既に存在します",
+        "no_command": "❌ このようなコマンドはありません",
+        "alias_done": "✅ エイリアス <code>{}</code> はコマンドのために作成されました <code>{}</code>",
+        "which_delete": "❔ どのエイリアスを削除しますか？",
+        "no_such_alias": "❌ このようなエイリアスはありません",
+        "alias_removed": "✅ エイリアス <code>{}</code> 削除されました",
+    }
+
+    async def setlangcmd(self, app, message):
+        """Change default language - [uz, ru, gb, jp]"""
+        args = utils.get_args_raw(message)
+        if not args or any(len(i) != 2 for i in args.split(" ")):
+            await utils.answer(message, self.strings("incorrect_language"))
+            return
+        if args.lower() not in ("uz", "ru", "gb", "jp"):
+            await utils.answer(message, self.strings("incorrect_language"))
+            return
+
+        self.db.set("shizu.me", "lang", args.lower())
+        tr = translater.Translator(app, self.db)
+        await tr.init()
+
+        await message.answer(
+            self.strings("language_saved").format(utils.get_lang_flag(args.lower()))
+        )
 
     @loader.command()
     async def logs(self, app: Client, message: types.Message, args: str):
@@ -46,13 +132,16 @@ class TesterMod(loader.Module):
         lvl = 40  # ERROR
 
         if args and not (lvl := logger.get_valid_level(args)):
-            return await message.answer("Invalid verbosity level")
+            return await message.answer(self.strings("invalid_verb"))
 
         handler = logging.getLogger().handlers[0]
         logs = ("\n".join(handler.dumps(lvl))).encode("utf-8")
         if not logs:
             return await message.answer(
-                f"❕ You don't have any logs at verbosity  {lvl} ({logging.getLevelName(lvl)})",
+                self.strings("no_logs_").format(
+                    lvl,
+                    logging.getLevelName(lvl),
+                )
             )
 
         logs = io.BytesIO(logs)
@@ -69,52 +158,52 @@ class TesterMod(loader.Module):
     async def setprefix(self, app: Client, message: types.Message, args: str):
         """To change the prefix, you can have several pieces separated by a space. Usage: setprefix (prefix) [prefix, ...]"""
         if not (args := args.split()):
-            return await message.answer("❔ Which prefix should I change to?")
+            return await message.answer(self.strings("ch_prefix"))
 
         self.db.set("shizu.loader", "prefixes", list(set(args)))
         prefixes = ", ".join(f"<code>{prefix}</code>" for prefix in args)
-        return await message.answer(f"✅ Prefix has been changed to {prefixes}")
+        return await message.answer(self.strings("prefix_changed").format(prefixes))
 
     @loader.command()
     async def addalias(self, app: Client, message: types.Message, args: str):
         """Add an alias. Usage: addalias (new alias) (command)"""
         if not (args := args.lower().split(maxsplit=1)):
-            return await message.answer("❔ Which alias should I add?")
+            return await message.answer(self.strings("which_alias"))
 
         if len(args) != 2:
-            return await message.answer(
-                "❌ The arguments are incorrect."
-                "✅ Correct: addalias <new alias> <command>",
-            )
+            return await message.answer(self.strings("inc_args"))
 
         aliases = self.all_modules.aliases
         if args[0] in aliases:
-            return await message.answer("❌ Тsuch an alias already exists")
+            return await message.answer(self.strings("alias_already"))
 
         if not self.all_modules.command_handlers.get(args[1]):
-            return await message.answer("❌ There is no such command")
+            return await message.answer(self.strings("no_command"))
 
         aliases[args[0]] = args[1]
         self.db.set("shizu.loader", "aliases", aliases)
 
         return await message.answer(
-            f"✅ Alias <code>{args[0]}</code> for the command <code>{args[1]}</code> has been added",
+            self.strings("alias_done").format(
+                args[0],
+                args[1],
+            )
         )
 
     @loader.command()
     async def delalias(self, app: Client, message: types.Message, args: str):
         """Delete the alias. Usage: delalas (alias)"""
         if not (args := args.lower()):
-            return await message.answer("❔ Which alias should I delete?")
+            return await message.answer(self.strings("which_delete"))
 
         aliases = self.all_modules.aliases
         if args not in aliases:
-            return await message.answer("❌ There is no such alias")
+            return await message.answer(self.strings("no_such_alias"))
 
         del aliases[args]
         self.db.set("shizu.loader", "aliases", aliases)
 
-        return await message.answer(f"✅ Alias <code>{args}</code> has been deleted")
+        return await message.answer(self.strings("alias_removed").format(args))
 
     @loader.command()
     async def aliases(self, app: Client, message: types.Message):
@@ -128,7 +217,7 @@ class TesterMod(loader.Module):
                 ),
             )
         else:
-            return await message.answer("Алиасов нет")
+            return await message.answer(self.strings("no_such_alias"))
 
     @loader.command()
     async def ping(self, app: Client, message: types.Message, args: str):

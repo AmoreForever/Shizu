@@ -13,6 +13,7 @@ from pyrogram.methods.utilities.idle import idle
 from pyrogram import types
 from . import auth, database, loader, utils, extrapatchs
 from .bot import core
+from .translater import Translator
 
 
 async def main():
@@ -22,8 +23,10 @@ async def main():
     db = database.db
     modules = loader.ModulesManager(app, db, me)
     extrapatchs.MessageMagic(types.Message)
+    tr = Translator(app, db)
 
     await modules.load(app)
+    await tr.init()
 
     with contextlib.suppress(Exception):
         app.inline_bot = core.bot

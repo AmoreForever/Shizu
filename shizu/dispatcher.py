@@ -52,9 +52,8 @@ class DispatcherManager:
     async def load(self) -> bool:
         """Загружает менеджер диспетчера"""
         self.app.add_handler(handler=MessageHandler(self._handle_message, filters.all))
-        self.app.add_handler(
-            handler=EditedMessageHandler(self._handle_message, filters.all)
-        )
+        self.app.add_handler(handler=EditedMessageHandler(self._handle_message, filters.all))
+
         return True
 
     async def _handle_message(
