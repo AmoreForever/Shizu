@@ -58,7 +58,7 @@ class TesterMod(loader.Module):
     }
 
     strings_ru = {
-        "incorrect_language": "❕ <b>Неправильный язык. Shizu поддерживается только 3 языка</b> [<code>uz</code>, <code>ru</code>, <code>gb</code>, <code>jp</code>].",
+        "incorrect_language": "❕ <b>Неправильный язык. Shizu поддерживает только 3 языка</b> [<code>uz</code>, <code>ru</code>, <code>gb</code>, <code>jp</code>].",
         "language_saved": "{} Язык сохранен",
         "no_logs_": "❕ У вас нет логов с уровнем {} ({})",
         "invalid_verb": "Недопустимый уровень вывода",

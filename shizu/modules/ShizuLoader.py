@@ -93,6 +93,7 @@ class Loader(loader.Module):
         "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>Specify the action</b>",
         "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Enabled, now you can load modules from <a href='https://t.me/aelis_msbot'>Aelis bot</a>",
         "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Disabled, now you cannot load nodules from <a href='https://t.me/aelis_msbot'>Aelis bot</a>",
+        "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>This module is not available for this account</b>",
     }
 
     strings_ru = {
@@ -120,6 +121,7 @@ class Loader(loader.Module):
         "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>Укажите действие</b>",
         "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Включено, теперь вы можете загружать модули с <a href='https://t.me/aelis_msbot'>Aelis бота</a>",
         "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Отключено, теперь вы не можете загружать модули с <a href='https://t.me/aelis_msbot'>Aelis бота</a>",
+        "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Этот модуль недоступен для этого аккаунта</b>",
     }
 
     strings_uz = {
@@ -147,6 +149,7 @@ class Loader(loader.Module):
         "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>Nma qilishim kerak?</b>",
         "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Endi siz modullarni botdan yuklashingiz mumkun <a href='https://t.me/aelis_msbot'>Bot</a>",
         "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Endi siz modullarni botdan yuklay olmaysiz <a href='https://t.me/aelis_msbot'>Bot</a>",
+        "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Bu modul ushbu akkaunt uchun mavjud emas</b>",
     }
 
     strings_jp = {
@@ -174,6 +177,7 @@ class Loader(loader.Module):
         "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>アクションを指定してください</b>",
         "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> 有効になりました。これで<a href='https://t.me/aelis_msbot'>Aelis bot</a>からモジュールをロードできます",
         "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> 無効になりました。これで<a href='https://t.me/aelis_msbot'>Aelis bot</a>からモジュールをロードできなくなります",
+        "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>このアカウントではこのモジュールは利用できません</b>",
     }
 
     @loader.command()
@@ -219,6 +223,8 @@ class Loader(loader.Module):
             module_name = await self.all_modules.load_module(r.text, r.url)
             if module_name == "DAR":
                 error_text = self.strings("found_delete_")
+            if module_name == "NFA":
+                error_text = self.strings("not_for_this_account")
             if module_name is True:
                 error_text = self.strings("dep_installed_req_res")
             if not module_name:
@@ -314,6 +320,9 @@ class Loader(loader.Module):
 
         if module_name == "DAR":
             return await message.answer(self.strings("found_delete_"))
+        
+        if module_name == "NFA":
+            return await message.answer(self.strings("not_for_this_account"))
 
         module = "_".join(module_name.lower().split())
         with open(f"shizu/modules/{module}.py", "w", encoding="utf-8") as file:

@@ -39,24 +39,48 @@ class ModulesLinkMod(loader.Module):
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> No arguments are specified (module name or command)",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Module search...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Couldn't find the module</b>",
+        "module_": (
+            "<emoji id=4920385126380077679>📁</emoji> <b><a href='{}'>{}</a></b>\n"
+            "<emoji id=4920256565124009114>ℹ️</emoji> <i>{}</i>\n\n"
+            "<emoji id=4920320912324035643>▫️</emoji> <b>Commands</b>: {}\n\n"
+            "<emoji id=4920662486778119009>🌐</emoji> <b>Download link:</b> <code>{}</code>"
+        ),
     }
 
     strings_ru = {
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> Нет аргументов (имя модуля или команда)",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Поиск модуля...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Не удалось найти модуль</b>",
+        "module_": (
+            "<emoji id=4920385126380077679>📁</emoji> <b><a href='{}'>{}</a></b>\n"
+            "<emoji id=4920256565124009114>ℹ️</emoji> <i>{}</i>\n\n"
+            "<emoji id=4920320912324035643>▫️</emoji> <b>Команды</b>: {}\n\n"
+            "<emoji id=4920662486778119009>🌐</emoji> <b>Ссылка на скачивание:</b> <code>{}</code>"
+        ),
     }
 
     strings_uz = {
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> Yozuv mavjud emas",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Qidiruv...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Qidiruv topilmadi</b>",
+        "module_": (
+            "<emoji id=4920385126380077679>📁</emoji> <b><a href='{}'>{}</a></b>\n"
+            "<emoji id=4920256565124009114>ℹ️</emoji> <i>{}</i>\n\n"
+            "<emoji id=4920320912324035643>▫️</emoji> <b>Buyruqlar</b>: {}\n\n"
+            "<emoji id=4920662486778119009>🌐</emoji> <b>Yuklab olish linki:</b> <code>{}</code>"
+        ),
     }
 
     strings_jp = {
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> 引数がありません（モジュール名またはコマンド）",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>モジュール検索...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>モジュールが見つかりませんでした</b>",
+        "module_": (
+            "<emoji id=4920385126380077679>📁</emoji> <b><a href='{}'>{}</a></b>\n"
+            "<emoji id=4920256565124009114>ℹ️</emoji> <i>{}</i>\n\n"
+            "<emoji id=4920320912324035643>▫️</emoji> <b>コマンド</b>: {}\n\n"
+            "<emoji id=4920662486778119009>🌐</emoji> <b>ダウンロードリンク:</b> <code>{}</code>"
+        ),
     }
 
     @loader.command()
@@ -97,3 +121,26 @@ class ModulesLinkMod(loader.Module):
 
         await m.delete()
         return await message.answer(source_code, doc=True, caption=caption)
+
+    @loader.command()
+    async def aeliscmd(self, app, message):
+        """Search module in Aelis API"""
+
+        args = message.get_args_raw()
+        if not args:
+            return await message.answer(self.strings("what_"))
+        await message.answer(self.strings("search_"))
+        module = await self.aelis.search(args)
+        if not module:
+            return await message.answer(self.strings("nope_"))
+        return await message.answer(
+            self.strings("module_").format(
+                f"https://aelis.hikamoru.uz/view/{module['name']}",
+                module["name"],
+                module["description"],
+                ", ".join(
+                    [f"<code>{self.prefix[0]}{i}</code>" for i in module["commands"]]
+                ),
+                module["link"],
+            )
+        )

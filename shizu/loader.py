@@ -40,7 +40,7 @@ from typing import Any, Callable, Dict, List, Union
 import requests
 from loguru import logger
 from pyrogram import Client, filters, types
-from . import bot, database, dispatcher, utils
+from . import bot, database, dispatcher, utils, aelis
 from .types import InfiniteLoop
 from .translater import Strings, Translator
 
@@ -259,8 +259,9 @@ class ModulesManager:
         self.bot_manager: bot.BotManager = None
 
         self.root_module: Module = None
+        self.aelis = aelis.AelisAPI()
+
         app.db = db
-        app.answer = utils
 
     async def load(self, app: Client) -> bool:
         """Loads the module manager"""
@@ -340,6 +341,7 @@ class ModulesManager:
             value.prefix = self._db.get("shizu.loader", "prefixes", ["."])
 
             instance = value()
+            instance.aelis = self.aelis
             instance.shizu = True
             instance.command_handlers = get_command_handlers(instance)
             instance.watcher_handlers = get_watcher_handlers(instance)
@@ -380,6 +382,13 @@ class ModulesManager:
                 f"Module {module_name} is forbidden, because it contains DeleteAccount"
             )
             return "DAR"
+        if re.search(r"# ?only: ?(.+)", module_source) and str(
+            self._db.get("shizu.me", "me")
+        ) not in re.search(r"# ?only: ?(.+)", module_source)[1].split(","):
+            logger.error(
+                f"Module {module_name} is forbidden, because it is not for this account"
+            )
+            return "NFA"
         try:
             spec = ModuleSpec(
                 module_name, StringLoader(module_source, origin), origin=origin
