@@ -509,7 +509,10 @@ class ModulesManager:
         for module_name in self.modules:
             await self.send_on_load(module_name)
             await self.prepare_module(module_name, Translator(self._app, self._db))
-            self.config_reconfigure(module_name)
+            try:
+                self.config_reconfigure(module_name)
+            except Exception as error:
+                pass #it will be here till modules will be updated
 
     def config_reconfigure(self, module: Module):
         """Reconfigures the module"""
