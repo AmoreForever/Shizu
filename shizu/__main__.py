@@ -29,6 +29,7 @@ else:
             f"👾 Pyrogram v{pyrogram.__version__}\n"
         )
         logging.info(aozora)
+        asyncio.run(main.main())
     except ModuleNotFoundError as module:
         print(
             "🔁 Trying to install it automatically...\n"
@@ -37,6 +38,3 @@ else:
         os.popen("pip3 install -r requirements.txt").read()
         print("👍 Dependencies installed")
         print("🔁 Retrying to run bot again please wait..")
-
-
-asyncio.run(main.main())
