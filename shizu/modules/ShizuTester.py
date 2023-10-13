@@ -41,7 +41,7 @@ class TesterMod(loader.Module):
     """Execute activities based on userbot self-testing"""
 
     strings = {
-        "incorrect_language": "❕ <b>Incorrect language. Shizu support only 3 languages</b> [<code>uz</code>, <code>ru</code>, <code>gb</code>, <code>jp</code>].",
+        "incorrect_language": "❕ <b>Incorrect language.",
         "language_saved": "{} Language saved",
         "no_logs_": "❕ You don't have any logs at verbosity  {} ({})",
         "invalid_verb": "Invalid verbosity level",
@@ -55,10 +55,11 @@ class TesterMod(loader.Module):
         "which_delete": "❔ Which alias should I delete?",
         "no_such_alias": "❌ There is no such alias",
         "alias_removed": "✅ Alias <code>{}</code> has been deleted",
+        "ping": "<emoji id=5220226955206467824>⚡️</emoji> <b>Telegram Response Rate:</b> <code>{}</code> <b>ms</b>",
     }
 
     strings_ru = {
-        "incorrect_language": "❕ <b>Неправильный язык. Shizu поддерживает только 3 языка</b> [<code>uz</code>, <code>ru</code>, <code>gb</code>, <code>jp</code>].",
+        "incorrect_language": "❕ <b>Неправильный язык.",
         "language_saved": "{} Язык сохранен",
         "no_logs_": "❕ У вас нет логов с уровнем {} ({})",
         "invalid_verb": "Недопустимый уровень вывода",
@@ -72,10 +73,11 @@ class TesterMod(loader.Module):
         "which_delete": "❔ Какой алиас удалить?",
         "no_such_alias": "❌ Такой алиас не существует",
         "alias_removed": "✅ Алиас <code>{}</code> удален",
+        "ping": "<emoji id=5220226955206467824>⚡️</emoji> <b>Скорость ответа Telegram:</b> <code>{}</code> <b>мс</b>",
     }
 
     strings_uz = {
-        "incorrect_language": "❕ <b>Bu til mavjud emas</b> [<code>uz</code>, <code>ru</code>, <code>gb</code>, <code>jp</code>].",
+        "incorrect_language": "❕ <b>Bu til mavjud emas</b>",
         "language_saved": "{} Til saqlandi",
         "no_logs_": "❕ <b>Shu xil xatolik mavjud emas</b> ({})",
         "invalid_verb": "Bunday xil xatolik yoq",
@@ -89,10 +91,11 @@ class TesterMod(loader.Module):
         "which_delete": "❔ Kanday alias o'chirmoqchisiz?",
         "no_such_alias": "❌ Bu alias mavjud emas",
         "alias_removed": "✅ Alias <code>{}</code> o'chirildi",
+        "ping": "<emoji id=5220226955206467824>⚡️</emoji> <b>Telegramga javob tezligi:</b> <code>{}</code> <b>ms</b>",
     }
 
     strings_jp = {
-        "incorrect_language": "❕ <b>言語が間違っています</b> [<code>uz</code>, <code>ru</code>, <code>gb</code>, <code>jp</code>].",
+        "incorrect_language": "❕ <b>言語が間違っています</b> .",
         "language_saved": "{} 言語が保存されました",
         "no_logs_": "❕ <b>このようなエラーはありません</b> ({})",
         "invalid_verb": "このようなエラーはありません",
@@ -106,25 +109,44 @@ class TesterMod(loader.Module):
         "which_delete": "❔ どのエイリアスを削除しますか？",
         "no_such_alias": "❌ このようなエイリアスはありません",
         "alias_removed": "✅ エイリアス <code>{}</code> 削除されました",
+        "ping": "<emoji id=5220226955206467824>⚡️</emoji> <b>Telegramの応答速度:</b> <code>{}</code> <b>ms</b>",
     }
 
-    async def setlangcmd(self, app, message):
-        """Change default language - [uz, ru, gb, jp]"""
-        args = utils.get_args_raw(message)
-        if not args or any(len(i) != 2 for i in args.split(" ")):
-            await utils.answer(message, self.strings("incorrect_language"))
-            return
-        if args.lower() not in ("uz", "ru", "gb", "jp"):
-            await utils.answer(message, self.strings("incorrect_language"))
-            return
-
-        self.db.set("shizu.me", "lang", args.lower())
-        tr = translater.Translator(app, self.db)
-        await tr.init()
-
-        await message.answer(
-            self.strings("language_saved").format(utils.get_lang_flag(args.lower()))
-        )
+    strings_ua = {
+        "incorrect_language": "❕ <b>Неправильна мова</b>",
+        "language_saved": "{} Мова збережена",
+        "no_logs_": "❕ <b>Такої помилки не існує</b> ({})",
+        "invalid_verb": "Такої помилки не існує",
+        "which_alias": "❔ Який аліас додати?",
+        "ch_prefix": "❔ Який префікс встановити?",
+        "prefix_changed": "✅ Префікс змінено на {}",
+        "inc_args": "❌ Параметри некоректні.\n✅ Правильно: addalias <новий аліас> <команда>",
+        "alias_already": "❌ Такий аліас вже існує",
+        "no_command": "❌ Такої команди не існує",
+        "alias_done": "✅ Аліас <code>{}</code> для команди <code>{}</code> додано",
+        "which_delete": "❔ Який аліас видалити?",
+        "no_such_alias": "❌ Такого аліасу не існує",
+        "alias_removed": "✅ Аліас <code>{}</code> видалено",
+        "ping": "<emoji id=5220226955206467824>⚡️</emoji> <b>Швидкість відповіді Telegram:</b> <code>{}</code> <b>мс</b>",
+    }
+    
+    strings_kz = {
+        "incorrect_language": "❕ <b>Тіл дұрыс емес</b>",
+        "language_saved": "{} Тіл сақталды",
+        "no_logs_": "❕ <b>Мұндай қате жоқ</b> ({})",
+        "invalid_verb": "Мұндай қате жоқ",
+        "which_alias": "❔ Қай алиас қосқыңыз келеді?",
+        "ch_prefix": "❔ Қай префикс орнатыңыз келеді?",
+        "prefix_changed": "✅ Префикс {} өзгертілді",
+        "inc_args": "❌ Параметрлер қате.\n✅ Дұрыс: addalias <жаңа алиас> <бағдарлама>",
+        "alias_already": "❌ Мұндай алиас бар",
+        "no_command": "❌ Мұндай бағдарлама жоқ",
+        "alias_done": "✅ Алиас <code>{}</code> бағдарлама үшін құрылды <code>{}</code>",
+        "which_delete": "❔ Қай алиас жою керек?",
+        "no_such_alias": "❌ Мұндай алиас жоқ",
+        "alias_removed": "✅ Алиас <code>{}</code> жойылды",
+        "ping": "<emoji id=5220226955206467824>⚡️</emoji> <b>Telegramға жауап беру тездігі:</b> <code>{}</code> <b>мс</b>",
+    }
 
     @loader.command()
     async def logs(self, app: Client, message: types.Message, args: str):
@@ -226,7 +248,7 @@ class TesterMod(loader.Module):
         await message.answer("<emoji id=5267444331010074275>▫️</emoji>")
         ping = round((time.perf_counter_ns() - start) / 10**6, 3)
         await message.answer(
-            f"<emoji id=5220226955206467824>⚡️</emoji> <b>Telegram Response Rate:</b> <code>{ping}</code> <b>ms</b>",
+            self.strings("ping").format(ping),
         )
 
     async def on_load(self, app: Client):

@@ -40,9 +40,9 @@ class EvaluatorMod(loader.Module):
                 raise DeleteAccountIsForbidden("DeleteAccount is forbidden")
             result = await meval(args, globals(), **self.getattrs(app, message))
             return await message.answer(
-                "<b><emoji id=4985626654563894116>🖥</emoji> Code:</b>\n"
+                "<b>🖥 Code:</b>\n"
                 f"<code>{args}</code>\n\n"
-                f"<emoji id=5021905410089550576>✅</emoji> <b>Result:</b>\n"
+                f"✅ <b>Result:</b>\n"
                 f"<code>{result}</code>",
             )
 
@@ -56,9 +56,9 @@ class EvaluatorMod(loader.Module):
                 + item.full_stack.splitlines()[-1]
             )
             return await message.answer(
-                "<b><emoji id=4985626654563894116>🖥</emoji> Code:</b>\n"
+                "<b>🖥 Code:</b>\n"
                 f"<code>{args}</code>\n\n"
-                "<emoji id=5877477244938489129>🚫</emoji> <b>Result:</b>\n"
+                "🚫 <b>Result:</b>\n"
                 f"{exc}",
             )
 
@@ -68,6 +68,7 @@ class EvaluatorMod(loader.Module):
             "db": self.db,
             "app": app,
             "c": app,
+            "print": lambda text: text,  # replace print with return
             "client": app,
             "bot": app,
             "message": message,

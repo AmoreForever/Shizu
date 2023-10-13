@@ -5,26 +5,87 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
+
 import asyncio
 import functools
 import random
 import string
 import typing
-
+import grapheme
 import logging
 import io
 import os
 import contextlib
 import git
 import aiohttp
+import shutil
+import subprocess
 from types import FunctionType
 from urllib.parse import urlparse
-from typing import Any, List, Literal, Tuple, Union
+from typing import Any, List, Literal, Tuple, Union, AsyncIterator
 
 from pyrogram.types import Chat, Message, User
-from pyrogram import Client
+from pyrogram import Client, enums, types
+from pyrogram.enums import MessageMediaType
+from pyrogram.raw.base import Updates
+from pyrogram.raw.base.messages import ForumTopics
+from pyrogram.raw.functions.channels import (
+    GetForumTopics,
+    CreateForumTopic,
+)
+
+from pyrogram.raw.types.message_entity_unknown import MessageEntityUnknown
+from pyrogram.raw.types.message_entity_mention import MessageEntityMention
+from pyrogram.raw.types.message_entity_hashtag import MessageEntityHashtag
+from pyrogram.raw.types.message_entity_bot_command import MessageEntityBotCommand
+from pyrogram.raw.types.message_entity_url import MessageEntityUrl
+from pyrogram.raw.types.message_entity_email import MessageEntityEmail
+from pyrogram.raw.types.message_entity_bold import MessageEntityBold
+from pyrogram.raw.types.message_entity_italic import MessageEntityItalic
+from pyrogram.raw.types.message_entity_code import MessageEntityCode
+from pyrogram.raw.types.message_entity_pre import MessageEntityPre
+from pyrogram.raw.types.message_entity_text_url import MessageEntityTextUrl
+from pyrogram.raw.types.message_entity_mention_name import MessageEntityMentionName
+from pyrogram.raw.types.input_message_entity_mention_name import (
+    InputMessageEntityMentionName,
+)
+from pyrogram.raw.types.message_entity_phone import MessageEntityPhone
+from pyrogram.raw.types.message_entity_cashtag import MessageEntityCashtag
+from pyrogram.raw.types.message_entity_underline import MessageEntityUnderline
+from pyrogram.raw.types.message_entity_strike import MessageEntityStrike
+from pyrogram.raw.types.message_entity_blockquote import MessageEntityBlockquote
+from pyrogram.raw.types.message_entity_bank_card import MessageEntityBankCard
+from pyrogram.raw.types.message_entity_spoiler import MessageEntitySpoiler
+from pyrogram.raw.types.message_entity_custom_emoji import MessageEntityCustomEmoji
+from pyrogram.raw.types import InputChannel
 
 from . import database
+
+FormattingEntity = Union[
+    MessageEntityUnknown,
+    MessageEntityMention,
+    MessageEntityHashtag,
+    MessageEntityBotCommand,
+    MessageEntityUrl,
+    MessageEntityEmail,
+    MessageEntityBold,
+    MessageEntityItalic,
+    MessageEntityCode,
+    MessageEntityPre,
+    MessageEntityTextUrl,
+    MessageEntityMentionName,
+    InputMessageEntityMentionName,
+    MessageEntityPhone,
+    MessageEntityCashtag,
+    MessageEntityUnderline,
+    MessageEntityStrike,
+    MessageEntityBlockquote,
+    MessageEntityBankCard,
+    MessageEntitySpoiler,
+    MessageEntityCustomEmoji,
+]
+
+ListLike = Union[list, set, tuple]
 
 logging.basicConfig(
     level=logging.INFO,
@@ -38,10 +99,11 @@ logging.basicConfig(
 
 db = database.db
 
+
 def get_lang_flag(countrycode: str) -> str:
     """
-    Gets an emoji of specified countrycode
-    :param countrycode: 2-letter countrycode
+    Gets an emoji of specified country code
+    :param countrycode: 2-letter country code
     :return: Emoji flag
     """
     if (
@@ -56,7 +118,13 @@ def get_lang_flag(countrycode: str) -> str:
     ):
         return "".join([chr(ord(c.upper()) + (ord("🇦") - ord("A"))) for c in code])
 
-    return countrycode
+    return countrycode.encode("utf-8")
+
+
+def chunks(_list: Union[list, tuple, set], n: int, /) -> list:
+    """Split provided `_list` into chunks of `n`"""
+    return [_list[i : i + n] for i in range(0, len(_list), n)]
+
 
 def get_full_command(
     message: Message,
@@ -172,6 +240,7 @@ async def create_chat(
 
     return chat
 
+
 def check_url(url: str) -> bool:
     """Checks url for validity"""
     try:
@@ -179,23 +248,271 @@ def check_url(url: str) -> bool:
     except Exception:
         return False
 
+
 def get_base_dir() -> str:
     """Get directory of this file"""
-    from . import __main__
+    from . import loader
 
-    return get_dir(__main__.__file__)
+    return get_dir(loader.__file__)
 
 
 def get_dir(mod: str) -> str:
     """Get directory of given module"""
     return os.path.abspath(os.path.dirname(os.path.abspath(mod)))
 
+
+async def get_forum(app, chat_id: int) -> str:
+    """Get forum of given chat_id"""
+    chat_ = await app.resolve_peer(chat_id)
+    channel_ = InputChannel(channel_id=chat_.channel_id, access_hash=chat_.access_hash)
+    get_topics_ = GetForumTopics(
+        channel=channel_, offset_date=0, offset_topic=0, offset_id=0, limit=1
+    )
+    topics: ForumTopics = await app.invoke(get_topics_)
+    topics.order_by_create_date = True
+    return topics.topics
+
+
+async def create_topic(app, chat_id: int, title: str) -> str:
+    """Create topic in given chat_id"""
+    chat_ = await app.resolve_peer(chat_id)
+    channel_ = InputChannel(channel_id=chat_.channel_id, access_hash=chat_.access_hash)
+    create_topic_ = CreateForumTopic(
+        channel=channel_, title=title, random_id=random.randint(10000000, 99999999)
+    )
+    updates: Updates = await app.invoke(create_topic_)
+    return updates
+
+
+async def smart_split(
+    client: Client,
+    text: str,
+    entities: List[FormattingEntity],
+    length: int = 4096,
+    split_on: ListLike = ("\n", " "),
+    min_length: int = 1,
+) -> AsyncIterator[str]:
+    """
+    Split the message into smaller messages.
+    A grapheme will never be broken. Entities will be displaced to match the right location. No inputs will be mutated.
+    The end of each message except the last one is stripped of characters from [split_on]
+    :param text: the plain text input
+    :param entities: the entities
+    :param length: the maximum length of a single message
+    :param split_on: characters (or strings) which are preferred for a message break
+    :param min_length: ignore any matches on [split_on] strings before this number of characters into each message
+    :return: iterator, which returns strings
+
+    :example:
+        >>> utils.smart_split(
+            *hikkatl.extensions.html.parse(
+                "<b>Hello, world!</b>"
+            )
+        )
+        <<< ["<b>Hello, world!</b>"]
+    """
+
+    # Authored by @bsolute
+    # https://t.me/LonamiWebs/27777
+
+    encoded = text.encode("utf-16le")
+    pending_entities = entities
+    text_offset = 0
+    bytes_offset = 0
+    text_length = len(text)
+    bytes_length = len(encoded)
+
+    while text_offset < text_length:
+        if bytes_offset + length * 2 >= bytes_length:
+            yield client.parser.unparse(
+                text[text_offset:],
+                list(sorted(pending_entities, key=lambda x: x.offset)),
+                True,
+            )
+            break
+
+        codepoint_count = len(
+            encoded[bytes_offset : bytes_offset + length * 2].decode(
+                "utf-16le",
+                errors="ignore",
+            )
+        )
+
+        for search in split_on:
+            search_index = text.rfind(
+                search,
+                text_offset + min_length,
+                text_offset + codepoint_count,
+            )
+            if search_index != -1:
+                break
+        else:
+            search_index = text_offset + codepoint_count
+
+        split_index = grapheme.safe_split_index(text, search_index)
+
+        split_offset_utf16 = (
+            len(text[text_offset:split_index].encode("utf-16le"))
+        ) // 2
+        exclude = 0
+
+        while (
+            split_index + exclude < text_length
+            and text[split_index + exclude] in split_on
+        ):
+            exclude += 1
+
+        current_entities = []
+        entities = pending_entities.copy()
+        pending_entities = []
+
+        for entity in entities:
+            if (
+                entity.offset < split_offset_utf16
+                and entity.offset + entity.length > split_offset_utf16 + exclude
+            ):
+                # spans boundary
+                current_entities.append(
+                    _copy_tl(
+                        entity,
+                        client,
+                        length=split_offset_utf16 - entity.offset,
+                    )
+                )
+                pending_entities.append(
+                    _copy_tl(
+                        entity,
+                        client,
+                        offset=0,
+                        length=entity.offset
+                        + entity.length
+                        - split_offset_utf16
+                        - exclude,
+                    )
+                )
+            elif entity.offset < split_offset_utf16 < entity.offset + entity.length:
+                # overlaps boundary
+                current_entities.append(
+                    _copy_tl(
+                        entity,
+                        client,
+                        length=split_offset_utf16 - entity.offset,
+                    )
+                )
+            elif entity.offset < split_offset_utf16:
+                # wholly left
+                current_entities.append(_copy_tl(entity, client))
+            elif (
+                entity.offset + entity.length
+                > split_offset_utf16 + exclude
+                > entity.offset
+            ):
+                # overlaps right boundary
+                pending_entities.append(
+                    _copy_tl(
+                        entity,
+                        client,
+                        offset=0,
+                        length=entity.offset
+                        + entity.length
+                        - split_offset_utf16
+                        - exclude,
+                    )
+                )
+            elif entity.offset + entity.length > split_offset_utf16 + exclude:
+                # wholly right
+                pending_entities.append(
+                    _copy_tl(
+                        entity,
+                        client,
+                        offset=entity.offset - split_offset_utf16 - exclude,
+                    )
+                )
+
+        current_text = text[text_offset:split_index]
+        yield client.parser.unparse(
+            current_text, list(sorted(current_entities, key=lambda x: x.offset)), True
+        )
+
+        text_offset = split_index + exclude
+        bytes_offset += len(current_text.encode("utf-16le"))
+
+
+def _copy_tl(o: FormattingEntity, client, **kwargs):
+    if isinstance(o, types.MessageEntity):
+        x: dict = o.default(o)  # type: ignore
+        del x["_"]
+        x |= kwargs
+        return type(o)(**x)
+
+    d: dict = o.default(o)  # type: ignore
+    del d["_"]
+    d |= kwargs
+    entity = type(o)(**d)
+    # print(entity, d, o)
+    if isinstance(entity, InputMessageEntityMentionName):
+        entity_type = enums.MessageEntityType.TEXT_MENTION
+        user_id = entity.user_id.user_id  # type: ignore
+    else:
+        info = {
+            isinstance(
+                entity, MessageEntityBankCard
+            ): enums.MessageEntityType.BANK_CARD,
+            isinstance(
+                entity, MessageEntityBlockquote
+            ): enums.MessageEntityType.BLOCKQUOTE,
+            isinstance(entity, MessageEntityBold): enums.MessageEntityType.BOLD,
+            isinstance(
+                entity, MessageEntityBotCommand
+            ): enums.MessageEntityType.BOT_COMMAND,
+            isinstance(entity, MessageEntityCashtag): enums.MessageEntityType.CASHTAG,
+            isinstance(entity, MessageEntityCode): enums.MessageEntityType.CODE,
+            isinstance(entity, MessageEntityUnknown): enums.MessageEntityType.UNKNOWN,
+            isinstance(
+                entity, MessageEntityUnderline
+            ): enums.MessageEntityType.UNDERLINE,
+            isinstance(entity, MessageEntityUrl): enums.MessageEntityType.URL,
+            isinstance(entity, MessageEntityTextUrl): enums.MessageEntityType.TEXT_LINK,
+            isinstance(entity, MessageEntityItalic): enums.MessageEntityType.ITALIC,
+            isinstance(
+                entity, MessageEntityStrike
+            ): enums.MessageEntityType.STRIKETHROUGH,
+            isinstance(
+                entity, MessageEntityCustomEmoji
+            ): enums.MessageEntityType.CUSTOM_EMOJI,
+            isinstance(entity, MessageEntityEmail): enums.MessageEntityType.EMAIL,
+            isinstance(entity, MessageEntityHashtag): enums.MessageEntityType.HASHTAG,
+            isinstance(
+                entity, MessageEntityMentionName
+            ): enums.MessageEntityType.MENTION,
+            isinstance(entity, MessageEntitySpoiler): enums.MessageEntityType.SPOILER,
+            isinstance(entity, MessageEntityMention): enums.MessageEntityType.MENTION,
+            isinstance(entity, MessageEntityPre): enums.MessageEntityType.PRE,
+            isinstance(
+                entity, MessageEntityPhone
+            ): enums.MessageEntityType.PHONE_NUMBER,
+        }
+        entity_type = info[True]
+        user_id = getattr(entity, "user_id", None)
+
+    return types.MessageEntity(
+        type=entity_type,
+        offset=entity.offset,
+        length=entity.length,
+        url=getattr(entity, "url", None),  # type: ignore
+        user=types.User._parse(client, {}.get(user_id, None)),  # type: ignore
+        language=getattr(entity, "language", None),  # type: ignore
+        custom_emoji_id=getattr(entity, "document_id", None),  # type: ignore
+        client=client,
+    )
+
+
 async def answer(
     message: Union[Message, List[Message]],
     response: Union[str, Any],
-    chat_id: Union[str, int] = None,
     doc: bool = False,
-    photo: bool = False,
+    photo_: bool = False,
+    reply_markup: Any = None,
     **kwargs,
 ) -> List[Message]:
     """Basically it's a regular message.edit, but:
@@ -210,9 +527,6 @@ async def answer(
         response (`str` | `typing.Any"):
     The text or object to be sent
 
-        chat_id (`str` | `int`, optional):
-    Chat to send a message to
-
         doc/photo (`bool", optional):
     If `True`, the message will be sent as a document/photo or by link
 
@@ -221,89 +535,79 @@ async def answer(
     """
     messages: List[Message] = []
     app: Client = message._client
-
+    reply = message.reply_to_message
     if isinstance(message, list):
         message = message[0]
 
-    if isinstance(response, str) and not any([doc, photo]):
-        if len(response) > 4096:
-            app.me = await app.get_me()
-            out = io.BytesIO(response.encode("utf-8"))  
-            out.name = "output.txt"
-            messages.append(await app.send_document(message.chat.id, out, caption="📁 Output was too long thos i send it as file", **kwargs))
-        
+    if isinstance(response, str) and not any([doc, photo_]):
+        info = await app.parser.parse(response, kwargs.get("parse_mode", None))
+        text, entities = str(info["message"]), info.get("entities", [])
+        if len(text) >= 4096:
+            try:
+                strings = [
+                    txt
+                    async for txt in smart_split(app, escape_html(text), entities, 4096)
+                ]
+                return await app._inline.list(message, strings, **kwargs)
+            except Exception:
+                file = io.BytesIO(text.encode())
+                file.name = "output.txt"
+                return await message.reply_document(file, **kwargs)
         outputs = [response[i : i + 4096] for i in range(0, len(response), 4096)]
-        if chat_id:
-            messages.append(
-                await message._client.send_message(chat_id, outputs[0], **kwargs)
-            )
-        else:
-            messages.append(
-                await (
-                    message.edit
-                    if message.from_user.id == db.get("shizu.me", "me")
-                    else message.reply
-                )(outputs[0], **kwargs)
-            )
 
+        messages.append(
+            await app._inline.form(
+                message=message,
+                text=response,
+                reply_markup=reply_markup,
+                msg_id=reply.id
+                if reply
+                else message.topics.id
+                if message.topics
+                else None,
+                **kwargs,
+            )
+            if reply_markup
+            else await message.edit(
+                outputs[0],
+                **kwargs,
+            )
+            if message.from_user.id == db.get("shizu.me", "me")
+            else await message.reply(
+                outputs[0],
+                **kwargs,
+                reply_to_message_id=reply.id if reply else None,
+            )
+        )
     elif doc:
         app.me = await app.get_me()
-        if chat_id:
-            messages.append(
-                await message._client.send_document(chat_id, response, **kwargs)
-            )
-        else:
-            messages.append(await message.reply_document(response, **kwargs))
+        messages.append(await message.reply_document(response, **kwargs))
 
-    elif photo:
+    elif photo_:
         app.me = await app.get_me()
-        if chat_id:
-            messages.append(
-                await message._client.send_photo(chat_id, response, **kwargs)
+        await message.delete()
+        messages.append(
+            await app._inline.form(
+                message=message,
+                photo=response,
+                reply_markup=reply_markup,
+                **kwargs,
             )
-        else:
-            await message.delete()
-            messages.append(await message.reply_photo(response, **kwargs))
+            if reply_markup
+            else await message.reply_photo(
+                response, reply_to_message_id=reply.id if reply else None, **kwargs
+            )
+        )
 
-    return messages[0] if len(messages) == 1 else messages[-1] 
+    return message if len(messages) == 1 else messages
 
-
-async def answer_inline(
-    message: Union[Message, List[Message]],
-    query: str,
-    chat_id: Union[str, int] = "",
-) -> None:
-    """
-    Parameters:
-        message (``program.types.Message`` | ``typing.List[pyrogram.types.Message]`):
-    Message
-
-            query (`str"):
-    Parameters for the inline bot
-
-            chat_id (`str` | `int`, optional):
-    The chat to send the inline result to
-    """
-
-    if isinstance(message, list):
-        message = message[0]
-
-    app: Client = message._client
-    message: Message
-
-    results = await app.get_inline_bot_results(
-        (await app.inline_bot.get_me()).username, query
-    )
-
-    await app.send_inline_bot_result(
-        chat_id or message.chat.id, results.query_id, results.results[0].id
-    )
 
 def rand(size: int, /) -> str:
     """Return random string of len `size`"""
     return "".join(
         [random.choice("abcdefghijklmnopqrstuvwxyz1234567890") for _ in range(size)]
     )
+
 
 def run_sync(func: FunctionType, *args, **kwargs) -> asyncio.Future:
     """Runs asynchronously non-asink function
@@ -346,32 +650,9 @@ def get_display_name(entity: Union[User, Chat]) -> str:
     )
 
 
-def get_ram() -> float:
-    """Возвращает данные о памяти."""
-    try:
-        import psutil
-
-        process = psutil.Process(os.getpid())
-        mem = process.memory_info()[0] / 2.0**20
-        for child in process.children(recursive=True):
-            mem += child.memory_info()[0] / 2.0**20
-        return round(mem, 1)
-    except:
-        return 0
-
-
-def get_cpu() -> float:
-    """Возвращает данные о процессоре."""
-    try:
-        import psutil
-
-        process = psutil.Process(os.getpid())
-        cpu = process.cpu_percent()
-        for child in process.children(recursive=True):
-            cpu += child.cpu_percent()
-        return round(cpu, 1)
-    except:
-        return 0
+def escape_html(text):
+    """Pass all untrusted/potentially corrupt input here"""
+    return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def get_platform() -> str:
@@ -389,17 +670,17 @@ def get_platform() -> str:
             IS_WSL = True
 
     if IS_TERMUX:
-        platform = "<emoji id=5865981429963296202>📱</emoji> Termux"
+        platform = "📱 Termux"
     elif IS_DOCKER:
-        platform = "<emoji id=5314447198967046292>🐳</emoji> Docker"
+        platform = "🐳 Docker"
     elif IS_WSL:
-        platform = "<emoji id=5865981429963296202>🧱</emoji> WSL"
+        platform = "🧱 WSL"
     elif IS_WIN:
-        platform = "<emoji id=5866334008123591985>💻</emoji> Windows"
+        platform = "💻 Windows"
     elif IS_GOORM:
-        platform = "<emoji id=5174797724612035575>🍊</emoji> Goorm"
+        platform = "🍊 Goorm"
     else:
-        platform = "<emoji id=5868375062481997528>🖥️</emoji> VDS"
+        platform = "🖥️ VDS"
 
     return platform
 
@@ -419,23 +700,6 @@ def random_id(size: int = 10) -> str:
 def get_random_hex() -> str:
     """Returns a random hex color"""
     return "#%06x" % random.randint(0, 0xFFFFFF)
-
-
-async def paste_neko(code: str):
-    try:
-        async with aiohttp.ClientSession(
-            connector=aiohttp.TCPConnector(ssl=False)
-        ) as session:
-            async with session.post(
-                "https://nekobin.com/api/documents",
-                json={"content": code},
-            ) as paste:
-                paste.raise_for_status()
-                result = await paste.json()
-    except Exception:
-        return "Pasting failed"
-    else:
-        return f"nekobin.com/{result['result']['key']}.py"
 
 
 def get_git_hash() -> typing.Union[str, bool]:
@@ -460,134 +724,16 @@ def get_commit_url() -> str:
     except Exception:
         return "Unknown"
 
-
-tr_langs = [
-    "af",
-    "am",
-    "ar",
-    "as",
-    "az",
-    "ba",
-    "bg",
-    "bn",
-    "bo",
-    "bs",
-    "ca",
-    "cs",
-    "cy",
-    "da",
-    "de",
-    "dsb",
-    "dv",
-    "el",
-    "en",
-    "es",
-    "et",
-    "eu",
-    "fa",
-    "fi",
-    "fil",
-    "fj",
-    "fo",
-    "fr",
-    "fr-CA",
-    "ga",
-    "gl",
-    "gom",
-    "gu",
-    "ha",
-    "he",
-    "hi",
-    "hr",
-    "hsb",
-    "ht",
-    "hu",
-    "hy",
-    "id",
-    "ig",
-    "ikt",
-    "is",
-    "it",
-    "iu",
-    "iu-Latn",
-    "ja",
-    "ka",
-    "kk",
-    "km",
-    "kmr",
-    "kn",
-    "ko",
-    "ku",
-    "ky",
-    "ln",
-    "lo",
-    "lt",
-    "lug",
-    "lv",
-    "lzh",
-    "mai",
-    "mg",
-    "mi",
-    "mk",
-    "ml",
-    "mn-Cyrl",
-    "mn-Mong",
-    "mr",
-    "ms",
-    "mt",
-    "mww",
-    "my",
-    "nb",
-    "ne",
-    "nl",
-    "nso",
-    "nya",
-    "or",
-    "otq",
-    "pa",
-    "pl",
-    "prs",
-    "ps",
-    "pt",
-    "pt-PT",
-    "ro",
-    "ru",
-    "run",
-    "rw",
-    "sd",
-    "si",
-    "sk",
-    "sl",
-    "sm",
-    "sn",
-    "so",
-    "sq",
-    "sr-Cyrl",
-    "sr-Latn",
-    "st",
-    "sv",
-    "sw",
-    "ta",
-    "te",
-    "th",
-    "ti",
-    "tk",
-    "tlh-Latn",
-    "tn",
-    "to",
-    "tr",
-    "tt",
-    "ty",
-    "ug",
-    "uk",
-    "ur",
-    "uz",
-    "vi",
-    "xh",
-    "yo",
-    "yua",
-    "yue",
-    "zh-Hans",
-    "zh-Hant",
-    "zu",
-]
+def get_kwargs() -> dict:
+    """
+    Get kwargs of function, in which is called
+    :return: kwargs
+    """
+    # https://stackoverflow.com/a/65927265/19170642
+    frame = inspect.currentframe().f_back
+    keys, _, _, values = inspect.getargvalues(frame)
+    kwargs = {}
+    for key in keys:
+        if key != "self":
+            kwargs[key] = values[key]
+    return kwargs

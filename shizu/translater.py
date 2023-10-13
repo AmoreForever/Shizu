@@ -6,7 +6,8 @@
 # 👤 https://t.me/hikamoru
 
 import logging
-import requests
+import os
+import json
 
 from . import utils
 
@@ -19,25 +20,19 @@ class Translator:
         self.db = db
 
     async def init(self) -> bool:
-        self._data = {}
-        if lang := self.db.get("shizu.me", "lang", False):
-            for language in lang.split(" "):
-                if utils.check_url(language):
-                    try:
-                        ndata = (await utils.run_sync(requests.get, language)).json()
-                    except Exception:
-                        logger.exception(f"Unable to decode {language}")
-                        continue
-
-                    data = ndata.get("data", ndata)
-
-                    if all(isinstance(i, str) for i in data.values()):
-                        self._data |= data
-
-        return bool(self._data)
+        return True  # Не нужно читать langpack файл при инициализации
 
     def getkey(self, key):
-        return self._data.get(key, False)
+        lang = self.db.get("shizu.me", "lang", "en")
+        langpack_path = os.path.join(utils.get_base_dir(), f"langpacks/{lang}.json")
+
+        if os.path.isfile(langpack_path):
+            with open(langpack_path, "r", encoding="utf-8") as f:
+                lang_data = json.load(f)
+                print(f"{utils.get_lang_flag(lang)} Loaded {lang} langpack")
+                return lang_data.get(key, False)
+
+        return False
 
     def gettext(self, text):
         return self.getkey(text) or text
@@ -51,20 +46,22 @@ class Strings:
         self._base_strings = mod.strings
 
     def __getitem__(self, key: str) -> str:
-        current_language = self._db.get("shizu.me", "lang", "en")
-        supported_languages = ["en", "ru", "uz", "jp"]
-
-        for lang in supported_languages:
-            strings_dict_name = f"strings_{lang}"
-            if (
-                current_language == lang
-                and hasattr(self._mod, strings_dict_name)
-                and isinstance(getattr(self._mod, strings_dict_name), dict)
-                and key in getattr(self._mod, strings_dict_name)
-            ):
-                return getattr(self._mod, strings_dict_name)[key]
-
-        return self._base_strings.get(key, "Unknown strings")
+        return (
+            self._translator.getkey(f"{self._mod.__module__}.{key}")
+            if self._translator is not None
+            else False
+        ) or (
+            getattr(
+                self._mod,
+                f"strings_{self._db.get('shizu.me', 'lang', 'en')}",
+                self._base_strings,
+            )
+            if self._translator is not None
+            else self._base_strings
+        ).get(
+            key,
+            self._base_strings.get(key, "Unknown strings"),
+        )
 
     def __call__(self, key: str) -> str:
         return self.__getitem__(key)

@@ -16,6 +16,8 @@ class Item:
         self._all_modules: types.ModulesManager = None
         self._db: database.Database = None
         self._app: Client = None
+        self._markup_ttl = 60 * 60 * 24
+        self._custom_map = {}
 
     async def _check_filters(
         self,

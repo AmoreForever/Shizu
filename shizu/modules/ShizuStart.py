@@ -31,6 +31,8 @@ class ShizuStart(loader.Module):
 3️⃣ Type <code>.dlmod (link)</code> to load module from link
 4️⃣ Type <code>.loadmod</code> with reply to file to install module from it
 5️⃣ Type <code>.unloadmod (ModuleName)</code> to unload module ModuleName
+6️⃣ Type <code>.aelis (ModuleName)</code> to search modules by name and u can load it
+7️⃣ Type <code>.langs</code> to see available languages and <code>.setlang (lang)</code> to change language
     """
 
     async def on_load(self, app: Client):

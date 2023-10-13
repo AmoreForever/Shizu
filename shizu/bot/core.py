@@ -37,8 +37,13 @@ class BotManager(Events, TokenManager):
         Modules
         """
         self._app = app
+        self._app._inline = self
         self._db = db
         self._all_modules = all_modules
+        self._forms = {}
+        self._markup_ttl = 60 * 60 * 24
+        self._custom_map = {}
+        self._me = self._db.get("shizu.me", "me", None)
         self._token = self._db.get("shizu.bot", "token", None)
 
     async def load(self) -> Union[bool, NoReturn]:
@@ -66,8 +71,13 @@ class BotManager(Events, TokenManager):
         self._dp.register_message_handler(
             self._message_handler, lambda _: True, content_types=["any"]
         )
+        self._dp.register_chosen_inline_handler(
+            self._chosen_inline_handler, lambda chosen_inline_query: True
+        )
         self._dp.register_inline_handler(self._inline_handler, lambda _: True)
-        self._dp.register_callback_query_handler(self._callback_handler, lambda _: True)
+        self._dp.register_callback_query_handler(
+            self._callback_query_handler, lambda _: True
+        )
         await self._dp.bot.set_my_commands(
             [
                 aiotypes.BotCommand("start", "start"),

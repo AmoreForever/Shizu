@@ -1,4 +1,4 @@
-Pyrogram
+https://github.com/AmoreForever/pyrogram/archive/dev.zip
 aiogram==2.25.1
 TgCrypto
 psutil

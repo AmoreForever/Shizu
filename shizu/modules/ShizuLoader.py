@@ -180,6 +180,36 @@ class Loader(loader.Module):
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>このアカウントではこのモジュールは利用できません</b>",
     }
 
+    strings_ua = {
+        "invalid_repo": "❌ Невірний репозиторій.\n",
+        "no_all": "❌ all.txt файл не знайдено в репозиторії <a href='{}'>repository</a>.\n",
+        "mods_in_repo": "<emoji id=5974220038956124904>📥</emoji> <b>Модулі репозиторію <a href='{}'>repository</a></b>:\n\n",
+        "check": "<emoji id=5280506417478903827>🛡</emoji> Аналіз модуля..",
+        "loaded": "<emoji id=5267468588985363056>✔️</emoji> Модуль <b>{}</b> завантажено\n"
+        "<emoji id=5787544344906959608>ℹ️</emoji> {} \n\n",
+        "repo_set": "✅ Репозиторій установлено",
+        "unloaded": "<emoji id=6334471265700546607>🧹</emoji> Модуль <code>{}</code> вилучено",
+        "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>Акцію вказано</b>",
+        "no_repy_to_file": "❌ Не надіслати повідомлення",
+        "loading": "<emoji id=5215493819641895305>🚛</emoji> <b>Модуль завантажується..</b>",
+        "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Включено. Через <a href='https://t.me/aelis_msbot'>Aelis bot</a> модуль можна завантажувати",
+    }
+
+    strings_kz = {
+        "invalid_repo": "❌ Репозиторий жарамсыз.\n",
+        "no_all": "❌ all.txt файлын табылмады <a href='{}'>repository</a>.\n",
+        "mods_in_repo": "<emoji id=5974220038956124904>📥</emoji> <b>Модульдер репозиториясы <a href='{}'>repository</a></b>:\n\n",
+        "check": "<emoji id=5280506417478903827>🛡</emoji> Модульді тексеру..",
+        "loaded": "<emoji id=5267468588985363056>✔️</emoji> Модуль <b>{}</b> жүктелді\n"
+        "<emoji id=5787544344906959608>ℹ️</emoji> {} \n\n",
+        "repo_set": "✅ Репозиторий орнатылды",
+        "unloaded": "<emoji id=6334471265700546607>🧹</emoji> Модуль <code>{}</code> жойылды",
+        "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>Әрекетті көрсетіңіз</b>",
+        "no_repy_to_file": "❌ Файлға жауап бермеу",
+        "loading": "<emoji id=5215493819641895305>🚛</emoji> <b>Модуль жүктелуде..</b>",
+        "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Қосылды. <a href='https://t.me/aelis_msbot'>Aelis bot</a> арқылы модуль жүктей аласыз",
+    }
+
     @loader.command()
     async def dlmod(self, app: Client, message: types.Message, args: str):
         """Download module by link. Usage: dlmod <link or all or nothing>"""
@@ -320,7 +350,7 @@ class Loader(loader.Module):
 
         if module_name == "DAR":
             return await message.answer(self.strings("found_delete_"))
-        
+
         if module_name == "NFA":
             return await message.answer(self.strings("not_for_this_account"))
 
@@ -400,6 +430,9 @@ class Loader(loader.Module):
 
                 if module_name == "DAR":
                     return await message.answer(self.strings("found_delete_"))
+
+                if module_name == "NFA":
+                    return await message.answer(self.strings("not_for_this_account"))
 
                 module = self.all_modules.get_module(module_name, True)
                 self.db.set(

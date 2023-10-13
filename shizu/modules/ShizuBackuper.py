@@ -71,6 +71,28 @@ class BackupMod(loader.Module):
         "disabled": "<emoji id=5260416304224936047>✅</emoji> <b>自動バックアップ <u>無効</u></b>",
     }
 
+    strings_ua = {
+        "backup": "👉 <b>Бекап бази</b>\n🕔 <b>{}</b>",
+        "done": "<emoji id=5260416304224936047>✅</emoji> Бекап створено\nПеревірте бекап в <b>бекаповому чаті</b>",
+        "restoring": "<emoji id=5370706614800097423>🧐</emoji> <b>Відновлення бази...</</b>",
+        "invalid": "<emoji id=5413472879771658264>❌</emoji> Неприпустимий формат",
+        "loaded": "<emoji id=5870888735041655084>📁</emoji> <b>Бекап успішно завантажено</b>",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Перезапуск...</b>",
+        "enabled": "<emoji id=5260416304224936047>✅</emoji> <b>Автобекап <u>увімкнено</u></b>",
+        "disabled": "<emoji id=5260416304224936047>✅</emoji> <b>Автобекап <u>вимкнено</u></b>",
+    }
+
+    strings_kz = {
+        "backup": "👉 <b>Деректер базасының резерттеуі</b>\n🕔 <b>{}</b>",
+        "done": "<emoji id=5260416304224936047>✅</emoji> Резерттеу жасалды\nРезерттеуді тексеріңіз <b>backups chat</b>",
+        "restoring": "<emoji id=5370706614800097423>🧐</emoji> <b>Деректер базасын қалпына келтіру...</</b>",
+        "invalid": "<emoji id=5413472879771658264>❌</emoji> Қате формат",
+        "loaded": "<emoji id=5870888735041655084>📁</emoji> <b>Резерттеу сәтті жүктелді</b>",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Қайта іске қосу...</b>",
+        "enabled": "<emoji id=5260416304224936047>✅</emoji> <b>Авторезерттеу <u>қосылған</u></b>",
+        "disabled": "<emoji id=5260416304224936047>✅</emoji> <b>Авторезерттеу <u>өшірілген</u></b>",
+    }
+
     @loader.command()
     async def backupdb(self, app: Client, message: types.Message):
         """Create database backup [will be sent in backups chat]"""
@@ -135,11 +157,9 @@ class BackupMod(loader.Module):
             self.db.set("shizu.backuper", "autobackup", None)
             await message.answer()
 
-    @loader.loop(interval=3, autostart=True)
+    @loader.loop(interval=36000, autostart=True)
     async def autobackupmods(self):
         if not self.db.get("shizu.backuper", "autobackup", None):
-            return
-        if time.strftime("%H:%M") != "00:00":
             return
         txt = io.BytesIO(json.dumps(self.db).encode("utf-8"))
         txt.name = f"shizu-{datetime.now().strftime('%d-%m-%Y-%H-%M')}.json"

@@ -5,14 +5,6 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-from aiogram.types import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InlineQuery,
-    InlineQueryResultArticle,
-    InputTextMessageContent,
-)
-
 from pyrogram import Client, types
 from .. import loader, utils
 
@@ -21,42 +13,45 @@ from .. import loader, utils
 class Help(loader.Module):
     """[module] - Show help"""
 
-    strings = {"available": "{} <b>{} modules available</b>\n{}"}
+    strings = {
+        "available": "{} <b>{} modules available</b>\n{}",
+        "support": "🧑‍🔬 <b>If you have any questions, suggestions or bug reports, please let us know in our support chat: @shizu_talks</b>",
+        "button": "🗼 Support chat",
+    }
 
-    strings_ru = {"available": "{} <b>{} модулей доступно</b>\n{}"}
+    strings_ru = {
+        "available": "{} <b>{} модулей доступно</b>\n{}",
+        "support": "🧑‍🔬 <b>Если у вас есть вопросы, предложения или сообщения об ошибках, сообщите нам в нашем чате поддержки: @shizu_talks</b>",
+        "button": "🗼 Чат поддержки",
+    }
 
-    strings_uz = {"available": "{} <b>{} modullar mavjud</b>\n{}"}
+    strings_uz = {
+        "available": "{} <b>{} modullar mavjud</b>\n{}",
+        "support": "🧑‍🔬 <b>Savollaringiz, takliflaringiz yoki xatolaringiz bo'lsa, iltimos, bizga yordam beruvchi chatga xabar bering: @shizu_talks</b>",
+        "button": "🗼 Yordam chati",
+    }
 
-    strings_jp = {"available": "{} <b>利用可能な {} のモジュールがあります</b>\n{}"}
+    strings_jp = {
+        "available": "{} <b>利用可能な {} のモジュールがあります</b>\n{}",
+        "support": "🧑‍🔬 <b>質問、提案、バグ報告がある場合は、サポートチャットでお知らせください: @shizu_talks</b>",
+        "button": "🗼 サポートチャット",
+    }
 
-    async def support_inline_handler(self, app: Client, inline_query: InlineQuery):
-        """Responds to inline queries"""
-        message = InputTextMessageContent("✨ Do you need help? don't be shy :)")
+    strings_ua = {
+        "available": "{} <b>{} модулів доступно</b>\n{}",
+        "support": "🧑‍🔬 <b>Якщо у вас є питання, пропозиції або повідомлення про помилки, повідомте нам у нашому чаті підтримки: @shizu_talks</b>",
+        "button": "🗼 Чат підтримки",
+    }
 
-        return await inline_query.answer(
-            [
-                InlineQueryResultArticle(
-                    id=utils.random_id(),
-                    title="Support Chat",
-                    input_message_content=message,
-                    reply_markup=(
-                        InlineKeyboardMarkup().add(
-                            InlineKeyboardButton(
-                                text="🧑‍💻 Support Chat", url="https://t.me/shizu_talks"
-                            ),
-                            InlineKeyboardButton(
-                                text="📢 Updates", url="https://t.me/shizuhub"
-                            ),
-                        )
-                    ),
-                )
-            ],
-            cache_time=0,
-        )
+    strings_kz = {
+        "available": "{} <b>{} модуль қолжетімді</b>\n{}",
+        "support": "🧑‍🔬 <b>Сұрақтарыңыз, ұсыныстарыңыз немесе қателер туралы хабарласу үшін, біздің қолдау құрамасында хабарласыңыз: @shizu_talks</b>",
+        "button": "🗼 Қолдау құрамасы",
+    }
 
     @loader.command()
     async def help(self, app: Client, message: types.Message):
-        """Список всех модулей"""
+        """Show help"""
 
         args = message.get_args()
         dop_help = (
@@ -92,9 +87,9 @@ class Help(loader.Module):
 
                 if commands or inline:
                     module_emoji = (
-                        "<emoji id=5100862156123931478>▪️</emoji>"
+                        "🀄️"
                         if module.name in self.cmodules
-                        else "<emoji id=5100652175172830068>▫️</emoji>"
+                        else "🎴"
                     )
                     text += (
                         f"\n<b>{module_emoji} {module.name}</b> - [ "
@@ -139,5 +134,10 @@ class Help(loader.Module):
     @loader.command()
     async def support(self, app, message):
         """Support"""
-        await message.delete()
-        await message.answer_inline("support")
+        await message.answer(
+            self.strings("support"),
+            reply_markup=[
+                [{"text": self.strings("button"), "url": "https://t.me/shizu_talks"}]
+            ],
+            prev=True,
+        )

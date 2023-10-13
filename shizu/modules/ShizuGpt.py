@@ -25,6 +25,7 @@ class ShizuGpt(loader.Module):
         "no_token": "<emoji id=5789703785743912485>❔</emoji> Token not set.",
         "pending": "<emoji id=5819167501912640906>❔</emoji> <b>Your Question was:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Answer: </b> Wait...",
         "answer": "<emoji id=5819167501912640906>❔</emoji> <b>Your Question was:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Answer:</b> {}",
+        "cfg_doc": "Here you can set your GPT key, you can get it here: https://platform.openai.com/",
     }
 
     strings_ru = {
@@ -34,6 +35,7 @@ class ShizuGpt(loader.Module):
         "no_token": "<emoji id=5789703785743912485>❔</emoji> Токен не установлен.",
         "pending": "<emoji id=5819167501912640906>❔</emoji> <b>Ваш вопрос:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Ответ:</b> Ожидание...",
         "answer": "<emoji id=5819167501912640906>❔</emoji> <b>Ваш вопрос:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Ответ:</b> {}",
+        "cfg_doc": "Здесь вы можете установить свой GPT ключ, вы можете получить его здесь: https://platform.openai.com/",
     }
 
     strings_uz = {
@@ -43,6 +45,7 @@ class ShizuGpt(loader.Module):
         "no_token": "<emoji id=5789703785743912485>❔</emoji> Token not set.",
         "pending": "<emoji id=5819167501912640906>❔</emoji> <b>Yozuv:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Javob:</b> O'qiyapman...",
         "answer": "<emoji id=5819167501912640906>❔</emoji> <b>Yozuv:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Javob:</b> {}",
+        "cfg_doc": "Bu erda siz o'zingizning GPT kalitingizni o'rnatishingiz mumkin, uni ushbu manzilda olishingiz mumkin: https://platform.openai.com/",
     }
 
     strings_jp = {
@@ -52,7 +55,33 @@ class ShizuGpt(loader.Module):
         "no_token": "<emoji id=5789703785743912485>❔</emoji> トークンが設定されていません。",
         "pending": "<emoji id=5819167501912640906>❔</emoji> <b>あなたの質問は:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>答え:</b> 待ってください...",
         "answer": "<emoji id=5819167501912640906>❔</emoji> <b>あなたの質問は:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>答え:</b> {}",
+        "cfg_doc": "ここではGPTキーを設定できます。ここで取得できます：https://platform.openai.com/",
     }
+
+    strings_ua = {
+        "set": "<emoji id=5021905410089550576>✅</emoji> <b>GPT ключ встановлено</b>",
+        "what": "<emoji id=5789703785743912485>❔</emoji> Що потрібно встановити?",
+        "what_ask": "<emoji id=5789703785743912485>❔</emoji> Що потрібно запитати?",
+        "no_token": "<emoji id=5789703785743912485>❔</emoji> Токен не встановлено.",
+        "pending": "<emoji id=5819167501912640906>❔</emoji> <b>Ваш запитання:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Відповідь:</b> Очікування...",
+        "answer": "<emoji id=5819167501912640906>❔</emoji> <b>Ваш запитання:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Відповідь:</b> {}",
+        "cfg_doc": "Тут ви можете встановити свій GPT ключ, ви можете отримати його тут: https://platform.openai.com/",
+    }
+
+    strings_kz = {
+        "set": "<emoji id=5021905410089550576>✅</emoji> <b>GPT тіркелді</b>",
+        "what": "<emoji id=5789703785743912485>❔</emoji> Нені орнату керек?",
+        "what_ask": "<emoji id=5789703785743912485>❔</emoji> Нені сұрау керек?",
+        "no_token": "<emoji id=5789703785743912485>❔</emoji> Токен орнатылмаған.",
+        "pending": "<emoji id=5819167501912640906>❔</emoji> <b>Сұрағыңыз:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Жауабы:</b> Күту...",
+        "answer": "<emoji id=5819167501912640906>❔</emoji> <b>Сұрағыңыз:</b> <code>{}</code>\n\n<emoji id=5372981976804366741>🤖</emoji> <b>Жауабы:</b> {}",
+        "cfg_doc": "Мұнда сіз оған түсініктеме беретін GPT тіркелгіңізді орнатуға болады: https://platform.openai.com/",
+    }
+
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            "GPT_KEY", None, lambda m: self.strings("cfg_doc")
+        )
 
     async def _make_request(
         self,
@@ -109,25 +138,16 @@ class ShizuGpt(loader.Module):
         return resp["choices"][0]["message"]["content"]
 
     @loader.command()
-    async def set_gpt_key(self, app: Client, message: types.Message):
-        """Set GPT key"""
-        if args := message.get_args_raw():
-            self.db.set("shizu.gpt", "token", args)
-            await message.answer(self.strings("set"))
-        else:
-            return await message.answer(self.strings("what"))
-
-    @loader.command()
     async def gpt(self, app: Client, message: types.Message):
         """Ask question to GPT"""
         args = message.get_args_raw()
         if not args:
             return await message.answer(self.strings("what_ask"))
-        token = self.db.get("shizu.gpt", "token", None)
+        token = self.config["GPT_KEY"]
         if not token:
             return await message.answer(self.strings("no_token"))
         await message.answer(self.strings("pending").format(args))
-        answer = await self._get_chat_completion(args, token)
+        answer = await self._get_chat_completion(args, self.config["GPT_KEY"])
         await message.answer(
             self.strings("answer").format(args, self._process_code_tags(answer))
         )

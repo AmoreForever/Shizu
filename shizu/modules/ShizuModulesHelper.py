@@ -24,9 +24,10 @@
 
 import io
 import os
-
+import requests
 import inspect
 
+from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram import Client, types
 from .. import loader, utils
 
@@ -40,11 +41,16 @@ class ModulesLinkMod(loader.Module):
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Module search...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Couldn't find the module</b>",
         "module_": (
-            "<emoji id=4920385126380077679>📁</emoji> <b><a href='{}'>{}</a></b>\n"
-            "<emoji id=4920256565124009114>ℹ️</emoji> <i>{}</i>\n\n"
-            "<emoji id=4920320912324035643>▫️</emoji> <b>Commands</b>: {}\n\n"
-            "<emoji id=4920662486778119009>🌐</emoji> <b>Download link:</b> <code>{}</code>"
+            "📁 <b><a href='{}'>{}</a></b>\n"
+            "ℹ️ <i>{}</i>\n\n"
+            "▫️ <b>Commands</b>: {}\n\n"
+            "🌐 <b>Download link:</b> <code>{}</code>"
         ),
+        "success": "✅ Installed",
+        "install": "📥 Install",
+        "restart": "🔄 Restart required",
+        "error": "🚫 Error",
+        "source": "📁 Source",
     }
 
     strings_ru = {
@@ -52,11 +58,16 @@ class ModulesLinkMod(loader.Module):
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Поиск модуля...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Не удалось найти модуль</b>",
         "module_": (
-            "<emoji id=4920385126380077679>📁</emoji> <b><a href='{}'>{}</a></b>\n"
-            "<emoji id=4920256565124009114>ℹ️</emoji> <i>{}</i>\n\n"
-            "<emoji id=4920320912324035643>▫️</emoji> <b>Команды</b>: {}\n\n"
-            "<emoji id=4920662486778119009>🌐</emoji> <b>Ссылка на скачивание:</b> <code>{}</code>"
+            "📁 <b><a href='{}'>{}</a></b>\n"
+            "ℹ️ <i>{}</i>\n\n"
+            "▫️ <b>Команды</b>: {}\n\n"
+            "🌐 <b>Ссылка на скачивание:</b> <code>{}</code>"
         ),
+        "success": "✅ Установлен",
+        "install": "📥 Установить",
+        "restart": "🔄 Требуется перезагрузка",
+        "error": "🚫 Ошибка",
+        "source": "📁 Исходный код",
     }
 
     strings_uz = {
@@ -64,11 +75,16 @@ class ModulesLinkMod(loader.Module):
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Qidiruv...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Qidiruv topilmadi</b>",
         "module_": (
-            "<emoji id=4920385126380077679>📁</emoji> <b><a href='{}'>{}</a></b>\n"
-            "<emoji id=4920256565124009114>ℹ️</emoji> <i>{}</i>\n\n"
-            "<emoji id=4920320912324035643>▫️</emoji> <b>Buyruqlar</b>: {}\n\n"
-            "<emoji id=4920662486778119009>🌐</emoji> <b>Yuklab olish linki:</b> <code>{}</code>"
+            "📁 <b><a href='{}'>{}</a></b>\n"
+            "ℹ️ <i>{}</i>\n\n"
+            "▫️ <b>Buyruqlar</b>: {}\n\n"
+            "🌐 <b>Yuklab olish linki:</b> <code>{}</code>"
         ),
+        "success": "✅ O'rnatildi",
+        "install": "📥 O'rnatish",
+        "restart": "🔄 Qayta yuklash talab qilinadi",
+        "error": "🚫 Xato",
+        "source": "📁 Manba",
     }
 
     strings_jp = {
@@ -76,11 +92,50 @@ class ModulesLinkMod(loader.Module):
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>モジュール検索...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>モジュールが見つかりませんでした</b>",
         "module_": (
-            "<emoji id=4920385126380077679>📁</emoji> <b><a href='{}'>{}</a></b>\n"
-            "<emoji id=4920256565124009114>ℹ️</emoji> <i>{}</i>\n\n"
-            "<emoji id=4920320912324035643>▫️</emoji> <b>コマンド</b>: {}\n\n"
-            "<emoji id=4920662486778119009>🌐</emoji> <b>ダウンロードリンク:</b> <code>{}</code>"
+            "📁 <b><a href='{}'>{}</a></b>\n"
+            "ℹ️ <i>{}</i>\n\n"
+            "▫️ <b>コマンド</b>: {}\n\n"
+            "🌐 <b>ダウンロードリンク:</b> <code>{}</code>"
         ),
+        "success": "✅ インストール済み",
+        "install": "📥 インストール",
+        "restart": "🔄 再起動が必要",
+        "error": "🚫 エラー",
+        "source": "📁 ソース",
+    }
+
+    strings_ua = {
+        "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> Немає аргументів (ім'я модуля або команда)",
+        "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Пошук модуля...</b>",
+        "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Не вдалося знайти модуль</b>",
+        "module_": (
+            "📁 <b><a href='{}'>{}</a></b>\n"
+            "ℹ️ <i>{}</i>\n\n"
+            "▫️ <b>Команди</b>: {}\n\n"
+            "🌐 <b>Посилання на завантаження:</b> <code>{}</code>"
+        ),
+        "success": "✅ Встановлено",
+        "install": "📥 Встановити",
+        "restart": "🔄 Потрібне перезавантаження",
+        "error": "🚫 Помилка",
+        "source": "📁 Вихідний код",
+    }
+
+    strings_kz = {
+        "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> Аргументтер жоқ (модульдің атауы немесе команда)",
+        "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Модульді іздеу...</b>",
+        "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Модуль табылмады</b>",
+        "module_": (
+            "📁 <b><a href='{}'>{}</a></b>\n"
+            "ℹ️ <i>{}</i>\n\n"
+            "▫️ <b>Бұйрықтар</b>: {}\n\n"
+            "🌐 <b>Жүктеу сілтемесі:</b> <code>{}</code>"
+        ),
+        "success": "✅ Орнатылды",
+        "install": "📥 Орнату",
+        "restart": "🔄 Қайта жүктеу қажет",
+        "error": "🚫 Қате",
+        "source": "📁 Мәнбе",
     }
 
     @loader.command()
@@ -133,14 +188,57 @@ class ModulesLinkMod(loader.Module):
         module = await self.aelis.search(args)
         if not module:
             return await message.answer(self.strings("nope_"))
+        text = self.strings("module_").format(
+            f"https://aelis.hikamoru.uz/view/{module['name']}",
+            module["name"],
+            module["description"],
+            ", ".join(
+                [f"<code>{self.prefix[0]}{i}</code>" for i in module["commands"]]
+            ),
+            module["link"],
+        )
         return await message.answer(
-            self.strings("module_").format(
-                f"https://aelis.hikamoru.uz/view/{module['name']}",
-                module["name"],
-                module["description"],
-                ", ".join(
-                    [f"<code>{self.prefix[0]}{i}</code>" for i in module["commands"]]
-                ),
-                module["link"],
+            text,
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("source"),
+                        "url": f"https://aelis.hikamoru.uz/view/{module['name']}",
+                    },
+                    {
+                        "text": self.strings("install"),
+                        "callback": self.module_load,
+                        "kwargs": {"link": module["link"], "text": text},
+                    },
+                ]
+            ],
+        )
+
+    async def module_load(self, call: CallbackQuery, link: str, text: str):
+        r = await utils.run_sync(requests.get, link)
+        mod = await self.all_modules.load_module(r.text, r.url)
+        module = self.all_modules.get_module(mod, True)
+        if module is True:
+            return await call.edit(
+                text,
+                reply_markup=[[{"text": self.strings("restart"), "data": "empty"}]],
             )
+
+        if not module:
+            return await call.edit(
+                text, reply_markup=[[{"text": self.strings("error"), "data": "empty"}]]
+            )
+
+        if module == "DAR":
+            return await call.edit(
+                text, reply_markup=[[{"text": self.strings("error"), "data": "empty"}]]
+            )
+
+        self.db.set(
+            "shizu.loader",
+            "modules",
+            list(set(self.db.get("shizu.loader", "modules", []) + [link])),
+        )
+        return await call.edit(
+            text, reply_markup=[[{"text": self.strings("success"), "data": "empty"}]]
         )

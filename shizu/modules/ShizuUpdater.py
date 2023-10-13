@@ -31,7 +31,7 @@ from subprocess import check_output
 from .. import loader, utils
 from ..version import __version__, branch
 
-from aiogram import Bot 
+from aiogram import Bot
 from aiogram.utils.exceptions import ChatNotFound
 
 
@@ -61,6 +61,18 @@ class UpdateMod(loader.Module):
         "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>最新バージョンがインストールされています</b>.",
         "update_": "🔁 更新...",
         "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> 再起動...</b>",
+    }
+
+    strings_ua = {
+        "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>У вас встановлена остання версія</b>.",
+        "update_": "🔁 Оновлення...",
+        "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Перезавантаження...</b>",
+    }
+
+    strings_kz = {
+        "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>Сізде соңғы нұсқа орнатылған</b>.",
+        "update_": "🔁 Жаңарту...",
+        "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Қайта іске қосу...</b>",
     }
 
     async def on_load(self, app: Client):

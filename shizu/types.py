@@ -94,7 +94,6 @@ class InfiniteLoop:
 
     def start(self, *args, **kwargs):
         if not self._task:
-            logger.info("Started loop for method %s", self.func)
             self._task = asyncio.ensure_future(self.actual_loop(*args, **kwargs))
         else:
             logger.info("Attempted to start already running loop")

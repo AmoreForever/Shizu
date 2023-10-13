@@ -27,6 +27,7 @@ import os
 import random
 import re
 import string
+import asyncio
 import subprocess
 import sys
 import typing
@@ -153,13 +154,11 @@ def get_message_handlers(instance: Module) -> Dict[str, FunctionType]:
 def get_callback_handlers(instance: Module) -> Dict[str, FunctionType]:
     """Returns a dictionary of names with callback handler functions"""
     return {
-        method_name[:-17].lower(): getattr(instance, method_name)
+        method_name[:-17]: getattr(instance, method_name)
         for method_name in dir(instance)
-        if (
-            callable(getattr(instance, method_name))
-            and len(method_name) > 17
-            and method_name.endswith("_callback_handler")
-        )
+        if callable(getattr(instance, method_name))
+        and len(method_name) > 17
+        and method_name[-17:] == "_callback_handler"
     }
 
 
@@ -235,6 +234,44 @@ def on_bot(custom_filters):
     return lambda func: setattr(func, "_filters", custom_filters) or func
 
 
+class ModuleConfig(dict):
+    """Like a dict but contains doc for each key"""
+
+    def __init__(self, *entries):
+        keys = []
+        values = []
+        defaults = []
+        docstrings = []
+        for i, entry in enumerate(entries):
+            if i % 3 == 0:
+                keys.append(entry)
+            elif i % 3 == 1:
+                values.append(entry)
+                defaults.append(entry)
+            else:
+                docstrings.append(entry)
+
+        super().__init__(zip(keys, values))
+        self._docstrings = dict(zip(keys, docstrings))
+        self._defaults = dict(zip(keys, defaults))
+
+    def getdoc(self, key, message=None):
+        """Get the documentation by key"""
+        ret = self._docstrings[key]
+        if callable(ret):
+            try:
+                ret = ret(message)
+            except TypeError:  # Invalid number of params
+                logging.debug("%s using legacy doc trnsl", key)
+                ret = ret()
+
+        return ret or "No description"
+
+    def getdef(self, key):
+        """Get the default value by key"""
+        return self._defaults[key]
+
+
 class ModulesManager:
     """Module Manager"""
 
@@ -250,6 +287,8 @@ class ModulesManager:
         self._local_modules_path: str = "./shizu/modules"
 
         self._app = app
+        self._client = app
+
         self._db = db
         self.me = me
 
@@ -317,7 +356,8 @@ class ModulesManager:
             "ShizuModulesHelper",
             "ShizuStart",
             "ShizuInfo",
-            "ShizuTranslater",
+            "ShizuConfig",
+            "ShizuLanguages",
         ]
         instance = None
         for key, value in vars(module).items():
@@ -331,18 +371,24 @@ class ModulesManager:
             value.db = self._db
             value.all_modules = self
             value.bot = self.bot_manager
+
             value._bot = self.bot_manager.bot
             value.inline_bot = self.bot_manager.bot
             value.me = self.me
             value.tg_id = self.me.id
+            value.app = self._app
+            value._app = self._app
             value.userbot = "Shizu"
             value.cmodules = cmodules
             value.get_mod = self.get_module
             value.prefix = self._db.get("shizu.loader", "prefixes", ["."])
+            value.lookup = self._lookup
 
             instance = value()
+            instance.reconfmod = self.config_reconfigure
             instance.aelis = self.aelis
             instance.shizu = True
+
             instance.command_handlers = get_command_handlers(instance)
             instance.watcher_handlers = get_watcher_handlers(instance)
 
@@ -363,6 +409,12 @@ class ModulesManager:
 
         return instance
 
+    def _lookup(self, modname: str):
+        return next(
+            (mod for mod in self.modules if mod.name.lower() == modname.lower()),
+            False,
+        )
+
     async def load_module(
         self,
         module_source: str,
@@ -378,15 +430,16 @@ class ModulesManager:
         )
         delete_account_re = re.compile(r"DeleteAccount", re.IGNORECASE)
         if delete_account_re.search(module_source):
-            logger.error(
-                f"Module {module_name} is forbidden, because it contains DeleteAccount"
+            logging.error(
+                "Module %s is forbidden, because it contains DeleteAccount", module_name
             )
             return "DAR"
         if re.search(r"# ?only: ?(.+)", module_source) and str(
             self._db.get("shizu.me", "me")
         ) not in re.search(r"# ?only: ?(.+)", module_source)[1].split(","):
-            logger.error(
-                f"Module {module_name} is forbidden, because it is not for this account"
+            logging.error(
+                "Module %s is forbidden, because it is not for this account",
+                module_name,
             )
             return "NFA"
         try:
@@ -395,7 +448,7 @@ class ModulesManager:
             )
             instance = self.register_instance(module_name, spec=spec)
         except ImportError as error:
-            logger.error(error)
+            logging.error(error)
 
             if did_requirements:
                 return True
@@ -411,26 +464,30 @@ class ModulesManager:
             except TypeError:
                 return logging.warn("No packages are specified for installation")
 
-            logging.info(f"Installing Packages: {', '.join(requirements)}...")
+            logging.warning(f"Installing Packages: {', '.join(requirements)}...")
 
             await self.bot_manager.bot.send_message(
                 self._db.get("shizu.chat", "logs", None),
-                f"⤵️ Installing Packages: {', '.join(requirements)}...",
+                f"⤵️ <b>Installing Packages:</b> <code>{', '.join(requirements)}</code>...",
             )
 
             try:
-                subprocess.run(
-                    [
-                        sys.executable,
-                        "-m",
-                        "pip",
-                        "install",
-                        "--user",
-                        *requirements,
-                    ],
-                    check=True,
+                pip = await asyncio.create_subprocess_exec(
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "--upgrade",
+                    "-q",
+                    "--disable-pip-version-check",
+                    "--no-warn-script-location",
+                    *requirements,
                 )
-            except subprocess.CalledProcessError as error:
+
+                rc = await pip.wait()
+                if rc != 0:
+                    raise subprocess.CalledProcessError(rc, pip.args)
+            except asyncio.CancelledError:
                 logging.error(f"Error installing packages: {error}")
 
             return await self.load_module(module_source, origin, True)
@@ -451,23 +508,42 @@ class ModulesManager:
         """Sends commands to execute the function"""
         for module_name in self.modules:
             await self.send_on_load(module_name)
+            await self.prepare_module(module_name, Translator(self._app, self._db))
+            self.config_reconfigure(module_name)
 
-    async def send_on_load(
-        self, module: Module, translator: "Translator" = None
-    ) -> bool:
-        """Used to perform the function after loading the module"""
+    def config_reconfigure(self, module: Module):
+        """Reconfigures the module"""
+        if hasattr(module, "config"):
+            modcfg = self._db.get(module.__class__.__name__, "__config__", {})
+            for conf in module.config.keys():
+                if conf in modcfg.keys():
+                    module.config[conf] = modcfg[conf]
+
+                else:
+                    try:
+                        module.config[conf] = os.environ[
+                            f"{module.__class__.__name__}.{conf}"
+                        ]
+
+                    except KeyError:
+                        module.config[conf] = module.config.getdef(conf)
+
+    async def prepare_module(self, module: Module, translator: Translator = None):
+        """Used for preparing the module for langpacks and configs"""
         for _, method in iter_attrs(module):
             if hasattr(method, "strings"):
                 method.strings = Strings(method, translator, self._db)
                 method.translator = translator
 
+    async def send_on_load(self, module: Module) -> bool:
+        """Used to perform the function after loading the module"""
+        for _, method in iter_attrs(module):
             if isinstance(method, InfiniteLoop):
                 setattr(method, "module_instance", module)
 
                 if method.autostart:
                     method.start()
 
-                logger.success(f"Module {module} added to method {method}")
         try:
             await module.on_load(self._app)
         except Exception as error:
