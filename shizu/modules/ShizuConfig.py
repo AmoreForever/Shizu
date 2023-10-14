@@ -126,7 +126,7 @@ class ShizuConfig(loader.Module):
                         with contextlib.suppress(KeyError):
                             self.db.pop(module.__class__.__name__, "__config__")
 
-                self.reconfmod(module)
+                self.reconfmod(module, self.db)
                 self.db.save()
 
         await call.edit(

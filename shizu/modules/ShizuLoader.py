@@ -25,9 +25,13 @@
 import re
 import requests
 import base64
+import time
+import atexit
+import sys
+import os
 import logging
 from typing import List
-from pyrogram import Client, types
+from pyrogram import Client, types, enums
 from .. import loader, utils
 
 VALID_URL = r"[-[\]_.~:/?#@!$&'()*+,;%<=>a-zA-Z0-9]+"
@@ -94,6 +98,8 @@ class Loader(loader.Module):
         "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Enabled, now you can load modules from <a href='https://t.me/aelis_msbot'>Aelis bot</a>",
         "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Disabled, now you cannot load nodules from <a href='https://t.me/aelis_msbot'>Aelis bot</a>",
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>This module is not available for this account</b>",
+        "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> All modules unloaded",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Restarting...</b>",
     }
 
     strings_ru = {
@@ -122,6 +128,8 @@ class Loader(loader.Module):
         "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Включено, теперь вы можете загружать модули с <a href='https://t.me/aelis_msbot'>Aelis бота</a>",
         "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Отключено, теперь вы не можете загружать модули с <a href='https://t.me/aelis_msbot'>Aelis бота</a>",
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Этот модуль недоступен для этого аккаунта</b>",
+        "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Все модули выгружены",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Перезапуск...</b>",
     }
 
     strings_uz = {
@@ -150,6 +158,9 @@ class Loader(loader.Module):
         "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Endi siz modullarni botdan yuklashingiz mumkun <a href='https://t.me/aelis_msbot'>Bot</a>",
         "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Endi siz modullarni botdan yuklay olmaysiz <a href='https://t.me/aelis_msbot'>Bot</a>",
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Bu modul ushbu akkaunt uchun mavjud emas</b>",
+        "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Barcha modullar ochirildi",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Qayta ishlayapti...</b>",
+        
     }
 
     strings_jp = {
@@ -178,6 +189,8 @@ class Loader(loader.Module):
         "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> 有効になりました。これで<a href='https://t.me/aelis_msbot'>Aelis bot</a>からモジュールをロードできます",
         "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> 無効になりました。これで<a href='https://t.me/aelis_msbot'>Aelis bot</a>からモジュールをロードできなくなります",
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>このアカウントではこのモジュールは利用できません</b>",
+        "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> すべてのモジュールがアンロードされました",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> 再起動しています...</b>",
     }
 
     strings_ua = {
@@ -193,6 +206,10 @@ class Loader(loader.Module):
         "no_repy_to_file": "❌ Не надіслати повідомлення",
         "loading": "<emoji id=5215493819641895305>🚛</emoji> <b>Модуль завантажується..</b>",
         "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Включено. Через <a href='https://t.me/aelis_msbot'>Aelis bot</a> модуль можна завантажувати",
+        "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Вимкнено. Через <a href='https://t.me/aelis_msbot'>Aelis bot</a> модуль не можна завантажувати",
+        "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Цей модуль недоступний для цього облікового запису</b>",
+        "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Всі модулі вилучено",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Перезавантаження...</b>",
     }
 
     strings_kz = {
@@ -208,7 +225,18 @@ class Loader(loader.Module):
         "no_repy_to_file": "❌ Файлға жауап бермеу",
         "loading": "<emoji id=5215493819641895305>🚛</emoji> <b>Модуль жүктелуде..</b>",
         "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Қосылды. <a href='https://t.me/aelis_msbot'>Aelis bot</a> арқылы модуль жүктей аласыз",
+        "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Өшірілді. <a href='https://t.me/aelis_msbot'>Aelis bot</a> арқылы модуль жүктей алмайсыз",
+        "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Бұл модуль бұл аккаунтқа қолжетімді емес</b>",
+        "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Барлық модульдер жойылды",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Қайта іске қосу...</b>",
     }
+    
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            "repo",
+            "https://github.com/AmoreForever/ShizuMods"
+            "Repository link",
+        )
 
     @loader.command()
     async def dlmod(self, app: Client, message: types.Message, args: str):
@@ -216,9 +244,7 @@ class Loader(loader.Module):
 
         bot_username = (await self.bot.bot.get_me()).username
         dop_help = "<emoji id=5100652175172830068>▫️</emoji>"
-        modules_repo = self.db.get(
-            "shizu.loader", "repo", "https://github.com/AmoreForever/ShizuMods"
-        )
+        modules_repo = self.config["repo"]
 
         api_result = await get_git_raw_link(modules_repo)
         if not api_result:
@@ -302,12 +328,6 @@ class Loader(loader.Module):
         return await message.answer(
             header + command_descriptions + "\n" + inline_descriptions + "\n" + footer,
         )
-
-    @loader.command()
-    async def set_dl_repo(self, app: Client, message: types.Message):
-        """Set the repository for downloading modules. Usage: set_dl_repo <link>"""
-        self.db.set("shizu.loader", "repo", message.get_args_raw())
-        return await message.answer(self.strings("repo_set"))
 
     @loader.command()
     async def loadmod(self, app: Client, message: types.Message):
@@ -396,6 +416,36 @@ class Loader(loader.Module):
             return await message.answer(self.strings("core_unload"))
 
         return await message.answer(self.strings("unloaded").format(module_name))
+
+    @loader.command()
+    async def unloadall(self, app: Client, message: types.Message):
+        """Unload all modules"""
+        self._local_modules_path: str = "./shizu/modules"
+        self.db.set("shizu.loader", "modules", [])
+        for local_module in filter(
+            lambda file_name: file_name.endswith(".py")
+            and not file_name.startswith("Shizu"),
+            os.listdir(self._local_modules_path),
+        ):
+            os.remove(f"{self._local_modules_path}/{local_module}")
+        await message.answer(self.strings("all_unloaded"))
+        ms = await message.answer(self.strings("restart"))
+        self.db.set(
+            "shizu.updater",
+            "restart",
+            {
+                "chat": message.chat.username
+                if message.chat.type == enums.ChatType.BOT
+                else message.chat.id,
+                "id": ms.id,
+                "start": time.time(),
+                "type": "restart",
+            },
+        )
+
+        atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
+        return sys.exit(0)
+    
 
     @loader.command()
     async def aelis_load(self, app: Client, message: types.Message, args: str):

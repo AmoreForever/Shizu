@@ -300,7 +300,20 @@ class ModulesManager:
 
         self.root_module: Module = None
         self.aelis = aelis.AelisAPI()
-
+        self.cmodules = [
+            "ShizuBackuper",
+            "ShizuHelp",
+            "ShizuLoader",
+            "ShizuTerminal",
+            "ShizuTester",
+            "ShizuUpdater",
+            "ShizuEval",
+            "ShizuModulesHelper",
+            "ShizuStart",
+            "ShizuInfo",
+            "ShizuConfig",
+            "ShizuLanguages",
+        ]
         app.db = db
 
     async def load(self, app: Client) -> bool:
@@ -346,20 +359,6 @@ class ModulesManager:
         module = module_from_spec(spec)
         sys.modules[module.__name__] = module
         spec.loader.exec_module(module)
-        cmodules = [
-            "ShizuBackuper",
-            "ShizuHelp",
-            "ShizuLoader",
-            "ShizuTerminal",
-            "ShizuTester",
-            "ShizuUpdater",
-            "ShizuEval",
-            "ShizuModulesHelper",
-            "ShizuStart",
-            "ShizuInfo",
-            "ShizuConfig",
-            "ShizuLanguages",
-        ]
         instance = None
         for key, value in vars(module).items():
             if not inspect.isclass(value) or not issubclass(value, Module):
@@ -380,7 +379,7 @@ class ModulesManager:
             value.app = self._app
             value._app = self._app
             value.userbot = "Shizu"
-            value.cmodules = cmodules
+            value.cmodules = self.cmodules
             value.get_mod = self.get_module
             value.prefix = self._db.get("shizu.loader", "prefixes", ["."])
             value.lookup = self._lookup
@@ -499,7 +498,8 @@ class ModulesManager:
             return False
 
         try:
-            await self.send_on_load(instance)
+            await self.send_on_load(instance, Translator(self._app, self._db))
+            await self.config_reconfigure(instance, self._db)
         except Exception as error:
             return logging.exception(error)
 
@@ -508,15 +508,15 @@ class ModulesManager:
     async def send_on_loads(self) -> bool:
         """Sends commands to execute the function"""
         for module_name in self.modules:
-            await self.send_on_load(module_name)
-            await self.prepare_module(module_name, Translator(self._app, self._db))
+            await self.send_on_load(module_name, Translator(self._app, self._db))
             with contextlib.suppress(Exception):
-                self.config_reconfigure(module_name)
-
-    def config_reconfigure(self, module: Module):
+                self.config_reconfigure(module_name, self._db)
+    
+    @staticmethod
+    def config_reconfigure(module: Module, db):
         """Reconfigures the module"""
         if hasattr(module, "config"):
-            modcfg = self._db.get(module.__class__.__name__, "__config__", {})
+            modcfg = db.get(module.__class__.__name__, "__config__", {})
             for conf in module.config.keys():
                 if conf in modcfg.keys():
                     module.config[conf] = modcfg[conf]
@@ -530,15 +530,13 @@ class ModulesManager:
                     except KeyError:
                         module.config[conf] = module.config.getdef(conf)
 
-    async def prepare_module(self, module: Module, translator: Translator = None):
-        """Used for preparing the module for langpacks and configs"""
+    async def send_on_load(self, module: Module, translator: Translator) -> bool:
+        """Used to perform the function after loading the module"""
         for _, method in iter_attrs(module):
             if hasattr(method, "strings"):
                 method.strings = Strings(method, translator, self._db)
                 method.translator = translator
 
-    async def send_on_load(self, module: Module) -> bool:
-        """Used to perform the function after loading the module"""
         for _, method in iter_attrs(module):
             if isinstance(method, InfiniteLoop):
                 setattr(method, "module_instance", module)
@@ -555,6 +553,8 @@ class ModulesManager:
 
     def unload_module(self, module_name: str = None, is_replace: bool = False) -> str:
         """Unloads the loaded (if loaded) module"""
+        if module_name in self.cmodules:
+            return False
         if is_replace:
             module = module_name
         else:

@@ -130,7 +130,7 @@ class BackupMod(loader.Module):
             """Start userbot"""
             os.execl(sys.executable, sys.executable, "-m", "shizu")
 
-        ms = await message.answer()
+        ms = await message.answer(self.strings("restart"))
         self.db.set(
             "shizu.updater",
             "restart",
