@@ -234,7 +234,7 @@ class Loader(loader.Module):
     def __init__(self):
         self.config = loader.ModuleConfig(
             "repo",
-            "https://github.com/AmoreForever/ShizuMods"
+            "https://github.com/AmoreForever/ShizuMods",
             "Repository link",
         )
 
