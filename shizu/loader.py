@@ -499,7 +499,7 @@ class ModulesManager:
 
         try:
             await self.send_on_load(instance, Translator(self._app, self._db))
-            await self.config_reconfigure(instance, self._db)
+            self.config_reconfigure(instance, self._db)
         except Exception as error:
             return logging.exception(error)
 
@@ -511,7 +511,7 @@ class ModulesManager:
             await self.send_on_load(module_name, Translator(self._app, self._db))
             with contextlib.suppress(Exception):
                 self.config_reconfigure(module_name, self._db)
-    
+
     @staticmethod
     def config_reconfigure(module: Module, db):
         """Reconfigures the module"""
