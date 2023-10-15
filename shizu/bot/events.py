@@ -428,8 +428,8 @@ class Events(Item):
                     if "url" in button:
                         line += [
                             InlineKeyboardButton(
-                                button["text"] or "🏄 Support chat",
-                                url=button["url"] or "https://t.me/shizu_talks",
+                                button["text"],
+                                url=button["url"],
                             )
                         ]
                     elif "callback" in button:

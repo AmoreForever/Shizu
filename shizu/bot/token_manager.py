@@ -121,6 +121,15 @@ class TokenManager(Item):
             await conv.ask("shizu>>")
             await conv.get_response()
 
+            await conv.ask("/setinlinefeedback")
+            await conv.get_response()
+
+            await conv.ask(f"@{bot_username}")
+            await conv.get_response()
+
+            await conv.ask("1/1000")
+            await conv.get_response()
+
             logger.success(f"Bot successfully created @{bot_username}")
             await self._app.send_message(bot_username, "/start")
 

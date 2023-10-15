@@ -87,11 +87,17 @@ class InformationMod(loader.Module):
     @loader.command()
     async def info(self, app: Client, message: types.Message):
         """Info about Shizu"""
-        await message.answer(
-            response=self.text_(self.me),
-            reply_markup=[[self.config["custom_buttons"]]],
-            photo=self.config["photo_url"],
-        )
+        if self.config["custom_buttons"]:
+            await message.answer(
+                response=self.text_(self.me),
+                reply_markup=[[self.config["custom_buttons"]]],
+                photo=self.config["photo_url"],
+            )
+        else:
+            await message.answer(
+                response=self.config['photo_url'], photo_=True, caption=self.text_(self.me)
+            )
+            
 
     @loader.command()
     async def wuserbot(self, app: Client, message: types.Message):

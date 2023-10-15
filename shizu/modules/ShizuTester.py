@@ -129,7 +129,7 @@ class TesterMod(loader.Module):
         "alias_removed": "✅ Аліас <code>{}</code> видалено",
         "ping": "<emoji id=5220226955206467824>⚡️</emoji> <b>Швидкість відповіді Telegram:</b> <code>{}</code> <b>мс</b>",
     }
-    
+
     strings_kz = {
         "incorrect_language": "❕ <b>Тіл дұрыс емес</b>",
         "language_saved": "{} Тіл сақталды",

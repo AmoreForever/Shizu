@@ -110,24 +110,22 @@ class ShizuConfig(loader.Module):
         option: str,
         inline_message_id: str,
     ) -> None:
-        with contextlib.suppress(Exception):
-            for module in self.all_modules.modules:
-                if module.name == mod:
+        for module in self.all_modules.modules:
+            if module.name == mod:
+                if query:
+                    with contextlib.suppress(ValueError, SyntaxError):
+                        query = ast.literal_eval(query)
+                    self.db.setdefault(module.__module__, {}).setdefault(
+                        "__config__", {}
+                    )[option] = query
                     module.config[option] = query
-                    if query:
-                        with contextlib.suppress(ValueError, SyntaxError):
-                            query = ast.literal_eval(query)
-                        self.db.set(
-                            module.__class__.__name__,
-                            "__config__",
-                            {option: query},
-                        )
-                    else:
-                        with contextlib.suppress(KeyError):
-                            self.db.pop(module.__class__.__name__, "__config__")
-
-                self.reconfmod(module, self.db)
-                self.db.save()
+                else:
+                    with contextlib.suppress(KeyError):
+                        del self.db.setdefault(module.name, {}).setdefault(
+                            "__config__", {}
+                        )[option]
+            self.reconfmod(module, self.db)
+            self.db.save()
 
         await call.edit(
             self.strings("option_saved").format(mod, option, query),

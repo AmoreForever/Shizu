@@ -509,24 +509,19 @@ class ModulesManager:
         """Sends commands to execute the function"""
         for module_name in self.modules:
             await self.send_on_load(module_name, Translator(self._app, self._db))
-            with contextlib.suppress(Exception):
-                self.config_reconfigure(module_name, self._db)
+            self.config_reconfigure(module_name, self._db)
 
     @staticmethod
     def config_reconfigure(module: Module, db):
         """Reconfigures the module"""
         if hasattr(module, "config"):
-            modcfg = db.get(module.__class__.__name__, "__config__", {})
+            modcfg = db.get(module.__module__, "__config__", {})
             for conf in module.config.keys():
                 if conf in modcfg.keys():
                     module.config[conf] = modcfg[conf]
-
                 else:
                     try:
-                        module.config[conf] = os.environ[
-                            f"{module.__class__.__name__}.{conf}"
-                        ]
-
+                        module.config[conf] = os.environ[f"{module.__module__}.{conf}"]
                     except KeyError:
                         module.config[conf] = module.config.getdef(conf)
 

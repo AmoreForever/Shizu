@@ -7,6 +7,7 @@
 
 
 import shutil
+import os
 from .. import loader, utils, translater
 
 
@@ -89,6 +90,9 @@ class ShizuLanguages(loader.Module):
 
         await message.answer(self.strings("downloading"))
         mm = await app.download_media(reply, f"{args.lower()}.json")
+        check_dir = f"{utils.get_base_dir()}/langpacks"
+        if not os.path.exists(check_dir):
+            os.mkdir(check_dir)
         langpack_path = f"{utils.get_base_dir()}/langpacks/{args.lower()}.json"
         shutil.move(mm, langpack_path)
 

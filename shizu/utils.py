@@ -539,7 +539,7 @@ async def answer(
     if isinstance(message, list):
         message = message[0]
 
-    if isinstance(response, str) and not any([doc, photo_]):
+    if isinstance(response, str) and not doc and not photo_:
         info = await app.parser.parse(response, kwargs.get("parse_mode", None))
         text, entities = str(info["message"]), info.get("entities", [])
         if len(text) >= 4096:
@@ -579,11 +579,11 @@ async def answer(
                 reply_to_message_id=reply.id if reply else None,
             )
         )
-    elif doc:
+    if doc:
         app.me = await app.get_me()
         messages.append(await message.reply_document(response, **kwargs))
 
-    elif photo_:
+    if photo_:
         app.me = await app.get_me()
         await message.delete()
         messages.append(
@@ -723,17 +723,3 @@ def get_commit_url() -> str:
         return f'<a href="https://github.com/AmoreForever/Shizu/commit/{hash_}">#{hash_[:7]}</a>'
     except Exception:
         return "Unknown"
-
-def get_kwargs() -> dict:
-    """
-    Get kwargs of function, in which is called
-    :return: kwargs
-    """
-    # https://stackoverflow.com/a/65927265/19170642
-    frame = inspect.currentframe().f_back
-    keys, _, _, values = inspect.getargvalues(frame)
-    kwargs = {}
-    for key in keys:
-        if key != "self":
-            kwargs[key] = values[key]
-    return kwargs
