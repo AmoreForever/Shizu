@@ -160,7 +160,6 @@ class Loader(loader.Module):
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Bu modul ushbu akkaunt uchun mavjud emas</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Barcha modullar ochirildi",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Qayta ishlayapti...</b>",
-        
     }
 
     strings_jp = {
@@ -230,7 +229,7 @@ class Loader(loader.Module):
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Барлық модульдер жойылды",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Қайта іске қосу...</b>",
     }
-    
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             "repo",
@@ -445,7 +444,6 @@ class Loader(loader.Module):
 
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
         return sys.exit(0)
-    
 
     @loader.command()
     async def aelis_load(self, app: Client, message: types.Message, args: str):

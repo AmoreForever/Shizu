@@ -556,6 +556,11 @@ class ModulesManager:
             if not (module := self.get_module(module_name)):
                 return False
 
+            mods_dir = os.path.join(utils.get_base_dir(), "modules")
+            path = os.path.join(mods_dir, f"{module_name}.py")
+            if os.path.exists(path):
+                os.remove(path)
+
             if (get_module := inspect.getmodule(module)).__spec__.origin != "<string>":
                 set_modules = set(self._db.get(__name__, "modules", []))
                 self._db.set(

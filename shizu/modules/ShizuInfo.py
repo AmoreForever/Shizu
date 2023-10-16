@@ -33,7 +33,7 @@ class InformationMod(loader.Module):
     }
 
     strings_jp = {
-        "custom_msg": "カスタムメッセージには、{mention}、{version}、{prefix}、{branch}、{platform}のキーワードが必要です",
+        "custom_msg": "カスタムメッセージには、{mention}、{version}、{prefix}、{branch}、{platform} のキーワードが必要です",
         "custom_button": "カスタムボタンにはテキストとURLが必要です",
         "photo_url": "写真のURLは有効である必要があります",
     }
@@ -95,19 +95,7 @@ class InformationMod(loader.Module):
             )
         else:
             await message.answer(
-                response=self.config['photo_url'], photo_=True, caption=self.text_(self.me)
+                response=self.config["photo_url"],
+                photo_=True,
+                caption=self.text_(self.me),
             )
-            
-
-    @loader.command()
-    async def wuserbot(self, app: Client, message: types.Message):
-        """What is a userbot?"""
-        text = """<emoji id=5188377234380954537>🌘 <b>Userbot</b>
-
-<emoji id=5472238129849048175>😎 A userbot can be characterized as a <b>third-party software application</b> that engages with the Telegram API in order to execute <b>automated operations on behalf of an end user</b>. These userbots possess the capability to streamline a variety of tasks, encompassing activities such as <b>dispatching messages, enrolling in channels, retrieving media files, and more</b>.
-
-<emoji id=5474667187258006816>😎 Diverging from conventional Telegram bots, <b>userbots operate within the confines of a user's account</b> rather than within a dedicated bot account. This particular distinction empowers userbots with enhanced accessibility to a broader spectrum of functionalities and a heightened degree of flexibility in executing actions.
-
-<emoji id=5472267631979405211>🚫 It is imperative to underscore, however, that <b>userbots do not receive official endorsement from the Telegram platform</b>, and their utilization may potentially infringe upon the terms of service established by the platform. Consequently, <b>users are advised to exercise discernment and prudence when deploying userbots</b>, ensuring that their usage remains devoid of any malevolent intent or misconduct.
-        """
-        await message.answer(text)

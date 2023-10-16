@@ -125,7 +125,7 @@ class Auth:
                         isinstance(r, raw.types.auth.login_token.LoginToken)
                         and tries % 30 == 0
                     ):
-                        print("Scan QR code below | Сканируйте QR код ниже:")
+                        print("Scan QR code below:")
                         qr = QRCode(error_correction=1)
                         qr.add_data(
                             f"tg://login?token={base64.urlsafe_b64encode(r.token).decode('utf-8').rstrip('=')}"
