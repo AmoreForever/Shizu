@@ -115,9 +115,9 @@ class ShizuConfig(loader.Module):
                 if query:
                     with contextlib.suppress(ValueError, SyntaxError):
                         query = ast.literal_eval(query)
-                    self.db.setdefault(module.__module__, {}).setdefault(
-                        "__config__", {}
-                    )[option] = query
+                    self.db.setdefault(module.name, {}).setdefault("__config__", {})[
+                        option
+                    ] = query
                     module.config[option] = query
                 else:
                     with contextlib.suppress(KeyError):

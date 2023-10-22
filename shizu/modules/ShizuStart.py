@@ -16,26 +16,46 @@ class ShizuStart(loader.Module):
     """
 
     text = """
-    🐙 Hello. You've just installed <u>Shizu userbot</u>.
+    👋 Hey there! Congratulations on installing the <u>Shizu userbot</u>. Need a hand with anything?
 
-❓ <b>Need help? Feel free to join our support chat. We help everyone.
+❓ Don't hesitate to reach out to our support chat if you have questions. We're here to assist everyone. @shizu_talks   
 
-📣 We always announce new updates in our channel. Join it to be the first to know about new features: @shizuhub
+🔒 Plus, we've beefed up security to protect against <b>Account Deletion</b>.
 
-🛡 And also we have made protection against Account Deletion</b>
+💁‍♀️ Let's get you started quickly:
 
-💁‍♀️ Quickstart:
+1️⃣ Just enter <code>.help</code> to see all available modules.
+2️⃣ If you need help with a specific module, try <code>.help (ModuleName/command)</code>.
+3️⃣ Want to grab a module from a link? Easy, just use <code>.dlmod (link)</code>.
+4️⃣ To install a module from a file, reply with <code>.loadmod</code> to the file.
+5️⃣ Deactivate a specific module by using <code>.unloadmod (ModuleName)</code>.
+6️⃣ If you're searching for modules by name, give <code>.aelis (ModuleName)</code> a shot.
+7️⃣ Explore available languages with <code>.langs</code>, and switch your language with <code>.setlang (lang)</code>.
 
-1️⃣ Type <code>.help</code> to see modules list
-2️⃣ Type <code>.help (ModuleName/command)</code> to see help of module ModuleName
-3️⃣ Type <code>.dlmod (link)</code> to load module from link
-4️⃣ Type <code>.loadmod</code> with reply to file to install module from it
-5️⃣ Type <code>.unloadmod (ModuleName)</code> to unload module ModuleName
-6️⃣ Type <code>.aelis (ModuleName)</code> to search modules by name and u can load it
-7️⃣ Type <code>.langs</code> to see available languages and <code>.setlang (lang)</code> to change language
+📢 Stay tuned for exciting updates in our channel. Join us at @shizuhub to be the first to know about our latest features.
+
     """
 
     async def on_load(self, app: Client):
-        if not self.db.get("shizu.me", "started", None):
-            await self._bot.send_message(self.me.id, self.text)
-            self.db.set("shizu.me", "started", True)
+        mymakr = self.bot._generate_markup(
+            [
+                [
+                    {
+                        "text": "📢 Channel",
+                        "url": "https://t.me/shizuhub",
+                    },
+                    {
+                        "text": "👥 Support",
+                        "url": "https://t.me/shizu_talks",
+                    },
+                ]
+            ]
+        )
+        if not self.db.get("shizu.me", "notified", None):
+            await self._bot.send_animation(
+                self.me.id,
+                "https://i.gifer.com/Qipy.gif",
+                caption=self.text,
+                reply_markup=mymakr,
+            )
+            self.db.set("shizu.me", "notified", True)

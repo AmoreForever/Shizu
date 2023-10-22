@@ -11,7 +11,6 @@ import json
 import time
 import atexit
 import logging
-import time
 import sys
 
 from datetime import datetime

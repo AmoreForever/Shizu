@@ -180,7 +180,6 @@ class ModulesLinkMod(loader.Module):
     @loader.command()
     async def aeliscmd(self, app, message):
         """Search module in Aelis API"""
-
         args = message.get_args_raw()
         if not args:
             return await message.answer(self.strings("what_"))

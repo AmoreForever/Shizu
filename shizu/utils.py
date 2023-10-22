@@ -17,16 +17,13 @@ import io
 import os
 import contextlib
 import git
-import aiohttp
-import shutil
-import subprocess
 from types import FunctionType
 from urllib.parse import urlparse
 from typing import Any, List, Literal, Tuple, Union, AsyncIterator
 
 from pyrogram.types import Chat, Message, User
 from pyrogram import Client, enums, types
-from pyrogram.enums import MessageMediaType
+from pyrogram.raw import functions
 from pyrogram.raw.base import Updates
 from pyrogram.raw.base.messages import ForumTopics
 from pyrogram.raw.functions.channels import (

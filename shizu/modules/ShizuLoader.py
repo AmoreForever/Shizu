@@ -360,7 +360,6 @@ class Loader(loader.Module):
         await message.answer(self.strings("check"))
 
         module_name = await self.all_modules.load_module(module_source)
-
         if module_name is True:
             return await message.answer(self.strings("dep_installed_req_res"))
 
@@ -412,6 +411,7 @@ class Loader(loader.Module):
             return await message.answer(self.strings("inc_module_name"))
 
         if module_name in self.cmodules:
+            logging.error("You can't unload core modules")
             return await message.answer(self.strings("core_unload"))
 
         return await message.answer(self.strings("unloaded").format(module_name))

@@ -31,7 +31,6 @@ else:
         logging.info(aozora)
         asyncio.run(main.main())
     except ModuleNotFoundError as module:
-        print(module)
         print(
             "🔁 Trying to install it automatically...\n"
             "⌛ Attempting dependencies installation... Just wait."

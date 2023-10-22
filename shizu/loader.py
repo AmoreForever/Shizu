@@ -21,7 +21,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-import contextlib
+import traceback
 import inspect
 import logging
 import os
@@ -42,7 +42,7 @@ from typing import Any, Callable, Dict, List, Union
 import requests
 from loguru import logger
 from pyrogram import Client, filters, types
-from . import bot, database, dispatcher, utils, aelis
+from . import bot, database, dispatcher, utils, aelis, logger as logger_
 from .types import InfiniteLoop
 from .translater import Strings, Translator
 
@@ -313,6 +313,7 @@ class ModulesManager:
             "ShizuInfo",
             "ShizuConfig",
             "ShizuLanguages",
+            "ShizuSettings"
         ]
         app.db = db
 
@@ -492,7 +493,19 @@ class ModulesManager:
 
             return await self.load_module(module_source, origin, True)
         except Exception as error:
-            return logging.exception(f"Error loading the module {origin}: {error}")
+            item = logger_.CustomException.from_exc_info(*sys.exc_info())
+            exc = (
+                "🚫 <b>Error while loading modue</b>"
+                "\n\n"
+                + "\n".join(item.full_stack.splitlines()[:-1])
+                + "\n\n"
+                + "😵 "
+                + item.full_stack.splitlines()[-1]
+            )
+            await self.bot_manager.bot.send_message(
+                self._db.get("shizu.chat", "logs", None), exc, parse_mode="html"
+            )
+            return logging.error(f"Error loading the module {origin}: {error}")
 
         if not instance:
             return False
@@ -501,8 +514,7 @@ class ModulesManager:
             await self.send_on_load(instance, Translator(self._app, self._db))
             self.config_reconfigure(instance, self._db)
         except Exception as error:
-            return logging.exception(error)
-
+            return logging.error(error)
         return instance.name
 
     async def send_on_loads(self) -> bool:
@@ -515,13 +527,13 @@ class ModulesManager:
     def config_reconfigure(module: Module, db):
         """Reconfigures the module"""
         if hasattr(module, "config"):
-            modcfg = db.get(module.__module__, "__config__", {})
+            modcfg = db.get(module.name, "__config__", {})
             for conf in module.config.keys():
                 if conf in modcfg.keys():
                     module.config[conf] = modcfg[conf]
                 else:
                     try:
-                        module.config[conf] = os.environ[f"{module.__module__}.{conf}"]
+                        module.config[conf] = os.environ[f"{module.name}.{conf}"]
                     except KeyError:
                         module.config[conf] = module.config.getdef(conf)
 
@@ -555,9 +567,9 @@ class ModulesManager:
         else:
             if not (module := self.get_module(module_name)):
                 return False
-
-            mods_dir = os.path.join(utils.get_base_dir(), "modules")
-            path = os.path.join(mods_dir, f"{module_name}.py")
+            
+            
+            path = inspect.getfile(module.__class__)
             if os.path.exists(path):
                 os.remove(path)
 
