@@ -1,6 +1,7 @@
 """In this file we have to make contract with Aelis API"""
 
 
+
 # █ █ █ █▄▀ ▄▀█ █▀▄▀█ █▀█ █▀█ █ █
 # █▀█ █ █ █ █▀█ █ ▀ █ █▄█ █▀▄ █▄█
 
@@ -11,6 +12,7 @@
 
 import logging
 import asyncio
+import contextlib
 import httpx
 
 from .database import db
@@ -87,8 +89,9 @@ class AelisAPI:
             "token": self.db.get("aelis", "token"),
         }
         response = (await self.session.get(url, params=params)).json()
-        if response["code"] == 401:
-            raise AelisNotAuthorized(
-                "You are not authorized. Please contact with @hikamoru"
-            )
+        with contextlib.suppress(Exception):
+            if response["code"] == 401:
+                raise AelisNotAuthorized(
+                    "You are not authorized. Please contact with @hikamoru"
+                )
         return response
