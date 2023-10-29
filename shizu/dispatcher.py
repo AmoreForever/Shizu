@@ -24,6 +24,10 @@ async def check_filters(
     func: FunctionType, app: Client, message: types.Message
 ) -> bool:
     db = database.db
+    if message.from_user is None:
+        _id = message.sender_chat.id
+    else:
+        _id = message.from_user.id
     if custom_filters := getattr(func, "_filters", None):
         coro = custom_filters(app, message)
 
@@ -32,9 +36,9 @@ async def check_filters(
 
         if not coro:
             return False
-
     elif message.chat.id == db.get("shizu.me", "me") or (
-        message.from_user.id in db.get("shizu.me", "owners", [])
+        _id
+        in db.get("shizu.me", "owners", [])
         and db.get("shizu.owner", "status", True)
     ):
         return True
