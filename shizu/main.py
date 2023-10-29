@@ -49,27 +49,6 @@ async def main():
         logging.info("Successfully installed shizu-pyrogram!")
         logging.info("Restarting...")
         return atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
-
-    if restart := db.get("shizu.updater", "restart"):
-        if restart["type"] == "restart":
-            restarted_text = f"<emoji id=5017470156276761427>🔄</emoji> <b>The reboot was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The reboot took <code>{round(time.time())-int(restart['start'])}</code> seconds"
-        else:
-            restarted_text = f"<emoji id=5258420634785947640>🔄</emoji> <b>The update was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The update took <code>{round(time.time())-int(restart['start'])}</code> seconds"
-
-        try:
-            await app.edit_message_text(restart["chat"], restart["id"], restarted_text)
-        except Exception:
-            await app.inline_bot.send_message(
-                app.db.get("shizu.me", "me", None),
-                "🔄 The reboot was successful!\n"
-                f'⌛️ The reboot took <code>{round(time.time())-int(restart["start"])}</code> seconds'
-                "\n\nℹ️ <b>Userbot couldn't edit that message due to an error thats why I am sending it to you instead :)</b>",
-                parse_mode="HTML",
-            )
-        logging.info("Successfully started!")
-        db.pop("shizu.updater", "restart")
-    async for _ in app.get_dialogs():
-        pass
     await idle()
 
     logging.info("Shizu is shutting down...")

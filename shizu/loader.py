@@ -41,7 +41,7 @@ from typing import Any, Callable, Dict, List, Union
 
 import requests
 from loguru import logger
-from pyrogram import Client, filters, types
+from pyrogram import Client, filters, types, raw
 from . import bot, database, dispatcher, utils, aelis, logger as logger_
 from .types import InfiniteLoop
 from .translater import Strings, Translator
@@ -155,11 +155,13 @@ def get_message_handlers(instance: Module) -> Dict[str, FunctionType]:
 def get_callback_handlers(instance: Module) -> Dict[str, FunctionType]:
     """Returns a dictionary of names with callback handler functions"""
     return {
-        method_name[:-17]: getattr(instance, method_name)
+        method_name[:-17].lower(): getattr(instance, method_name)
         for method_name in dir(instance)
-        if callable(getattr(instance, method_name))
-        and len(method_name) > 17
-        and method_name[-17:] == "_callback_handler"
+        if (
+            callable(getattr(instance, method_name))
+            and len(method_name) > 17
+            and method_name.endswith("_callback_handler")
+        )
     }
 
 
@@ -313,7 +315,8 @@ class ModulesManager:
             "ShizuInfo",
             "ShizuConfig",
             "ShizuLanguages",
-            "ShizuSettings"
+            "ShizuSettings",
+            "ShizuOwner",
         ]
         app.db = db
 
@@ -389,6 +392,7 @@ class ModulesManager:
             instance.reconfmod = self.config_reconfigure
             instance.aelis = self.aelis
             instance.shizu = True
+            instance.invoke = self.invoke
 
             instance.command_handlers = get_command_handlers(instance)
             instance.watcher_handlers = get_watcher_handlers(instance)
@@ -415,6 +419,26 @@ class ModulesManager:
             (mod for mod in self.modules if mod.name.lower() == modname.lower()),
             False,
         )
+
+    async def invoke(self, command: str, message: types.Message) -> bool:
+        """Invokes the command"""
+        command = command.lower()
+        if command in self.command_handlers:
+            try:
+                await self.command_handlers[command](self._app, message)
+            except Exception as error:
+                logging.exception(f"Error executing command {command}: {error}")
+                await message.reply(
+                    f"🚫 <b>Error executing command</b>"
+                    "\n\n"
+                    + "\n".join(
+                        traceback.format_exception(
+                            type(error), error, error.__traceback__
+                        )
+                    )
+                )
+            return True
+        return False
 
     async def load_module(
         self,
@@ -567,8 +591,7 @@ class ModulesManager:
         else:
             if not (module := self.get_module(module_name)):
                 return False
-            
-            
+
             path = inspect.getfile(module.__class__)
             if os.path.exists(path):
                 os.remove(path)

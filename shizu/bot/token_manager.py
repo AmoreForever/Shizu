@@ -127,7 +127,7 @@ class TokenManager(Item):
             await conv.ask(f"@{bot_username}")
             await conv.get_response()
 
-            await conv.ask("1/1000")
+            await conv.ask("1/100")
             await conv.get_response()
 
             logger.success(f"Bot successfully created @{bot_username}")

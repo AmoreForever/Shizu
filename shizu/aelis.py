@@ -1,7 +1,6 @@
 """In this file we have to make contract with Aelis API"""
 
 
-
 # █ █ █ █▄▀ ▄▀█ █▀▄▀█ █▀█ █▀█ █ █
 # █▀█ █ █ █ █▀█ █ ▀ █ █▄█ █▀▄ █▄█
 

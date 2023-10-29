@@ -156,9 +156,11 @@ class BackupMod(loader.Module):
             self.db.set("shizu.backuper", "autobackup", None)
             await message.answer()
 
-    @loader.loop(interval=36000, autostart=True)
+    @loader.loop(interval=3, autostart=True)
     async def autobackupmods(self):
         if not self.db.get("shizu.backuper", "autobackup", None):
+            return
+        if time.strftime("%H:%M") != "00:00":
             return
         txt = io.BytesIO(json.dumps(self.db).encode("utf-8"))
         txt.name = f"shizu-{datetime.now().strftime('%d-%m-%Y-%H-%M')}.json"

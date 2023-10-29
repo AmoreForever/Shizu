@@ -21,9 +21,11 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
+import contextlib
 import os
 import sys
 import time
+import logging
 import atexit
 
 from pyrogram import Client, types, enums
@@ -43,41 +45,69 @@ class UpdateMod(loader.Module):
         "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>You have the latest version installed</b>.",
         "update_": "🔁 Update...",
         "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Rebooting...</b>",
+        "start_r": "<emoji id=5017470156276761427>🔄</emoji> <b>The reboot was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The reboot took <code>{}</code> seconds",
+        "start_u": "<emoji id=5258420634785947640>🔄</emoji> <b>The update was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The update took <code>{}</code> seconds",
     }
 
     strings_ru = {
         "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>У вас установлена последняя версия</b>.",
         "update_": "🔁 Обновление...",
         "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Перезагрузка...</b>",
+        "start_r": "<emoji id=5017470156276761427>🔄</emoji> <b>Перезагрузка прошла успешно!</b>\n<emoji id=5451646226975955576>⌛️</emoji> Перезагрузка заняла <code>{}</code> секунд",
+        "start_u": "<emoji id=5258420634785947640>🔄</emoji> <b>Обновление прошло успешно!</b>\n<emoji id=5451646226975955576>⌛️</emoji> Обновление заняло <code>{}</code> секунд",
     }
 
     strings_uz = {
         "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>Shizu botningizning yangi versiyasi</b>.",
         "update_": "🔁 Yangilash...",
         "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Qayta yuklash...</b>",
+        "start_r": "<emoji id=5017470156276761427>🔄</emoji> <b>Qayta yuklash muvaffaqiyatli o'tdi!</b>\n<emoji id=5451646226975955576>⌛️</emoji> Qayta yuklash <code>{}</code> soniyadan iborat",
+        "start_u": "<emoji id=5258420634785947640>🔄</emoji> <b>Yangilash muvaffaqiyatli o'tdi!</b>\n<emoji id=5451646226975955576>⌛️</emoji> Yangilash <code>{}</code> soniyadan iborat",
     }
 
     strings_jp = {
         "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>最新バージョンがインストールされています</b>.",
         "update_": "🔁 更新...",
         "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> 再起動...</b>",
+        "start_r": "<emoji id=5017470156276761427>🔄</emoji> <b>再起動に成功しました！</b>\n<emoji id=5451646226975955576>⌛️</emoji> 再起動には <code>{}</code> 秒かかりました",
+        "start_u": "<emoji id=5258420634785947640>🔄</emoji> <b>更新に成功しました！</b>\n<emoji id=5451646226975955576>⌛️</emoji> 更新には <code>{}</code> 秒かかりました",
     }
 
     strings_ua = {
         "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>У вас встановлена остання версія</b>.",
         "update_": "🔁 Оновлення...",
         "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Перезавантаження...</b>",
+        "start_r": "<emoji id=5017470156276761427>🔄</emoji> <b>Перезавантаження пройшло успішно!</b>\n<emoji id=5451646226975955576>⌛️</emoji> Перезавантаження зайняло <code>{}</code> секунд",
+        "start_u": "<emoji id=5258420634785947640>🔄</emoji> <b>Оновлення пройшло успішно!</b>\n<emoji id=5451646226975955576>⌛️</emoji> Оновлення зайняло <code>{}</code> секунд",
     }
 
     strings_kz = {
         "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>Сізде соңғы нұсқа орнатылған</b>.",
         "update_": "🔁 Жаңарту...",
         "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Қайта іске қосу...</b>",
+        "start_r": "<emoji id=5017470156276761427>🔄</emoji> <b>Қайта іске қосу сәтті аяқталды!</b>\n<emoji id=5451646226975955576>⌛️</emoji> Қайта іске қосу <code>{}</code> секунд ұзақтығынан тұрады",
+        "start_u": "<emoji id=5258420634785947640>🔄</emoji> <b>Жаңарту сәтті аяқталды!</b>\n<emoji id=5451646226975955576>⌛️</emoji> Жаңарту <code>{}</code> секунд ұзақтығынан тұрады",
     }
 
     async def on_load(self, app: Client):
-        bot: Bot = self.bot.bot
-        _me = await bot.get_me()
+        async for _ in app.get_dialogs():
+            pass
+        if restart := self.db.get("shizu.updater", "restart"):
+            if restart["type"] == "restart":
+                restarted_text = self.strings("start_r").format(
+                    round(time.time()) - int(restart["start"])
+                )
+            else:
+                restarted_text = self.strings("start_u").format(
+                    round(time.time()) - int(restart["start"])
+                )
+
+            with contextlib.suppress(Exception):
+                await app.edit_message_text(
+                    restart["chat"], restart["id"], restarted_text
+                )
+            logging.info("Successfully started!")
+            self.db.pop("shizu.updater", "restart")
 
         started_text = (
             f"🐙 <b>Your <u>Shizu</u> started</b> <code>v{'.'.join(map(str, __version__))}</code>\n\n"

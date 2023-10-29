@@ -180,7 +180,11 @@ class Events(Item):
 
     async def _inline_handler(self, inline_query: InlineQuery) -> InlineQuery:
         """Обработчик инлайн-хендеров"""
-        if inline_query.from_user.id != database.db.get("shizu.me", "me"):
+        if inline_query.from_user.id != database.db.get(
+            "shizu.me", "me"
+        ) and inline_query.from_user.id not in database.db.get(
+            "shizu.me", "owners", []
+        ):
             return await inline_query.answer(
                 [
                     InlineQueryResultArticle(
@@ -194,7 +198,6 @@ class Events(Item):
                 ],
                 cache_time=0,
             )
-
         if not (query := inline_query.query):
             commands = ""
             for command, func in self._all_modules.inline_handlers.items():
@@ -345,7 +348,9 @@ class Events(Item):
                         and "input" in button
                         and button["_switch_query"] == query.split()[0]
                         and inline_query.from_user.id
-                        in [self._me] + form["always_allow"]
+                        in [self._me]
+                        + form["always_allow"]
+                        + self._db.get("shizu.me", "owners", [])
                     ):
                         await inline_query.answer(
                             [
@@ -505,8 +510,14 @@ class Events(Item):
 
             for button in array_sum(form.get("buttons", [])):
                 if button.get("_callback_data", None) == query.data:
-                    if form["force_me"] and query.from_user.id != self._me:
-                        await query.answer("You are not allowed to press this button!")
+                    if (
+                        form["force_me"]
+                        and query.from_user.id != self._me
+                        and query.from_user.id
+                        and self._db.get('shizu.owner', 'status') == False
+                        not in self._db.get("shizu.me", "owners", [])            
+                    ):
+                        await query.answer("🚫 You are not allowed to press this button!")
                         return
 
                     query.edit = functools.partial(
@@ -542,9 +553,11 @@ class Events(Item):
                 self._custom_map[query.data].get("force_me", None)
                 and query.from_user.id != self._me
                 and query.from_user.id
+                and self._db.get('shizu.owner', 'status') == False
+                not in self._db.get("shizu.me", "owners", [])
                 not in self._custom_map[query.data].get("always_allow", [])
             ):
-                await query.answer("You are not allowed to press this button!")
+                await query.answer("🚫 You are not allowed to press this button!")
                 return
 
             button = self._custom_map[query.data]
@@ -563,7 +576,9 @@ class Events(Item):
                     and "input" in button
                     and button["_switch_query"] == query.split()[0]
                     and chosen_inline_query.from_user.id
-                    in [self._me] + form["always_allow"]
+                    in [self._me]
+                    + form["always_allow"]
+                    + self._db.get("shizu.me", "owners", [])
                 ):
                     query = query.split(maxsplit=1)[1] if len(query.split()) > 1 else ""
 
@@ -697,7 +712,10 @@ class Events(Item):
         }
 
         if isinstance(message, pyrogram.types.Message) and prev:
-            soo = await message.edit("🐙")
+            if message.from_user.id != self._me:
+                soo = await message.reply("🐙 Loading inline form...")
+            else:
+                soo = await message.edit("🐙")
         else:
             soo = None
         try:

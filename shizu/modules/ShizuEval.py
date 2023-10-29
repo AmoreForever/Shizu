@@ -14,7 +14,7 @@ from pyrogram import Client, types, enums
 
 from .. import loader, utils, logger
 
-    
+
 class DeleteAccountIsForbidden(Exception):
     """For prohibited actions"""
 
@@ -41,9 +41,9 @@ class EvaluatorMod(loader.Module):
             result = await meval(args, globals(), **self.getattrs(app, message))
             return await message.answer(
                 "<b>🖥 Code:</b>\n"
-                f"<code>{args}</code>\n\n"
+                f"<pre language='python'>{args}</pre>\n\n"
                 f"✅ <b>Result:</b>\n"
-                f"<code>{result}</code>",
+                f"<pre language='python'>{result}</pre>",
             )
 
         except Exception:
@@ -57,9 +57,9 @@ class EvaluatorMod(loader.Module):
             )
             return await message.answer(
                 "<b>🖥 Code:</b>\n"
-                f"<code>{args}</code>\n\n"
+                f"<pre language='python'>{args}</pre>\n\n"
                 "🚫 <b>Result:</b>\n"
-                f"{exc}",
+                f"<pre>{exc}</pre>",
             )
 
     def getattrs(self, app: Client, message: types.Message):
@@ -68,7 +68,7 @@ class EvaluatorMod(loader.Module):
             "db": self.db,
             "app": app,
             "c": app,
-            "print": lambda text: text,  # replace print with return
+            "print": lambda text: text,
             "client": app,
             "bot": app,
             "message": message,
