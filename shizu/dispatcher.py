@@ -33,6 +33,9 @@ async def check_filters(
         if not coro:
             return False
 
+    if message.chat.id == db.get("shizu.me", "me", None):
+        return True
+
     if (
         not message.outgoing
         and (
