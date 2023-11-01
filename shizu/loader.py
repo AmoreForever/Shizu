@@ -328,6 +328,12 @@ class ModulesManager:
         self.bot_manager = bot.BotManager(app, self._db, self)
         await self.bot_manager.load()
 
+        try:
+            app.inline_bot = self.bot_manager.bot
+            app.bot = self.bot_manager.bot
+        except Exception as error:
+            logging.exception(f"Error loading bot: {error}")
+
         for local_module in filter(
             lambda file_name: file_name.endswith(".py")
             and not file_name.startswith("_"),
@@ -343,8 +349,6 @@ class ModulesManager:
             except Exception as error:
                 logging.exception(f"Error loading local module {module_name}: {error}")
 
-        await self.send_on_loads()
-
         for custom_module in self._db.get(__name__, "modules", []):
             try:
                 r = await utils.run_sync(requests.get, custom_module)
@@ -353,6 +357,11 @@ class ModulesManager:
                 logging.exception(
                     f"Ошибка при загрузке стороннего модуля {custom_module}: {error}"
                 )
+        async for _ in self._app.get_dialogs():
+            pass
+        logging.info("Dialogs loaded")
+        await self.send_on_loads()
+        logging.info("Modules loaded")
         return True
 
     def register_instance(
@@ -497,23 +506,19 @@ class ModulesManager:
             )
 
             try:
-                pip = await asyncio.create_subprocess_exec(
-                    sys.executable,
-                    "-m",
-                    "pip",
-                    "install",
-                    "--upgrade",
-                    "-q",
-                    "--disable-pip-version-check",
-                    "--no-warn-script-location",
-                    *requirements,
+                subprocess.run(
+                    [
+                        sys.executable,
+                        "-m",
+                        "pip",
+                        "install",
+                        "--user",
+                        *requirements,
+                    ],
+                    check=True,
                 )
-
-                rc = await pip.wait()
-                if rc != 0:
-                    raise subprocess.CalledProcessError(rc, pip.args)
-            except asyncio.CancelledError:
-                logging.error(f"Error installing packages: {error}")
+            except subprocess.CalledProcessError as error:
+                logging.exception(f"Ошибка при установке пакетов: {error}")
 
             return await self.load_module(module_source, origin, True)
         except Exception as error:

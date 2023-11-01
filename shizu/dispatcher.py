@@ -24,10 +24,6 @@ async def check_filters(
     func: FunctionType, app: Client, message: types.Message
 ) -> bool:
     db = database.db
-    if message.from_user is None:
-        _id = message.sender_chat.id
-    else:
-        _id = message.from_user.id
     if custom_filters := getattr(func, "_filters", None):
         coro = custom_filters(app, message)
 
@@ -36,14 +32,17 @@ async def check_filters(
 
         if not coro:
             return False
-    elif message.chat.id == db.get("shizu.me", "me") or (
-        _id
-        in db.get("shizu.me", "owners", [])
-        and db.get("shizu.owner", "status", True)
-    ):
-        return True
 
-    elif not message.outgoing:
+    if (
+        not message.outgoing
+        and (
+            message.sender_chat.id
+            if message.from_user is None
+            else message.from_user.id
+        )
+        not in db.get("shizu.me", "owners", [])
+        and not db.get("shizu.owner", "status", False)
+    ):
         return False
 
     return True
@@ -62,7 +61,6 @@ class DispatcherManager:
         self.app.add_handler(
             handler=EditedMessageHandler(self._handle_message, filters.all)
         )
-
         return True
 
     async def _handle_message(

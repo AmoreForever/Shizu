@@ -59,7 +59,7 @@ class InformationMod(loader.Module):
             {"text": "🏄 Here we are", "url": "https://t.me/shizu_talks"},
             lambda: self.strings("custom_button"),
             "photo_url",
-            "https://0x0.st/HOP4.jpg",
+            "https://x0.at/iqxh.png",
             lambda: self.strings("photo_url"),
         )
 

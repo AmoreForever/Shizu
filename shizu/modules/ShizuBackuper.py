@@ -16,7 +16,7 @@ import sys
 from datetime import datetime
 from pyrogram import Client, types, enums
 
-from .. import loader, utils
+from .. import loader, utils, database
 
 
 LOADED_MODULES_DIR = os.path.join(os.getcwd(), "shizu/modules")
@@ -155,19 +155,3 @@ class BackupMod(loader.Module):
         else:
             self.db.set("shizu.backuper", "autobackup", None)
             await message.answer()
-
-    @loader.loop(interval=3, autostart=True)
-    async def autobackupmods(self):
-        if not self.db.get("shizu.backuper", "autobackup", None):
-            return
-        if time.strftime("%H:%M") != "00:00":
-            return
-        txt = io.BytesIO(json.dumps(self.db).encode("utf-8"))
-        txt.name = f"shizu-{datetime.now().strftime('%d-%m-%Y-%H-%M')}.json"
-        await self._bot.send_document(
-            self.db.get("shizu.chat", "backup"),
-            document=txt,
-            caption=self.strings("backup").format(
-                datetime.now().strftime("%d-%m-%Y %H:%M")
-            ),
-        )

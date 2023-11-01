@@ -5,7 +5,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-__version__ = (0, 2, 7)
+__version__ = (0, 2, 8)
 
 import os
 

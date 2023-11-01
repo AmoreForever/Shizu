@@ -504,7 +504,6 @@ def _copy_tl(o: FormattingEntity, client, **kwargs):
     )
 
 
-
 async def answer(
     message: Union[Message, List[Message]],
     response: Union[str, Any],
@@ -551,7 +550,7 @@ async def answer(
                 file = io.BytesIO(text.encode())
                 file.name = "output.txt"
                 return await message.reply_document(file, **kwargs)
-        outputs = [response[i : i + 4096] for i  in range(0, len(response), 4096)]
+        outputs = [response[i : i + 4096] for i in range(0, len(response), 4096)]
 
         messages.append(
             await app._inline.form(
@@ -721,3 +720,8 @@ def get_commit_url() -> str:
         return f'<a href="https://github.com/AmoreForever/Shizu/commit/{hash_}">#{hash_[:7]}</a>'
     except Exception:
         return "Unknown"
+
+
+def is_tl_enabled() -> bool:
+    """Check if telethon is enabled"""
+    return any("shizu-tl.session" in i for i in os.listdir())

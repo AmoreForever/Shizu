@@ -10,7 +10,7 @@ import sys
 import re
 import logging
 from meval import meval
-from pyrogram import Client, types, enums
+from pyrogram import Client, types
 
 from .. import loader, utils, logger
 
@@ -29,7 +29,6 @@ class EvaluatorMod(loader.Module):
     @loader.command()
     async def eval(self, app: Client, message: types.Message):
         """Execute python code and return result"""
-
         args = message.get_args_raw()
         try:
             delete_account_re = re.compile(r"DeleteAccount", re.IGNORECASE)
@@ -45,7 +44,6 @@ class EvaluatorMod(loader.Module):
                 f"✅ <b>Result:</b>\n"
                 f"<pre language='python'>{result}</pre>",
             )
-
         except Exception:
             item = logger.CustomException.from_exc_info(*sys.exc_info())
             exc = (
@@ -68,6 +66,7 @@ class EvaluatorMod(loader.Module):
             "db": self.db,
             "app": app,
             "c": app,
+            "tl": app.tl,
             "print": lambda text: text,
             "client": app,
             "bot": app,

@@ -5,44 +5,41 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-import contextlib
 import logging
-import time
 import os
 import atexit
 import sys
 import pyrogram
+import asyncio
+import subprocess
 from pyrogram.methods.utilities.idle import idle
 from pyrogram import types
-import subprocess
 from . import auth, database, loader, utils, extrapatchs
-from .bot import core
-from .translater import Translator
 
 
 async def main():
     """Main function"""
-    me, app = await auth.Auth().authorize()
+
+    me, app, tapp = await auth.Auth().authorize()
     await app.initialize()
     db = database.db
+
     modules = loader.ModulesManager(app, db, me)
     extrapatchs.MessageMagic(types.Message)
-    tr = Translator(app, db)
-
+    if utils.is_tl_enabled():
+        asyncio.ensure_future(tapp.start())
+        app.tl = tapp
+    else:
+        app.tl = "Not enabled"
     await modules.load(app)
-    await tr.init()
-    with contextlib.suppress(Exception):
-        app.inline_bot = core.bot
-        app.bot = modules.bot_manager.bot
-    me = db.get("shizu.me", "me", None)
 
-    if not me:
+    if not db.get("shizu.me", "me", None):
         id_ = (await app.get_me()).id
         db.set("shizu.me", "me", id_)
-    if pyrogram.__version__ != "2.0.112":
+    if pyrogram.__version__ != "2.0.106.8":
         logging.info("Installing shizu-pyrogram...")
         subprocess.run(
-            "pip install https://github.com/AmoreForever/pyrogram/archive/dev.zip --force-reinstall",
+            "pip install https://github.com/AmoreForever/Shizu-Pyro/archive/dev.zip --force-reinstall",
             shell=True,
             check=True,
         )

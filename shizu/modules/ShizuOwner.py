@@ -13,8 +13,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@loader.module("ShizuSecurity", "hikamoru")
-class ShizuSecurity(loader.Module):
+@loader.module("ShizuOwner", "hikamoru")
+class ShizuOwner(loader.Module):
     """Give owner permissions to users"""
 
     strings = {

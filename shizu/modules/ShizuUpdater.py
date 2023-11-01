@@ -90,8 +90,6 @@ class UpdateMod(loader.Module):
     }
 
     async def on_load(self, app: Client):
-        async for _ in app.get_dialogs():
-            pass
         if restart := self.db.get("shizu.updater", "restart"):
             if restart["type"] == "restart":
                 restarted_text = self.strings("start_r").format(
@@ -102,10 +100,12 @@ class UpdateMod(loader.Module):
                     round(time.time()) - int(restart["start"])
                 )
 
-            with contextlib.suppress(Exception):
+            try:
                 await app.edit_message_text(
                     restart["chat"], restart["id"], restarted_text
                 )
+            except Exception as why:
+                logging.error(f"Failed to edit message: {why}")
             logging.info("Successfully started!")
             self.db.pop("shizu.updater", "restart")
 
@@ -170,9 +170,7 @@ class UpdateMod(loader.Module):
             "shizu.updater",
             "restart",
             {
-                "chat": message.chat.username
-                if message.chat.type == enums.ChatType.BOT
-                else message.chat.id,
+                "chat": message.chat.id,
                 "id": ms.id,
                 "start": time.time(),
                 "type": "restart",

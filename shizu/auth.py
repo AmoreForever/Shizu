@@ -12,8 +12,11 @@ from getpass import getpass
 from typing import NoReturn, Tuple, Union
 from pyrogram import Client, errors, types, raw
 from pyrogram.session.session import Session
+from telethon.sessions import StringSession
+from telethon import TelegramClient
 from pyrogram.raw.functions.auth.export_login_token import ExportLoginToken
 from qrcode.main import QRCode
+from . import database, utils
 
 Session.notice_displayed: bool = True
 
@@ -45,6 +48,13 @@ class Auth:
             api_hash=cfg.get("pyrogram", "api_hash"),
             device_model="Shizu",
         )
+        if utils.is_tl_enabled():
+            self.tapp = TelegramClient(
+                "shizu-tl",
+                api_id=cfg.get("pyrogram", "api_id"),
+                api_hash=cfg.get("pyrogram", "api_hash"),
+                device_model="Shizu-TL",
+            )
 
     def _check_api_tokens(self) -> bool:
         cfg = cp.ConfigParser()
@@ -146,4 +156,6 @@ class Auth:
             )
             await self.app.disconnect()
             return sys.exit(64)
-        return me, self.app
+        if utils.is_tl_enabled():
+            return me, self.app, self.tapp
+        return me, self.app, None
