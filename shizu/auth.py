@@ -6,17 +6,23 @@
 # 👤 https://t.me/hikamoru
 
 import configparser as cp
-import asyncio, logging, base64, sys
+import asyncio
+import logging
+import base64
+import sys
+
 from datetime import datetime
 from getpass import getpass
 from typing import NoReturn, Tuple, Union
+
 from pyrogram import Client, errors, types, raw
 from pyrogram.session.session import Session
-from telethon.sessions import StringSession
-from telethon import TelegramClient
 from pyrogram.raw.functions.auth.export_login_token import ExportLoginToken
+
+from telethon import TelegramClient
+
 from qrcode.main import QRCode
-from . import database, utils
+from . import utils
 
 Session.notice_displayed: bool = True
 
@@ -156,6 +162,8 @@ class Auth:
             )
             await self.app.disconnect()
             return sys.exit(64)
+        
         if utils.is_tl_enabled():
             return me, self.app, self.tapp
+        
         return me, self.app, None
