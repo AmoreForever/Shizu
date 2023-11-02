@@ -8,9 +8,12 @@
 import contextlib
 import logging
 import sys
+
 import inspect
 from inspect import getfullargspec, iscoroutine
+
 from types import FunctionType
+from typing import Union
 
 from pyrogram import Client, filters, types
 from pyrogram.handlers import MessageHandler, EditedMessageHandler
@@ -21,7 +24,9 @@ logger = logging.getLogger(__name__)
 
 
 async def check_filters(
-    func: FunctionType, app: Client, message: types.Message
+    func: FunctionType,
+    app: Client,
+    message: types.Message,
 ) -> bool:
     db = database.db
     if custom_filters := getattr(func, "_filters", None):
@@ -64,6 +69,7 @@ class DispatcherManager:
         self.app.add_handler(
             handler=EditedMessageHandler(self._handle_message, filters.all)
         )
+        
         return True
 
     async def _handle_message(

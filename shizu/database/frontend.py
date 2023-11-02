@@ -11,6 +11,7 @@ class Database(LightDB):
 
     def set(self, name: str, key: KT, value: VT):
         self.setdefault(name, {})[key] = value
+
         return self.save()
 
     def get(self, name: str, key: KT, default: VT = None):
@@ -21,7 +22,7 @@ class Database(LightDB):
 
     def pop(self, name: str, key: KT = None, default: VT = None):
         if not key:
-            value = self[name].pop(name, default) 
+            value = self[name].pop(name, default)
         else:
             try:
                 value = self[name].pop(key, default)
@@ -29,4 +30,5 @@ class Database(LightDB):
                 value = default
 
         self.save()
-        return value if value is not None else default 
+
+        return value if value is not None else default

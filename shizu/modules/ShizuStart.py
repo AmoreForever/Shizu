@@ -9,8 +9,6 @@ import logging
 from .. import loader, utils
 from pyrogram import Client
 from ..bot import core
-from aiogram import types
-
 
 @loader.module("ShizuStart", "hikamoru")
 class ShizuStart(loader.Module):
@@ -37,7 +35,7 @@ class ShizuStart(loader.Module):
 
 📢 Stay tuned for exciting updates in our channel. Join us at @shizuhub to be the first to know about our latest features.
 
-    """
+    """ 
 
     async def on_load(self, app: Client):
         mymakr = self.bot._generate_markup(

@@ -5,6 +5,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
+# some piece of code taken from: https://github.com/hikariatama/Hikka/blob/master/hikka/utils.py
 
 import asyncio
 import functools

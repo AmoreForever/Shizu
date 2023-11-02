@@ -145,13 +145,3 @@ class BackupMod(loader.Module):
         logging.info("restart...")
         atexit.register(restart)
         return sys.exit(0)
-
-    @loader.command()
-    async def abackup(self, app: Client, message: types.Message):
-        """Enable/disable autobackup it will backup database everyday"""
-        if not self.db.get("shizu.backuper", "autobackup", None):
-            self.db.set("shizu.backuper", "autobackup", True)
-            await message.answer(self.strings("enabled"))
-        else:
-            self.db.set("shizu.backuper", "autobackup", None)
-            await message.answer()

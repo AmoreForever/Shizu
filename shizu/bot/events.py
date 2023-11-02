@@ -64,6 +64,9 @@ async def delete(self: Any = None, form: Any = None, form_uid: Any = None) -> bo
     return True
 
 
+# see the differences? https://github.com/GeekTG/Friendly-Telegram/blob/master/friendly-telegram/inline.py
+
+
 async def edit(
     text: str,
     reply_markup: List[List[dict]] = None,
