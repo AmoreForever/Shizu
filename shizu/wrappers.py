@@ -9,8 +9,10 @@ from typing import Callable
 def wrap_function_to_async(function: Callable) -> Callable:
     """Wraps synchronous functions into asynchronous"""
 
-    assert not iscoroutinefunction(function), "The function is already asynchronous!"
-    assert not iscoroutine(function), "A function is expected, a coroutine is obtained."
+    if iscoroutinefunction(function):
+        raise AssertionError("The function is already asynchronous!")
+    if iscoroutine(function):
+        raise AssertionError("A function is expected, a coroutine is obtained.")
 
     pool = ThreadPoolExecutor()
 
