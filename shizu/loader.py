@@ -348,6 +348,8 @@ class ModulesManager:
                 self.register_instance(module_name, file_path)
             except Exception as error:
                 logging.exception(f"Error loading local module {module_name}: {error}")
+                
+        await self.send_on_loads()
 
         for custom_module in self._db.get(__name__, "modules", []):
             try:
@@ -360,7 +362,6 @@ class ModulesManager:
         async for _ in self._app.get_dialogs():
             pass
         logging.info("Dialogs loaded")
-        await self.send_on_loads()
         logging.info("Modules loaded")
         return True
 
