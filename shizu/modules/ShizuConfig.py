@@ -22,6 +22,7 @@ from pyrogram.types import Message
 
 from .. import loader, utils
 from ..utils import chunks
+from typing import Union
 
 logger = logging.getLogger(__name__)
 
