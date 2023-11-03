@@ -26,26 +26,33 @@ async def main():
 
     modules = loader.ModulesManager(app, db, me)
     extrapatchs.MessageMagic(types.Message)
+
     if utils.is_tl_enabled():
         asyncio.ensure_future(tapp.start())
         app.tl = tapp
     else:
         app.tl = "Not enabled"
+
     await modules.load(app)
 
     if not db.get("shizu.me", "me", None):
         id_ = (await app.get_me()).id
         db.set("shizu.me", "me", id_)
+
     if pyrogram.__version__ != "2.0.106.8":
         logging.info("Installing shizu-pyrogram...")
+
         subprocess.run(
             "pip install https://github.com/AmoreForever/Shizu-Pyro/archive/dev.zip --force-reinstall",
             shell=True,
             check=True,
         )
+
         logging.info("Successfully installed shizu-pyrogram!")
         logging.info("Restarting...")
+
         return atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
+
     await idle()
 
     logging.info("Shizu is shutting down...")

@@ -12,14 +12,16 @@ import functools
 import random
 import string
 import typing
-import grapheme
+import contextlib
 import logging
 import io
 import os
-import contextlib
+import grapheme
 import git
+
 from types import FunctionType
 from urllib.parse import urlparse
+
 from typing import Any, List, Literal, Tuple, Union, AsyncIterator
 
 from pyrogram.types import Chat, Message, User
@@ -236,14 +238,6 @@ async def create_chat(
             await app.set_administrator_title(chat.id, bot, "Shizu Inline")
 
     return chat
-
-
-def check_url(url: str) -> bool:
-    """Checks url for validity"""
-    try:
-        return bool(urlparse(url).netloc)
-    except Exception:
-        return False
 
 
 def get_base_dir() -> str:
@@ -624,14 +618,6 @@ def run_sync(func: FunctionType, *args, **kwargs) -> asyncio.Future:
     )
 
 
-async def answer_eor(message: Message, *args, **kwargs) -> Message:
-    att = (
-        message.edit_text
-        if bool(message.from_user and message.from_user.is_self or message.outgoing)
-        else (message.reply_to_message or message).reply_text
-    )
-    return await att(*args, **kwargs)
-
 
 def get_display_name(entity: Union[User, Chat]) -> str:
     """Получить отображаемое имя
@@ -692,35 +678,6 @@ def random_id(size: int = 10) -> str:
     return "".join(
         random.choice(string.ascii_letters + string.digits) for _ in range(size)
     )
-
-
-def get_random_hex() -> str:
-    """Returns a random hex color"""
-    return "#%06x" % random.randint(0, 0xFFFFFF)
-
-
-def get_git_hash() -> typing.Union[str, bool]:
-    """
-    Get current Shizu git hash
-    :return: Git commit hash
-    """
-    try:
-        return git.Repo().head.commit.hexsha
-    except Exception:
-        return False
-
-
-def get_commit_url() -> str:
-    """
-    Get current Shizu git commit url
-    :return: Git commit url
-    """
-    try:
-        hash_ = get_git_hash()
-        return f'<a href="https://github.com/AmoreForever/Shizu/commit/{hash_}">#{hash_[:7]}</a>'
-    except Exception:
-        return "Unknown"
-
 
 def is_tl_enabled() -> bool:
     """Check if telethon is enabled"""

@@ -230,8 +230,10 @@ class ShizuSettings(loader.Module):
         phone = phone = f"+{(await self.app.get_me()).phone_number}"
         api_id = self.app.api_id
         api_hash = self.app.api_hash
+        
         client = TelegramClient("shizu-tl", api_id, api_hash)
         await client.connect()
+        
         try:
             login = await client.send_code_request(phone=phone)
             await client.disconnect()
@@ -242,16 +244,22 @@ class ShizuSettings(loader.Module):
             t = message.text
 
         code = re.findall(r"(\d{5})", t)[0]
+        
         client = TelegramClient("shizu-tl", api_id, api_hash, device_model="Shizu-Tl")
+        
         await client.connect()
+        
         try:
             await client.sign_in(
                 phone=f"+{(await self.app.get_me()).phone_number}",
                 code=code,
                 phone_code_hash=login.phone_code_hash,
             )
+            
             await client.disconnect()
+            
             await call.edit(self.strings["congratulations"])
+            
         except SessionPasswordNeededError:
             await call.edit(
                 "\n\nPlease temporarily disable 2FA\n\n <i># Hikamoru too lazy to extend this module</i>"
@@ -266,4 +274,5 @@ class ShizuSettings(loader.Module):
                 + "\n\nPlease temporarily disable 2FA\n\n <i># Hikamoru too lazy to extend this module</i>",
                 reply_markup=self.markup_(),
             )
+            
         await message.answer(self.strings["already_enabled"])

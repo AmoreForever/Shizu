@@ -93,6 +93,8 @@ class CustomException:
             "Traceback (most recent call last):\n", ""
         )
 
+        # part HIkka: https://github.com/hikariatama/Hikka/blob/ce1f24f03313f8500de671815dde065fc8d86897/hikka/log.py#L76
+
         line_regex = r'  File "(.*?)", line ([0-9]+), in (.+)'
 
         def format_line(line: str) -> str:

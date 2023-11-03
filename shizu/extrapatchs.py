@@ -8,7 +8,6 @@
 import loguru
 from .utils import (
     answer,
-    answer_eor,
     get_args,
     get_args_raw,
     get_args_html,
@@ -37,7 +36,6 @@ class MessageMagic:
 
         Side Effects:
             Sets the `answer` attribute of the `message` object.
-            Sets the `answer_eor` attribute of the `message` object.
             Sets the `get_args` attribute of the `message` object.
             Sets the `get_args_raw` attribute of the `message` object.
             Sets the `get_args_html` attribute of the `message` object.
@@ -46,10 +44,8 @@ class MessageMagic:
         """
         try:
             self.message.answer = answer
-            self.message.answer_eor = answer_eor
             self.message.get_args = get_args
             self.message.get_args_raw = get_args_raw
             self.message.get_args_html = get_args_html
-            logger.success("MessageMagic initialized")
         except Exception as e:
             logger.error(f"Error initializing MessageMagic: {str(e)}")

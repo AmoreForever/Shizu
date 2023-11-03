@@ -21,19 +21,19 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-import contextlib
 import os
 import sys
 import time
 import logging
 import atexit
 
-from pyrogram import Client, types, enums
 from subprocess import check_output
+
+from pyrogram import Client, types, enums
+
 from .. import loader, utils
 from ..version import __version__, branch
 
-from aiogram import Bot
 from aiogram.utils.exceptions import ChatNotFound
 
 

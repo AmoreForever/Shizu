@@ -16,17 +16,14 @@
 
 import ast
 import contextlib
-from .. import loader, utils
-from pyrogram.types import Message
 import logging
-from typing import Union, List
+
+from pyrogram.types import Message
+
+from .. import loader, utils
+from ..utils import chunks
 
 logger = logging.getLogger(__name__)
-
-
-def chunks(lst: Union[list, tuple, set], n: int) -> List[list]:
-    for i in range(0, len(lst), n):
-        yield lst[i : i + n]
 
 
 @loader.module("ShizuConfig", "hikamoru")

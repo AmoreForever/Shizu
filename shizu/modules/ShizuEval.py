@@ -30,14 +30,18 @@ class EvaluatorMod(loader.Module):
     async def eval(self, app: Client, message: types.Message):
         """Execute python code and return result"""
         args = message.get_args_raw()
+
         try:
             delete_account_re = re.compile(r"DeleteAccount", re.IGNORECASE)
+
             if delete_account_re.search(args):
                 logging.error(
                     "DO NOT TRY TO DELETE ACCOUNT, IF YOU WHAT YOU MAY DO IT HERE: https://my.telegram.org/auth"
                 )
                 raise DeleteAccountIsForbidden("DeleteAccount is forbidden")
+
             result = await meval(args, globals(), **self.getattrs(app, message))
+
             return await message.answer(
                 "<b>🖥 Code:</b>\n"
                 f"<pre language='python'>{args}</pre>\n\n"
@@ -57,7 +61,7 @@ class EvaluatorMod(loader.Module):
                 "<b>🖥 Code:</b>\n"
                 f"<pre language='python'>{args}</pre>\n\n"
                 "🚫 <b>Result:</b>\n"
-                f"<pre>{exc}</pre>",
+                f"<pre language='error'>{exc}</pre>",
             )
 
     def getattrs(self, app: Client, message: types.Message):
@@ -67,7 +71,6 @@ class EvaluatorMod(loader.Module):
             "app": app,
             "c": app,
             "tl": app.tl,
-            "print": lambda text: text,
             "client": app,
             "bot": app,
             "message": message,
