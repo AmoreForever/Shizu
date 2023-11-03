@@ -293,18 +293,20 @@ class ShizuOwner(loader.Module):
     @loader.command()
     async def delowner(self, app, message):
         """Remove owner permissions from user - <user_id>"""
-        user = utils.get_args(message)
+        user = int(utils.get_args(message))
         if not user:
             await utils.answer(message, self.strings("whod"))
             return
         if user not in self.db.get("shizu.me", "owners", []):
             await utils.answer(message, self.strings("not_owner"))
             return
+        
         self.db.set(
             "shizu.me",
-            "owner",
+            "owners",
             list(set(self.db.get("shizu.me", "owners", [])) - {user}),
         )
+        self.db.save()
         await utils.answer(
             message, self.strings("doned").format((await app.get_users(user)).mention)
         )

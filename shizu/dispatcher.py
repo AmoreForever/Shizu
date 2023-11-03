@@ -41,15 +41,11 @@ async def check_filters(
         return True
 
     if (
-        not message.outgoing
-        and (
-            message.sender_chat.id
-            if message.from_user is None
-            else message.from_user.id
-        )
-        not in db.get("shizu.me", "owners", [])
-        and not db.get("shizu.owner", "status", False)
-    ):
+        message.sender_chat.id if message.from_user is None else message.from_user.id
+    ) in db.get("shizu.me", "owners", []) and db.get("shizu.owner", "status", False):
+        return True
+
+    if not message.outgoing:
         return False
 
     return True
