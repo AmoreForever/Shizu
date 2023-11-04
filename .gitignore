@@ -1,4 +1,5 @@
 __pycache__/
+downloads
 config.ini
 db.json
 shizu.session

@@ -1,3 +1,11 @@
+"""
+    █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+    █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+
+    Copyright 2022 t.me/hikariatama
+    Licensed under the GNU GPLv3
+"""
+
 # █ █ █ █▄▀ ▄▀█ █▀▄▀█ █▀█ █▀█ █ █
 # █▀█ █ █ █ █▀█ █ ▀ █ █▄█ █▀▄ █▄█
 
@@ -44,7 +52,6 @@ class Strings:
         self._translator = translator
         self._db = db
         self._base_strings = mod.strings
-        # self.part = https://github.com/hikariatama/Hikka/blob/866f0a94e5d32a34b6dc8719da95307c353ac1e9/hikka/translations.py#L20
 
     def __getitem__(self, key: str) -> str:
         return (

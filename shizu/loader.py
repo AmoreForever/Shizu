@@ -21,14 +21,13 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-import traceback
+
 import inspect
 import logging
 import os
 import random
 import re
 import string
-import asyncio
 import subprocess
 import sys
 import typing
@@ -120,12 +119,6 @@ def get_command_handlers(instance: Module) -> Dict[str, FunctionType]:
         or method_name.endswith("_cmd")
         or method_name.endswith("cmd")
     }
-
-
-def return_aliases(instance: Module) -> Dict[str, str]:
-    """Returns a dictionary of aliases"""
-    return instance.aliases
-
 
 def get_watcher_handlers(instance: Module) -> List[FunctionType]:
     """Returns a list of watchers"""
@@ -402,7 +395,6 @@ class ModulesManager:
             instance.reconfmod = self.config_reconfigure
             instance.aelis = self.aelis
             instance.shizu = True
-            instance.invoke = self.invoke
 
             instance.command_handlers = get_command_handlers(instance)
             instance.watcher_handlers = get_watcher_handlers(instance)
@@ -430,26 +422,6 @@ class ModulesManager:
             False,
         )
 
-    async def invoke(self, command: str, message: types.Message) -> bool:
-        """Invokes the command"""
-        command = command.lower()
-        if command in self.command_handlers:
-            try:
-                await self.command_handlers[command](self._app, message)
-            except Exception as error:
-                logging.exception(f"Error executing command {command}: {error}")
-                await message.reply(
-                    f"🚫 <b>Error executing command</b>"
-                    "\n\n"
-                    + "\n".join(
-                        traceback.format_exception(
-                            type(error), error, error.__traceback__
-                        )
-                    )
-                )
-            return True
-        return False
-
     async def load_module(
         self,
         module_source: str,
@@ -463,12 +435,14 @@ class ModulesManager:
                 random.choice(string.ascii_letters + string.digits) for _ in range(10)
             )
         )
+        
         delete_account_re = re.compile(r"DeleteAccount", re.IGNORECASE)
         if delete_account_re.search(module_source):
             logging.error(
                 "Module %s is forbidden, because it contains DeleteAccount", module_name
             )
             return "DAR"
+        
         if re.search(r"# ?only: ?(.+)", module_source) and str(
             self._db.get("shizu.me", "me")
         ) not in re.search(r"# ?only: ?(.+)", module_source)[1].split(","):
@@ -477,6 +451,9 @@ class ModulesManager:
                 module_name,
             )
             return "NFA"
+        
+        
+        
         try:
             spec = ModuleSpec(
                 module_name, StringLoader(module_source, origin), origin=origin
