@@ -165,9 +165,7 @@ class UpdateMod(loader.Module):
     @loader.command()
     async def restart(self, app: Client, message: types.Message):
         """Rebooting the user bot"""
-        ms = await app.send_message(
-            message.chat.id, self.strings("reboot_"), reply_to_message_id=message.id
-        )
+        ms = await message.answer(self.strings("reboot_"))
         self.db.set(
             "shizu.updater",
             "restart",
