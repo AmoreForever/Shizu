@@ -50,22 +50,10 @@ class AelisAPI:
         :return: None
         """
         user_id = self.db.get("shizu.me", "me")
-        url = f"{self.api}/user/{user_id}/shizu/"
-        await self.session.post(url)
-        await self.recap_token()
-
-    async def recap_token(self):
-        """
-        Retrieves a token from the API endpoint.
-
-        :return: The JSON response containing the token.
-        :rtype: dict
-        """
-        url = f"{self.api}/gettoken/"
-        params = {"user_id": self.db.get("shizu.me", "me")}
-        response = await self.session.get(url, params=params)
-        self.db.set("aelis", "token", response.json()["token"])
-        return response.json()
+        params = {"user_id": user_id, "userbot": "shizu"}
+        url = f"{self.api}/user/"
+        x = await self.session.post(url, params=params)
+        self.db.set("aelis", "token", x.json()["token"])
 
     async def search(self, module):
         """
