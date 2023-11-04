@@ -50,8 +50,7 @@ class AelisAPI:
         :return: None
         """
         user_id = self.db.get("shizu.me", "me")
-        bot_token = self.db.get("shizu.bot", "token")
-        url = f"{self.api}/user/{user_id}/shizu/{bot_token}"
+        url = f"{self.api}/user/{user_id}/shizu/"
         await self.session.post(url)
         await self.recap_token()
 
