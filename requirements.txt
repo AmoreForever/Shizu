@@ -1,4 +1,5 @@
 https://github.com/AmoreForever/Shizu-Pyro/archive/dev.zip
+telethon
 aiogram==2.25.1
 TgCrypto
 psutil
