@@ -31,8 +31,13 @@ class TokenManager(Item):
 
             await conv.get_response()
             await conv.ask("/mybots")
+            
+            time.sleep(1)
+            
             r = await conv.get_response()
-
+            
+            time.sleep(1)
+            
             if not r.reply_markup:
                 return False
 
@@ -40,9 +45,6 @@ class TokenManager(Item):
             buttons_text = [button.text for row in data for button in row]
 
             buttons = [i for i in buttons_text if "shizu" in i]
-
-            if not buttons:
-                return False
 
             logger.info("Found bot: %s", buttons[0])
 
@@ -54,7 +56,7 @@ class TokenManager(Item):
             await h2.click(0)
 
             response = await conv.get_response()
-
+            await self._app.send_message(buttons[0], "/start")
             if token_match := re.search(r"(\d+:[A-Za-z0-9_-]+)", response.text):
                 return token_match[1]
             else:

@@ -57,6 +57,8 @@ from pyrogram.raw.types.message_entity_custom_emoji import MessageEntityCustomEm
 from pyrogram.raw.types import InputChannel
 
 from . import database
+from . import bot
+
 
 FormattingEntity = Union[
     MessageEntityUnknown,
@@ -278,12 +280,12 @@ async def create_chat(
         chat = await app.create_supergroup(title, description)
 
     if inline_bot:
-        bot = (await bot.bot.get_me()).username
-        await app.add_chat_members(chat.id, [bot])
+        bot_ = (await app.bot.get_me()).username
+        await app.add_chat_members(chat.id, [bot_])
 
         if promote:
-            await app.promote_chat_member(chat.id, bot)
-            await app.set_administrator_title(chat.id, bot, "Shizu Inline")
+            await app.promote_chat_member(chat.id, bot_)
+            await app.set_administrator_title(chat.id, bot_, "Shizu Inline")
 
     return chat
 

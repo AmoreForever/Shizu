@@ -88,48 +88,7 @@ class UpdateMod(loader.Module):
         "start_r": "<emoji id=5017470156276761427>🔄</emoji> <b>Қайта іске қосу сәтті аяқталды!</b>\n<emoji id=5451646226975955576>⌛️</emoji> Қайта іске қосу <code>{}</code> секунд ұзақтығынан тұрады",
         "start_u": "<emoji id=5258420634785947640>🔄</emoji> <b>Жаңарту сәтті аяқталды!</b>\n<emoji id=5451646226975955576>⌛️</emoji> Жаңарту <code>{}</code> секунд ұзақтығынан тұрады",
     }
-
-    async def on_load(self, app: Client):
-        if restart := self.db.get("shizu.updater", "restart"):
-            if restart["type"] == "restart":
-                restarted_text = self.strings("start_r").format(
-                    round(time.time()) - int(restart["start"])
-                )
-            else:
-                restarted_text = self.strings("start_u").format(
-                    round(time.time()) - int(restart["start"])
-                )
-
-            try:
-                await app.edit_message_text(
-                    restart["chat"], restart["id"], restarted_text
-                )
-            except Exception as why:
-                logging.error(f"Failed to edit message: {why}")
-            logging.info("Successfully started!")
-            self.db.pop("shizu.updater", "restart")
-
-        started_text = (
-            f"🐙 <b>Your <u>Shizu</u> started</b> <code>v{'.'.join(map(str, __version__))}</code>\n\n"
-            f"🌳 <b>Branch:</b> <code>{branch}</code>\n"
-        )
-        try:
-            await self._bot.send_photo(
-                chat_id=self.db.get("shizu.chat", "logs", None),
-                photo=open("assets/Shizu.jpg", "rb"),
-                caption=started_text,
-                parse_mode="HTML",
-            )
-        except ChatNotFound:
-            await utils.invite_bot(app, self.db.get("shizu.chat", "logs", None))
-            await self._bot.send_photo(
-                chat_id=self.db.get("shizu.chat", "logs", None),
-                photo=open("assets/Shizu.jpg", "rb"),
-                caption=started_text,
-                parse_mode="HTML",
-            )
-        except Exception:
-            pass
+        
 
     @loader.command()
     async def update(self, app: Client, message: types.Message):

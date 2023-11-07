@@ -14,6 +14,7 @@ import asyncio
 import contextlib
 import httpx
 
+from pyrogram import Client
 from .database import db
 
 logger = logging.getLogger("aelis")
@@ -26,7 +27,7 @@ class AelisNotAuthorized(Exception):
 
 
 class AelisAPI:
-    def __init__(self):
+    def __init__(self, app: Client):
         """
         Initializes an instance of the class.
 
@@ -41,6 +42,7 @@ class AelisAPI:
         self.api = "https://aelis.hikamoru.uz"
         self.db = db
         self.session = httpx.AsyncClient()
+        self.app = app
         asyncio.create_task(self.post_info())
 
     async def post_info(self):
@@ -49,7 +51,7 @@ class AelisAPI:
 
         :return: None
         """
-        user_id = self.db.get("shizu.me", "me")
+        user_id = (await self.app.get_me()).id
         params = {"user_id": user_id, "userbot": "shizu"}
         url = f"{self.api}/user/"
         x = await self.session.post(url, params=params)

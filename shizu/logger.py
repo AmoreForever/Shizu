@@ -27,6 +27,7 @@ from loguru._colorizer import Colorizer
 from loguru import logger
 
 from .database import db
+from . import utils 
 
 FORMAT_FOR_FILES = "[{level}] {name}: {message}"
 
@@ -242,7 +243,6 @@ class Telegramhandler(logging.Handler):
         self.buffer = []
         self.handled_buffer = []
         self.msgs = []
-        self.bot = bot
         self.chat = db.get("shizu.chat", "logs")
         self.last_log_time = None
         self.time_threshold = 1
@@ -266,10 +266,10 @@ class Telegramhandler(logging.Handler):
         if current_time - self.last_log_time >= self.time_threshold and self.msgs:
             try:
                 asyncio.ensure_future(
-                    self.bot.send_message(self.chat, "\n".join(self.msgs))
+                    bot.send_message(self.chat, "\n".join(self.msgs))
                 )
-            except Exception:
-                logger.exception("Error while sending logs to telegram")
+            except:
+                pass
             self.msgs.clear()
             self.last_log_time = current_time
 

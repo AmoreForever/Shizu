@@ -293,7 +293,7 @@ class ModulesManager:
         self.bot_manager: bot.BotManager = None
 
         self.root_module: Module = None
-        self.aelis = aelis.AelisAPI()
+        self.aelis = aelis.AelisAPI(self._app)
         self.cmodules = [
             "ShizuBackuper",
             "ShizuHelp",

@@ -58,7 +58,6 @@ import contextlib
 import pyrogram
 from typing import Union, List, Any, Optional
 from .. import utils, logger as lo
-from ..utils import rand
 from .types import Item
 from .. import database
 
@@ -341,7 +340,7 @@ class Events(Item):
                 return await inline_query.answer(
                     [
                         InlineQueryResultArticle(
-                            id=rand(20),
+                            id=utils.rand(20),
                             title="Shizu",
                             input_message_content=InputTextMessageContent(
                                 self._forms[query].get(
@@ -360,7 +359,7 @@ class Events(Item):
                 return await inline_query.answer(
                     [
                         InlineQueryResultArticle(
-                            id=rand(20),
+                            id=utils.rand(20),
                             title="Shizu",
                             input_message_content=InputTextMessageContent(
                                 self._forms[query].get("text", None),
@@ -387,7 +386,7 @@ class Events(Item):
                         await inline_query.answer(
                             [
                                 InlineQueryResultArticle(
-                                    id=rand(20),
+                                    id=utils.rand(20),
                                     title=button["input"],
                                     description="⚠️ Please, do not remove identifier!",
                                     input_message_content=InputTextMessageContent(
@@ -435,7 +434,7 @@ class Events(Item):
                         return None
 
                 if "callback" in button and "_callback_data" not in button:
-                    button["_callback_data"] = rand(30)
+                    button["_callback_data"] = utils.rand(30)
                     self._custom_map[button["_callback_data"]] = button
 
                 if "handler" in button and not isinstance(button["handler"], str):
@@ -454,7 +453,7 @@ class Events(Item):
                         return None
 
                 if "input" in button and "_switch_query" not in button:
-                    button["_switch_query"] = rand(10)
+                    button["_switch_query"] = utils.rand(10)
 
         for row in (
             self._forms[form_uid]["buttons"] if isinstance(form_uid, str) else form_uid
@@ -730,7 +729,7 @@ class Events(Item):
             logger.error("Invalid type for `ttl`")
             return False
 
-        form_uid = rand(30)
+        form_uid = utils.rand(30)
 
         self._forms[form_uid] = {
             "type": "form",
@@ -861,9 +860,9 @@ class Events(Item):
             ttl = self._markup_ttl
             logger.debug("Defaulted ttl, because it breaks out of limits")
 
-        unit_id = utils.rand(16)
+        unit_id = utils.utils.rand(16)
         btn_call_data = {
-            key: utils.rand(10) for key in {"back", "next", "show_current"}
+            key: utils.utils.rand(10) for key in {"back", "next", "show_current"}
         }
 
         perms_map = None

@@ -154,7 +154,9 @@ class Auth:
                             )
                         )
                     except errors.exceptions.unauthorized_401.SessionPasswordNeeded:
-                        me: types.User = await self.enter_2fa()
+                        me: types.User = (
+                            await self.app.get_me() if logged else await self.enter_2fa()
+                        )
                         break
                     if isinstance(
                         r, raw.types.auth.login_token_success.LoginTokenSuccess
