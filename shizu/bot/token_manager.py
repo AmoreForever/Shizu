@@ -45,6 +45,9 @@ class TokenManager(Item):
             buttons_text = [button.text for row in data for button in row]
 
             buttons = [i for i in buttons_text if "shizu" in i]
+            
+            if not buttons:
+                return False
 
             logger.info("Found bot: %s", buttons[0])
 
