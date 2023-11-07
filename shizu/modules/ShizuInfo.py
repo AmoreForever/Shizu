@@ -85,7 +85,7 @@ class InformationMod(loader.Module):
 
         return (
             "🐙 <b>Shizu UserBot</b>\n\n"
-            f"👑 <b:>Owner</b: {mention}\n\n"
+            f"👑 <b>Owner</b>: {mention}\n\n"
             f"🌳 <b>Branch</b>: <code>{version.branch}</code>\n"
             f"🦋 <b>Version</b>: <code>{'.'.join(map(str, version.__version__))}</code>\n\n"
             f"⌨️ <b>Prefix</b>: <code>{prefix}</code>\n"
