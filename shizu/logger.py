@@ -7,7 +7,7 @@
 
 
 import logging
-import requests
+import asyncio
 import traceback
 import os
 import typing
@@ -17,8 +17,10 @@ import html
 import re
 import time
 
+from datetime import datetime
 
 from typing import Union
+from aiogram import Bot, Dispatcher
 from aiogram.utils.exceptions import NetworkError
 from loguru._better_exceptions import ExceptionFormatter
 from loguru._colorizer import Colorizer
@@ -34,18 +36,14 @@ FORMAT_FOR_TGLOG = logging.Formatter(
     style="%",
 )
 
+with contextlib.suppress(Exception): # will be simplified in the future
+    bot = Bot(token=db.get("shizu.bot", "token", None), parse_mode="html")
+    dp = Dispatcher(bot)
+
+
 
 def get_valid_level(level: Union[str, int]):
     return int(level) if level.isdigit() else getattr(logging, level.upper(), None)
-
-
-def send_message(message: str, chat_id: int):
-    with contextlib.suppress(NetworkError):
-        requests.post(
-            f"https://api.telegram.org/bot{db.get('shizu.bot', 'token')}/sendMessage",
-            data={"chat_id": chat_id, "text": message, "parse_mode": "HTML"},
-            timeout=10,
-        )
 
 
 class CustomException:
@@ -103,7 +101,7 @@ class CustomException:
                 filename_ = os.path.basename(filename_)
 
             return (
-                f"👉 <code>{html.escape(filename_)}:{lineno_}</code> <b>in</b>"
+                f"➤ <code>{html.escape(filename_)}:{lineno_}</code> <b>in</b>"
                 f" <code>{html.escape(name_)}</code>"
             )
 
@@ -129,12 +127,10 @@ class CustomException:
             filename = os.path.basename(filename)
 
         return CustomException(
-            message=override_text(exc_value)
-            or (
-                f"<b>🗄 Where:</b>  "
-                f"<code>{html.escape(filename)}:{lineno}</code>"
-                f"<b>in </b><code>{html.escape(name)}</code>\n<b>❓ What:</b>"
-                f" <code>{html.escape(''.join(traceback.format_exception_only(exc_type, exc_value)).strip())}</code>"
+            message=(
+                f"<b>🌎 Where:</b> <code>{html.escape(filename)}:{lineno}</code> <b>in </b><code>{html.escape(name)}</code>\n"
+                f"<b>⏳ When:</b> <code>{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</code>\n"
+                f"<b>🤔 What:</b> <code>{html.escape(''.join(traceback.format_exception_only(exc_type, exc_value)).strip())}</code>"
             ),
             local_vars=(
                 f"<code>{html.escape(json.dumps(to_hashable(tb.tb_frame.f_locals), indent=4))}</code>"
@@ -246,7 +242,7 @@ class Telegramhandler(logging.Handler):
         self.buffer = []
         self.handled_buffer = []
         self.msgs = []
-        self.token = db.get("shizu.bot", "token")
+        self.bot = bot
         self.chat = db.get("shizu.chat", "logs")
         self.last_log_time = None
         self.time_threshold = 1
@@ -268,7 +264,12 @@ class Telegramhandler(logging.Handler):
         self.msgs.append(f"<code>{FORMAT_FOR_TGLOG.format(record)}</code>")
 
         if current_time - self.last_log_time >= self.time_threshold and self.msgs:
-            send_message("\n".join(self.msgs), self.chat)
+            try:
+                asyncio.ensure_future(
+                    self.bot.send_message(self.chat, "\n".join(self.msgs))
+                )
+            except Exception:
+                logger.exception("Error while sending logs to telegram")
             self.msgs.clear()
             self.last_log_time = current_time
 
@@ -296,4 +297,3 @@ def setup_logger(level: Union[str, int]):
         "pyrogram.methods.utilities.idle",
     ]:
         logger.disable(ignore)
-    logging.captureWarnings(True)

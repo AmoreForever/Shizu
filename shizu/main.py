@@ -9,11 +9,13 @@ import logging
 import os
 import atexit
 import sys
-import pyrogram
 import asyncio
 import subprocess
-from pyrogram.methods.utilities.idle import idle
+
+import pyrogram
 from pyrogram import types
+from pyrogram.methods.utilities.idle import idle
+
 from . import auth, database, loader, utils, extrapatchs
 
 
@@ -21,7 +23,9 @@ async def main():
     """Main function"""
 
     me, app, tapp = await auth.Auth().authorize()
+
     await app.initialize()
+
     db = database.db
 
     modules = loader.ModulesManager(app, db, me)

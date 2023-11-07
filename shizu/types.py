@@ -58,11 +58,11 @@ class StopLoop(Exception):
     """Stops the loop, in which is raised"""
 
 
-class InfiniteLoop: 
+class InfiniteLoop:
     _task = None
     status = False
 
-    #piece of code: https://github.com/hikariatama/Hikka/blob/ce1f24f03313f8500de671815dde065fc8d86897/hikka/loader.py#L138
+    # piece of code: https://github.com/hikariatama/Hikka/blob/ce1f24f03313f8500de671815dde065fc8d86897/hikka/loader.py#L138
     def __init__(
         self,
         func: FunctionType,

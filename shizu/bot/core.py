@@ -21,9 +21,7 @@ with contextlib.suppress(Exception):
 class BotManager(Events, TokenManager):
     """Bot manager"""
 
-    def __init__(
-        self, app: Client, db: database.Database, all_modules: types.ModulesManager
-    ) -> None:
+    def __init__(self, app: Client, db: database.Database, all_modules: types.ModulesManager) -> None:
         """Initializing a class
 
         Parameters:
@@ -36,6 +34,7 @@ class BotManager(Events, TokenManager):
                     all_modules (`loader.Modules"):
         Modules
         """
+        super().__init__()
         self._app = app
         self._app._inline = self
         self._db = db
@@ -49,14 +48,13 @@ class BotManager(Events, TokenManager):
     async def load(self) -> Union[bool, NoReturn]:
         """Loads the bot manager"""
         if not self._token:
-            self._token, self._bot_username = await self._create_bot()
+            self._token = await self._create_bot()
             if self._token is False:
                 error_text = "A user bot needs a bot. Solve the problem of creating a bot and start the user bot again"
                 logging.error(error_text)
                 return sys.exit(1)
 
             self._db.set("shizu.bot", "token", self._token)
-            self._db.set("shizu.bot", "username", self._bot_username)
 
         try:
             self.bot = Bot(self._token, parse_mode="html")
@@ -64,7 +62,6 @@ class BotManager(Events, TokenManager):
             logging.error("Invalid token. Attempt to recreate the token")
 
             self._db.set("shizu.bot", "token", self._token)
-            self._db.set("shizu.bot", "username", self._bot_username)
             return await self.load()
 
         self._dp = Dispatcher(self.bot)

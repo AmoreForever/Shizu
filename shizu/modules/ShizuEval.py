@@ -46,7 +46,7 @@ class EvaluatorMod(loader.Module):
                 "<b>🖥 Code:</b>\n"
                 f"<pre language='python'>{args}</pre>\n\n"
                 f"✅ <b>Result:</b>\n"
-                f"<pre language='python'>{result}</pre>",
+                f"<pre language='python'>{utils.escape_html(result)}</pre>",
             )
         except Exception:
             item = logger.CustomException.from_exc_info(*sys.exc_info())

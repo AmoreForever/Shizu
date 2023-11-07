@@ -137,7 +137,8 @@ class Conversation:
                 await asyncio.sleep(1)
                 responses = self.app.get_chat_history(self.chat_id, limit=1)
 
-        self.messagee_to_purge.append(response)
+            self.messagee_to_purge.append(response)
+
         return response
 
     async def get_another_same(self) -> types.Message:
@@ -152,7 +153,7 @@ class Conversation:
                 await asyncio.sleep(1)
                 responses = self.app.get_chat_history(self.chat_id, limit=1)
 
-        self.messagee_to_purge.append(response)
+            self.messagee_to_purge.append(response)
         return response
 
     async def _purge(self) -> bool:

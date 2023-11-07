@@ -8,7 +8,7 @@
 
 import shutil
 import os
-from .. import loader, utils, translater
+from .. import loader, utils, translator
 
 
 @loader.module("ShizuLanguages", "hikamoru", 1.0)
@@ -97,7 +97,7 @@ class ShizuLanguages(loader.Module):
         shutil.move(mm, langpack_path)
 
         await message.answer("<b>Downloaded</b>")
-        tr = translater.Translator(app, self.db)
+        tr = translator.Translator(app, self.db)
         await tr.init()
         await message.answer(
             self.strings("language_saved").format(utils.get_lang_flag(args.lower()))

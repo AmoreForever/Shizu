@@ -10,6 +10,7 @@ import asyncio
 import logging
 import base64
 import sys
+import os
 
 from datetime import datetime
 from getpass import getpass
@@ -46,14 +47,35 @@ def colored_input(prompt: str = "", hide: bool = False) -> str:
 class Auth:
     def __init__(self, session_name: str = "../shizu") -> None:
         self._check_api_tokens()
+
         cfg = cp.ConfigParser()
         cfg.read("./config.ini")
-        self.app = Client(
-            name=session_name,
-            api_id=cfg.get("pyrogram", "api_id"),
-            api_hash=cfg.get("pyrogram", "api_hash"),
-            device_model="Shizu",
-        )
+
+        try:  # TODO: Remove this in the future
+            device_model = cfg["pyrogram"]["device_model"]
+        except KeyError:
+            device_model = utils.get_random_smartphone()
+
+            cfg["pyrogram"]["device_model"] = device_model
+
+            with open("./config.ini", "w", encoding="utf-8") as file:
+                cfg.write(file)
+
+        if "JAMHOST" in os.environ:
+            self.app = Client(
+                name=session_name,
+                api_id=cfg.get("pyrogram", "api_id"),
+                api_hash=cfg.get("pyrogram", "api_hash"),
+                device_model=device_model,
+                session_string=cfg.get("pyrogram", "string_session", fallback=None),
+            )
+        else:
+            self.app = Client(
+                name=session_name,
+                api_id=cfg.get("pyrogram", "api_id"),
+                api_hash=cfg.get("pyrogram", "api_hash"),
+                device_model=device_model,
+            )
         if utils.is_tl_enabled():
             self.tapp = TelegramClient(
                 "shizu-tl",
@@ -68,6 +90,7 @@ class Auth:
             cfg["pyrogram"] = {
                 "api_id": colored_input("Enter API ID: "),
                 "api_hash": colored_input("Enter API hash: "),
+                "device_model": utils.get_random_smartphone(),
             }
             with open("./config.ini", "w", encoding="utf-8") as file:
                 cfg.write(file)
@@ -153,17 +176,20 @@ class Auth:
             else:
                 phone, phone_code_hash = await self.send_code()
                 logged = await self.enter_code(phone, phone_code_hash)
-                me: types.User = (
-                    await self.app.get_me() if logged else await self.enter_2fa()
-                )
+                
+                cfg["pyrogram"]["string_session"] = await self.app.export_session_string()
+                with open("./config.ini", "w", encoding="utf-8") as file:
+                    cfg.write(file)
+                
+
         except errors.SessionRevoked:
             logging.error(
                 "Session has been revoked, delete the session and run the start command again"
             )
             await self.app.disconnect()
             return sys.exit(64)
-        
+
         if utils.is_tl_enabled():
             return me, self.app, self.tapp
-        
+
         return me, self.app, None

@@ -33,7 +33,7 @@ from .. import logger
 
 from pyrogram import Client, types
 from pyrogram.raw import functions, types as typ
-from .. import loader, utils, translater
+from .. import loader, utils
 
 
 @loader.module(name="ShizuTester", author="shizu")

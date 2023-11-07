@@ -206,10 +206,11 @@ class ShizuOwner(loader.Module):
         )
 
     async def add_owner_hnd(self, call: "aiogram.types.CallbackQuery", query, cid):
+        user_id = (await self.app.get_users(query)).id
         self.db.set(
             "shizu.me",
             "owners",
-            list(set(self.db.get("shizu.me", "owners", []) + [int(query)])),
+            list(set(self.db.get("shizu.me", "owners", []) + [int(user_id)])),
         )
         await call.edit(
             self.strings("successfull"),
@@ -226,10 +227,12 @@ class ShizuOwner(loader.Module):
         )
 
     async def del_owner_hnd(self, call: "aiogram.types.CallbackQuery", query, cid):
+        user_id = (await self.app.get_users(query)).id
+
         self.db.set(
             "shizu.me",
             "owners",
-            list(set(self.db.get("shizu.me", "owners", [])) - {int(query)}),
+            list(set(self.db.get("shizu.me", "owners", [])) - {int(user_id)}),
         )
         await call.edit(
             self.strings("successfull"),
@@ -274,50 +277,65 @@ class ShizuOwner(loader.Module):
     @loader.command()
     async def addowner(self, app, message):
         """Give owner permissions to user - <user_id>"""
-        user = int(utils.get_args(message))
+
+        user = utils.get_args(message)
+        user_id = (await app.get_users(user)).id
+
         if not user:
             await utils.answer(message, self.strings("who"))
             return
+
         if user in self.db.get("shizu.me", "owners", []):
             await utils.answer(message, self.strings("already"))
             return
+
         self.db.set(
             "shizu.me",
             "owners",
-            list(set(self.db.get("shizu.me", "owners", []) + [user])),
+            list(set(self.db.get("shizu.me", "owners", []) + [user_id])),
         )
+
         await utils.answer(
-            message, self.strings("done").format((await app.get_users(user)).mention)
+            message, self.strings("done").format((await app.get_users(user_id)).mention)
         )
 
     @loader.command()
     async def delowner(self, app, message):
         """Remove owner permissions from user - <user_id>"""
-        user = int(utils.get_args(message))
+
+        user = utils.get_args(message)
+        user_id = (await app.get_users(user)).id
+
         if not user:
             await utils.answer(message, self.strings("whod"))
             return
-        if user not in self.db.get("shizu.me", "owners", []):
+
+        if user_id not in self.db.get("shizu.me", "owners", []):
             await utils.answer(message, self.strings("not_owner"))
             return
-        
+
         self.db.set(
             "shizu.me",
             "owners",
-            list(set(self.db.get("shizu.me", "owners", [])) - {user}),
+            list(set(self.db.get("shizu.me", "owners", [])) - {user_id}),
         )
+
         self.db.save()
+
         await utils.answer(
-            message, self.strings("doned").format((await app.get_users(user)).mention)
+            message,
+            self.strings("doned").format((await app.get_users(user_id)).mention),
         )
 
     @loader.command()
     async def owners(self, app, message):
         """Show owners"""
         owners = self.db.get("shizu.me", "owners", [])
+
         if not owners:
             await utils.answer(message, self.strings("no_owners"))
             return
+
         await utils.answer(
             message,
             self.strings("owners").format(

@@ -1,7 +1,6 @@
 import logging
 import re
 import time
-from loguru import logger
 from typing import Union
 from typing import Tuple
 
@@ -13,11 +12,15 @@ from .types import Item
 FIND = True
 
 
+logger = logging.getLogger(__name__)
+
+
 class TokenManager(Item):
     """Менеджер токенов"""
 
     async def _find_bot(self) -> Union[Tuple[str, str], None]:
         """Find the bot"""
+        
         async with fsm.Conversation(self._app, "@BotFather") as conv:
             logging.info("Checking for the presence of a bot...")
 
@@ -31,34 +34,41 @@ class TokenManager(Item):
             r = await conv.get_response()
 
             if not r.reply_markup:
-                return None, None
+                return False
 
             data = r.reply_markup.inline_keyboard
             buttons_text = [button.text for row in data for button in row]
 
-            if not buttons_text:
-                logger.error("The bot was not found, attempting to create a new bot...")
-                return None, None
-
             buttons = [i for i in buttons_text if "shizu" in i]
-            logger.success("Found bot: %s", buttons_text[buttons[0]])
+
+            if not buttons:
+                return False
+
+            logger.info("Found bot: %s", buttons[0])
+
             resp = await conv.get_response()
+
             await resp.click(buttons[0])
-            print(resp.text)
+
             h2 = await conv.get_another_same()
             await h2.click(0)
 
             response = await conv.get_response()
-            token_match = re.search(r"(\d+:[A-Za-z0-9_-]+)", response.text)
-            username_match = re.search(r"@(\w+)", response.text)
 
-            if token_match and username_match:
-                return token_match[1], username_match[1]
+            if token_match := re.search(r"(\d+:[A-Za-z0-9_-]+)", response.text):
+                return token_match[1]
             else:
-                return None  # Bot not found
+                return None
 
     async def _create_bot(self) -> Union[str, None]:
         """Create and configure a bot"""
+
+        logging.info("Started to search for a bot...")
+
+        if token := await self._find_bot():
+            logger.info("Found bot: %s", token)
+            return token
+
         async with fsm.Conversation(self._app, "@BotFather", True) as conv:
             logging.info("The process of creating a new bot has begun...")
 
@@ -68,7 +78,9 @@ class TokenManager(Item):
                 await self._app.unblock_user("@BotFather")
 
             await conv.get_response()
+
             await conv.ask("/newbot")
+
             response = await conv.get_response()
 
             error_phrases = ["That I cannot do.", "Sorry"]
@@ -94,7 +106,6 @@ class TokenManager(Item):
             time.sleep(1)
             response = await conv.get_response()
 
-            logger.error(response.text)
             search = re.search(r"(?<=<code>)(.*?)(?=</code>)", response.text.html)
             if not search:
                 logging.error("Произошла ошибка при создании бота. Ответ @BotFather:")
@@ -109,7 +120,9 @@ class TokenManager(Item):
             await conv.get_response()
 
             self._app.me = await self._app.get_me()
+
             await conv.ask_media("assets/bot.jpg", media_type="photo")
+
             await conv.get_response()
 
             await conv.ask("/setinline")
@@ -127,10 +140,19 @@ class TokenManager(Item):
             await conv.ask(f"@{bot_username}")
             await conv.get_response()
 
-            await conv.ask("1/100")
+            await conv.ask("1/1000")
             await conv.get_response()
 
-            logger.success(f"Bot successfully created @{bot_username}")
+            await conv.ask("/setinlinefeedback")
+            await conv.get_response()
+
+            await conv.ask(f"@{bot_username}")
+            await conv.get_response()
+
+            await conv.ask("Enabled")
+            await conv.get_response()
+
+            logger.info(f"Bot successfully created @{bot_username}")
             await self._app.send_message(bot_username, "/start")
 
-            return token, bot_username
+        return token

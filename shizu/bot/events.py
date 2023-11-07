@@ -32,6 +32,7 @@
 import time
 from urllib.parse import urlparse
 import os
+import sys
 from types import FunctionType
 
 import logging
@@ -56,7 +57,7 @@ import aiogram
 import contextlib
 import pyrogram
 from typing import Union, List, Any, Optional
-from .. import utils
+from .. import utils, logger as lo
 from ..utils import rand
 from .types import Item
 from .. import database
@@ -771,7 +772,15 @@ class Events(Item):
                 "while processing query. Check logs for "
                 f"further info.</b>\n\n {erro}"
             )
-
+            item = lo.CustomException.from_exc_info(*sys.exc_info())
+            exc = item.message + "\n\n" + item.full_stack
+            
+            log_message = "🚫 <b>Inline bot invoke failed!</b>\n\n" + exc
+            
+            # await self._app.bot.send_message(
+            #     self._db.get("shizu.chat", "logs", None), log_message
+            # )
+            
             del self._forms[form_uid]
             if isinstance(message, Message):
                 await (message.edit if message.out else message.respond)(msg)

@@ -72,7 +72,7 @@ class InformationMod(loader.Module):
         )
 
     def text_(self, me: types.User):
-        mention = f'<a href="tg://user?id={me.id}">{utils.get_display_name(me)}</a>'
+        mention = f'<a href="tg://user?id={me.id}">{utils.escape_html((utils.get_display_name(me)))}</a>'
         prefix = ", ".join(self.prefix)
         if self.config["custom_message"]:
             return "🐙 Shizu\n" + self.config["custom_message"].format(
@@ -82,15 +82,15 @@ class InformationMod(loader.Module):
                 branch=version.branch,
                 platform=utils.get_platform(),
             )
-        else:
-            return (
-                "🐙 <b>Shizu UserBot</b>\n\n"
-                f"👑 <b>Owner</b>: {mention}\n\n"
-                f"🌳 <b>Branch</b>: <code>{version.branch}</code>\n"
-                f"🦋 <b>Version</b>: <code>{'.'.join(map(str, version.__version__))}</code>\n\n"
-                f"⌨️ <b>Prefix</b>: <code>{prefix}</code>\n"
-                f"{utils.get_platform()}"
-            )
+
+        return (
+            "🐙 <b>Shizu UserBot</b>\n\n"
+            f"👑 <b:>Owner</b: {mention}\n\n"
+            f"🌳 <b>Branch</b>: <code>{version.branch}</code>\n"
+            f"🦋 <b>Version</b>: <code>{'.'.join(map(str, version.__version__))}</code>\n\n"
+            f"⌨️ <b>Prefix</b>: <code>{prefix}</code>\n"
+            f"{utils.get_platform()}"
+        )
 
     @loader.command()
     async def info(self, app: Client, message: types.Message):
