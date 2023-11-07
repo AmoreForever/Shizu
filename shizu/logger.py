@@ -26,8 +26,10 @@ from loguru._better_exceptions import ExceptionFormatter
 from loguru._colorizer import Colorizer
 from loguru import logger
 
+from aiogram.types import ParseMode
+
 from .database import db
-from . import utils 
+from . import utils
 
 FORMAT_FOR_FILES = "[{level}] {name}: {message}"
 
@@ -37,10 +39,9 @@ FORMAT_FOR_TGLOG = logging.Formatter(
     style="%",
 )
 
-with contextlib.suppress(Exception): # will be simplified in the future
+with contextlib.suppress(Exception):  # will be simplified in the future
     bot = Bot(token=db.get("shizu.bot", "token", None), parse_mode="html")
     dp = Dispatcher(bot)
-
 
 
 def get_valid_level(level: Union[str, int]):
@@ -261,16 +262,25 @@ class Telegramhandler(logging.Handler):
         if self.last_log_time is None:
             self.last_log_time = current_time
 
-        self.msgs.append(f"<code>{FORMAT_FOR_TGLOG.format(record)}</code>")
+        self.msgs.append(f"<code>{utils.escape_html(FORMAT_FOR_TGLOG.format(record))}</code>")
 
-        if current_time - self.last_log_time >= self.time_threshold and self.msgs:
+        if (
+            current_time - self.last_log_time >= self.time_threshold
+            and self.msgs
+            and self.chat
+        ):
             try:
-                if self.chat:
-                    asyncio.ensure_future(
-                        bot.send_message(self.chat, "\n".join(self.msgs))
+                asyncio.ensure_future(
+                    bot.send_message(
+                        self.chat,
+                        "\n".join(self.msgs)
+                        + f"\n\n<b>⏳ Logged time:</b> <code>{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</code>",
+                        parse_mode=ParseMode.HTML,
                     )
-            except:
+                )
+            except Exception:
                 pass
+
             self.msgs.clear()
             self.last_log_time = current_time
 
