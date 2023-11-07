@@ -265,9 +265,10 @@ class Telegramhandler(logging.Handler):
 
         if current_time - self.last_log_time >= self.time_threshold and self.msgs:
             try:
-                asyncio.ensure_future(
-                    bot.send_message(self.chat, "\n".join(self.msgs))
-                )
+                if self.chat:
+                    asyncio.ensure_future(
+                        bot.send_message(self.chat, "\n".join(self.msgs))
+                    )
             except:
                 pass
             self.msgs.clear()
