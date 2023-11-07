@@ -1,4 +1,4 @@
-__all__ = ["BotManager", "bot", "dp", "TokenManager"]
+__all__ = ["BotManager", "TokenManager"]
 
-from .core import BotManager, bot, dp
+from .core import BotManager
 from .token_manager import TokenManager
