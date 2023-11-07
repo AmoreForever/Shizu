@@ -30,13 +30,16 @@
 # 👤 https://t.me/hikamoru
 
 import time
-from urllib.parse import urlparse
-import os
 import sys
-from types import FunctionType
 
 import logging
 import traceback
+import asyncio
+import functools
+import contextlib
+import aiogram
+import pyrogram
+
 from aiogram.types import (
     CallbackQuery,
     InlineQuery,
@@ -50,13 +53,8 @@ from aiogram.types import (
     InlineQueryResultAudio,
     InlineQueryResultGif,
 )
-import asyncio
-import functools
-import aiogram
-
-import contextlib
-import pyrogram
 from typing import Union, List, Any, Optional
+
 from .. import utils, logger as lo
 from .types import Item
 from .. import database

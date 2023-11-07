@@ -269,7 +269,7 @@ class Telegramhandler(logging.Handler):
             and self.msgs
             and self.chat
         ):
-            try:
+            with contextlib.suppress(Exception):
                 asyncio.ensure_future(
                     bot.send_message(
                         self.chat,
@@ -278,9 +278,6 @@ class Telegramhandler(logging.Handler):
                         parse_mode=ParseMode.HTML,
                     )
                 )
-            except Exception:
-                pass
-
             self.msgs.clear()
             self.last_log_time = current_time
 
