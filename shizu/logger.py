@@ -11,7 +11,7 @@ import asyncio
 import traceback
 import os
 import typing
-import random
+import io
 import contextlib
 import json
 import html
@@ -263,47 +263,47 @@ class Telegramhandler(logging.Handler):
         if self.last_log_time is None:
             self.last_log_time = current_time
 
-        self.msgs.append(f"<code>{utils.escape_html(FORMAT_FOR_TGLOG.format(record))}</code>")
+        self.msgs.append(
+            f"<code>{utils.escape_html(FORMAT_FOR_TGLOG.format(record))}</code>"
+        )
 
         if (
             current_time - self.last_log_time >= self.time_threshold
             and self.msgs
             and self.chat
         ):
-            try:            
-                asyncio.ensure_future(
-                    bot.send_message(
-                        self.chat,
-                        "\n".join(self.msgs)
-                        + f"\n\n<b>⏳ Logged time:</b> <code>{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</code>",
-                        parse_mode=ParseMode.HTML,
-                    )
-                )
-                
-                self.msgs.clear()
-                self.last_log_time = current_time
-            
-            except MessageIsTooLong:
-                
-                tit = random.randint(1, 100)
-                with open(f"shizu-{tit}.log", "w", encoding="utf-8") as f:
-                    f.write(self.msgs)
-                    
-                asyncio.ensure_future(
-                    bot.send_document(
-                        self.chat,
-                        document=open(f"shizu-{tit}.logs", "r", encoding="utf-8"),
-                        caption="💾 <b>The message was too long, thus i send it as document</b>",
-                        parse_mode="HTML"
-                    )
-                )
-                os.remove(f"shizu-{tit}.log")
-                self.msgs.clear()
-                self.last_log_time = current_time
+            asyncio.ensure_future(self.send_logs(self.msgs))
 
+            self.last_log_time = current_time
+
+    async def send_logs(self, msgs):
+        """Send logs to chat"""
+        
+        ms = "\n".join(msgs)
+        
+        if len(ms) > 4096:
             
-            except Exception:
-                pass
+            logs = io.BytesIO(ms.encode("utf-8"))
+            logs.name = "logs.txt"
+                
+            await bot.send_document(
+                self.chat,
+                document=logs,
+                caption="💾 <b>The message was too long, thus i send it as document</b>",
+                parse_mode="HTML",
+            )
+            self.msgs.clear()
+            
+            return
+        
+        await bot.send_message(
+            self.chat,
+            "\n".join(self.msgs)
+            + f"\n\n<b>⏳ Logged time:</b> <code>{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</code>",
+            parse_mode=ParseMode.HTML,
+        ); self.msgs.clear()
+        
+        
 
 
 def override_text(exception: Exception) -> typing.Optional[str]:
