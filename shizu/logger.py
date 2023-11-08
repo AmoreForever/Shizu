@@ -11,6 +11,7 @@ import asyncio
 import traceback
 import os
 import typing
+import random
 import contextlib
 import json
 import html
@@ -270,6 +271,24 @@ class Telegramhandler(logging.Handler):
             and self.chat
         ):
             with contextlib.suppress(Exception):
+                if len(self.msgs) > 4000:
+                    tit = random.randint(1, 100)
+                    with open(f"shizu-{tit}.log", "w", encoding="utf-8") as f:
+                        f.write(self.msgs)
+                        
+                    asyncio.ensure_future(
+                        bot.send_document(
+                            self.chat,
+                            document=open(f"shizu-{tit}.logs", "r", encoding="utf-8"),
+                            caption="💾 <b>The message was too long, thus i send it as document</b>",
+                            parse_mode="HTML"
+                        )
+                    )
+                    os.remove(f"shizu-{tit}.log")
+                    self.msgs.clear()
+                    self.last_log_time = current_time
+                    return
+                
                 asyncio.ensure_future(
                     bot.send_message(
                         self.chat,
