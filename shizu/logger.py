@@ -22,7 +22,7 @@ from datetime import datetime
 
 from typing import Union
 from aiogram import Bot, Dispatcher
-from aiogram.utils.exceptions import NetworkError
+from aiogram.utils.exceptions import NetworkError, MessageIsTooLong
 from loguru._better_exceptions import ExceptionFormatter
 from loguru._colorizer import Colorizer
 from loguru import logger
@@ -270,25 +270,7 @@ class Telegramhandler(logging.Handler):
             and self.msgs
             and self.chat
         ):
-            with contextlib.suppress(Exception):
-                if len(self.msgs) > 4000:
-                    tit = random.randint(1, 100)
-                    with open(f"shizu-{tit}.log", "w", encoding="utf-8") as f:
-                        f.write(self.msgs)
-                        
-                    asyncio.ensure_future(
-                        bot.send_document(
-                            self.chat,
-                            document=open(f"shizu-{tit}.logs", "r", encoding="utf-8"),
-                            caption="💾 <b>The message was too long, thus i send it as document</b>",
-                            parse_mode="HTML"
-                        )
-                    )
-                    os.remove(f"shizu-{tit}.log")
-                    self.msgs.clear()
-                    self.last_log_time = current_time
-                    return
-                
+            try:            
                 asyncio.ensure_future(
                     bot.send_message(
                         self.chat,
@@ -297,8 +279,31 @@ class Telegramhandler(logging.Handler):
                         parse_mode=ParseMode.HTML,
                     )
                 )
-            self.msgs.clear()
-            self.last_log_time = current_time
+                
+                self.msgs.clear()
+                self.last_log_time = current_time
+            
+            except MessageIsTooLong:
+                
+                tit = random.randint(1, 100)
+                with open(f"shizu-{tit}.log", "w", encoding="utf-8") as f:
+                    f.write(self.msgs)
+                    
+                asyncio.ensure_future(
+                    bot.send_document(
+                        self.chat,
+                        document=open(f"shizu-{tit}.logs", "r", encoding="utf-8"),
+                        caption="💾 <b>The message was too long, thus i send it as document</b>",
+                        parse_mode="HTML"
+                    )
+                )
+                os.remove(f"shizu-{tit}.log")
+                self.msgs.clear()
+                self.last_log_time = current_time
+
+            
+            except Exception:
+                pass
 
 
 def override_text(exception: Exception) -> typing.Optional[str]:
