@@ -131,7 +131,7 @@ class UpdateMod(loader.Module):
         try:
             if (
                 message.from_user.username == "shizu_ubot"
-                or message.sender_chat.username == "shizihub"
+                or message.sender_chat.username == "shizu_ubot"
             ) and message.text == "#force_update":
                 check_output("git stash", shell=True).decode()
                 output = check_output("git pull", shell=True).decode()
