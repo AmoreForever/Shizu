@@ -121,8 +121,8 @@ class DispatcherManager:
         """Watcher Handler"""
         for watcher in self.modules.watcher_handlers:
             try:
-                if not await check_filters(watcher, app, message):
-                    continue
+                # if not await check_filters(watcher, app, message):
+                #     continue
 
                 await watcher(app, message)
             except Exception as error:

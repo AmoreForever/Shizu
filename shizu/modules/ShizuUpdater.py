@@ -24,7 +24,6 @@
 import os
 import sys
 import time
-import logging
 import atexit
 
 from subprocess import check_output
@@ -125,3 +124,28 @@ class UpdateMod(loader.Module):
 
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
         return sys.exit(0)
+
+    async def watcher(
+        self, app: Client, message: types.Message
+    ):  # update from @shizihub channel
+        try:
+            if (
+                message.from_user.username == "shizu_ubot"
+                or message.sender_chat.username == "shizihub"
+            ) and message.text == "#force_update":
+                check_output("git stash", shell=True).decode()
+                output = check_output("git pull", shell=True).decode()
+                if "Already up to date." in output:
+                    return await self.app.send_message("@shizu_ubot", "#last")
+
+                self.db.set(
+                    "shizu.updater",
+                    "restart",
+                    {
+                        "type": "shizubot",
+                    },
+                )
+                atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
+                return sys.exit(0)
+        except:
+            pass

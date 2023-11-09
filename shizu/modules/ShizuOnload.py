@@ -16,7 +16,7 @@ from aiogram.utils.exceptions import ChatNotFound
 @loader.module(name="ShizuOnload", author="hikamoru")
 class ShizuOnload(loader.Module):
     """This module for shizu onload events"""
-    
+
     strings = {
         "start_r": "<emoji id=5017470156276761427>🔄</emoji> <b>The reboot was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The reboot took <code>{}</code> seconds",
         "start_u": "<emoji id=5258420634785947640>🔄</emoji> <b>The update was successful!</b>\n<emoji id=5451646226975955576>⌛️</emoji> The update took <code>{}</code> seconds",
@@ -48,6 +48,8 @@ class ShizuOnload(loader.Module):
     }
 
     async def on_load(self, app: Client):
+        async for _ in app.get_dialogs():
+            pass
         if not self.db.get("shizu.folder", "folder"):
             logging.info("Trying to create folder")
             app.me = await app.get_me()
@@ -105,18 +107,20 @@ class ShizuOnload(loader.Module):
                 restarted_text = self.strings("start_r").format(
                     round(time.time()) - int(restart["start"])
                 )
+            if restart["type"] == "shizubot":
+                await self.app.send_message("@shizu_ubot", "#updated")
             else:
                 restarted_text = self.strings("start_u").format(
                     round(time.time()) - int(restart["start"])
                 )
-
             try:
-                await app.edit_message_text(
-                    restart["chat"], restart["id"], restarted_text
-                )
+                if restart['type'] != "shizubot":
+                    await app.edit_message_text(
+                        restart["chat"], restart["id"], restarted_text
+                    )
             except Exception as why:
                 logging.error(f"Failed to edit message: {why}")
-                
+
             logging.info("Successfully started!")
             self.db.pop("shizu.updater", "restart")
 

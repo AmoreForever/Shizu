@@ -22,6 +22,7 @@
 # 👤 https://t.me/hikamoru
 
 
+import contextlib
 import inspect
 import logging
 import os
@@ -351,8 +352,7 @@ class ModulesManager:
                 logging.exception(
                     f"Ошибка при загрузке стороннего модуля {custom_module}: {error}"
                 )
-        async for _ in self._app.get_dialogs():
-            pass
+                
         logging.info("Dialogs loaded")
         logging.info("Modules loaded")
         return True
@@ -572,10 +572,12 @@ class ModulesManager:
             if not (module := self.get_module(module_name)):
                 return False
 
-            path = inspect.getfile(module.__class__)
-            if os.path.exists(path):
-                os.remove(path)
+            with contextlib.suppress(TypeError):
+                path = inspect.getfile(module.__class__)
 
+                if os.path.exists(path):    
+                    os.remove(path)
+                    
             if (get_module := inspect.getmodule(module)).__spec__.origin != "<string>":
                 set_modules = set(self._db.get(__name__, "modules", []))
                 self._db.set(

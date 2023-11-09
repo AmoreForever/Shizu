@@ -83,10 +83,13 @@ async def delete(self: Any = None, form: Any = None, form_uid: Any = None) -> bo
     for internal use only, do not try to pass them
     """
     try:
+        
         await self._app.delete_messages(
             self._forms[form_uid]["chat"], self._forms[form_uid]["message_id"]
         )
+        
         del self._forms[form_uid]
+        
     except Exception:
         return False
 
@@ -193,6 +196,7 @@ class Events(Item):
                     )
                 ),
             )
+            
         if message.text == "/userbot":
             if message.chat.type != "private":
                 return False
@@ -258,6 +262,8 @@ class Events(Item):
         args = " ".join(query_[1:])
 
         func = self._all_modules.inline_handlers.get(cmd)
+        
+        
         try:
             if self._forms[query].get("type", None) == "form":
                 if self._forms[query].get("photo", None):
@@ -652,6 +658,7 @@ class Events(Item):
         video: str = None,
         gif: str = None,
         audio: str = None,
+        **kwargs,
     ) -> Union[str, bool]:
         """Creates inline form with callback
 
@@ -760,6 +767,7 @@ class Events(Item):
                 results.query_id,
                 results.results[0].id,
                 reply_to_message_id=msg_id or None,
+                
             )
             if soo:
                 await self._app.delete_messages(soo.chat.id, soo.id)
@@ -771,13 +779,13 @@ class Events(Item):
             )
             item = lo.CustomException.from_exc_info(*sys.exc_info())
             exc = item.message + "\n\n" + item.full_stack
-            
-            log_message = "🚫 <b>Inline bot invoke failed!</b>\n\n" + exc
-            
-            # await self._app.bot.send_message(
-            #     self._db.get("shizu.chat", "logs", None), log_message
-            # )
-            
+
+            log_message = "🚫 <b>Inline bot invoke failed!</b>\n\n" +  f"<code>{utils.escape_html(exc)}</code>"
+
+            await self._app.bot.send_message(
+                self._db.get("shizu.chat", "logs", None), log_message
+            )
+
             del self._forms[form_uid]
             if isinstance(message, Message):
                 await (message.edit if message.out else message.respond)(msg)
@@ -858,9 +866,9 @@ class Events(Item):
             ttl = self._markup_ttl
             logger.debug("Defaulted ttl, because it breaks out of limits")
 
-        unit_id = utils.utils.rand(16)
+        unit_id = utils.rand(16)
         btn_call_data = {
-            key: utils.utils.rand(10) for key in {"back", "next", "show_current"}
+            key: utils.rand(10) for key in {"back", "next", "show_current"}
         }
 
         perms_map = None

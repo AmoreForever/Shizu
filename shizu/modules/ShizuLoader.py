@@ -229,6 +229,9 @@ class Loader(loader.Module):
             "repo",
             "https://github.com/AmoreForever/ShizuMods",
             "Repository link",
+            "disable_button",
+            "False",
+            "Disable button in dlmod command",
         )
 
     @loader.command()
@@ -255,17 +258,18 @@ class Loader(loader.Module):
             text = self.strings("mods_in_repo").format(modules_repo) + "\n".join(
                 map("• <code>{}</code>".format, modules)
             )
-
-            return await message.answer(
-                text,
-                reply_markup=[
-                    [
+            
+            markup = [[
                         {
                             "text": self.strings("mods_channel_button"),
                             "url": "https://t.me/ShizuMods",
                         }
-                    ]
-                ],
+                    ]]
+
+            return await message.answer(
+                text,
+                reply_markup=markup if self.config["disable_button"] == "False" else None,
+                disable_web_page_preview=True,
             )
 
         error_text: str = None
