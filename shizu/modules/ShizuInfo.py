@@ -18,7 +18,7 @@ from pyrogram import Client, types
 from .. import loader, utils, version
 
 
-@loader.module("ShizuInfo", "sh1tn3t")
+@loader.module("ShizuInfo", "hikamoru")
 class InformationMod(loader.Module):
     """Info"""
 
@@ -64,15 +64,15 @@ class InformationMod(loader.Module):
             False,
             lambda: self.strings("custom_msg"),
             "custom_buttons",
-            {"text": "🏄 Here we are", "url": "https://t.me/shizu_talks"},
+            {"text": "🤝 Support", "url": "https://t.me/shizu_talks"},
             lambda: self.strings("custom_button"),
             "photo_url",
-            "https://x0.at/iqxh.png",
+            "https://github.com/AmoreForever/shizuassets/blob/master/shizubanner.jpg?raw=true",
             lambda: self.strings("photo_url"),
         )
 
-    def text_(self, me: types.User):
-        mention = f'<a href="tg://user?id={me.id}">{utils.get_display_name(me)}</a>'
+    def text_(self, me: types.User, username):
+        mention = f'<a href="tg://user?id={me.id}">{utils.escape_html((utils.get_display_name(me)))}</a>'
         prefix = ", ".join(self.prefix)
         if self.config["custom_message"]:
             return "🐙 Shizu\n" + self.config["custom_message"].format(
@@ -82,22 +82,23 @@ class InformationMod(loader.Module):
                 branch=version.branch,
                 platform=utils.get_platform(),
             )
-        else:
-            return (
-                "🐙 <b>Shizu UserBot</b>\n\n"
-                f"👑 <b>Owner</b>: {mention}\n\n"
-                f"🌳 <b>Branch</b>: <code>{version.branch}</code>\n"
-                f"🦋 <b>Version</b>: <code>{'.'.join(map(str, version.__version__))}</code>\n\n"
-                f"⌨️ <b>Prefix</b>: <code>{prefix}</code>\n"
-                f"{utils.get_platform()}"
-            )
+
+        return (
+            "🐙 <b>Shizu UserBot</b>\n\n"
+            f"👩‍💼 <b>Owner of userbot</b>: {mention}\n"
+            f"👩‍🎤 <b>Inline bot</b>: @{username}\n\n"
+            f"• <b>Branch</b>: <code>{version.branch}</code>\n"
+            f"• <b>Version</b>: <code>{'.'.join(map(str, version.__version__))}</code>\n"
+            f"• <b>Prefix</b>: «<code>{prefix}</code>»\n\n"
+            f"{utils.get_platform()}\n"
+        )
 
     @loader.command()
     async def info(self, app: Client, message: types.Message):
         """Info about Shizu"""
         if self.config["custom_buttons"]:
             await message.answer(
-                response=self.text_(self.me),
+                response=self.text_(self.me, (await self.bot.bot.get_me()).username),
                 reply_markup=[[self.config["custom_buttons"]]],
                 photo=self.config["photo_url"],
             )
@@ -105,5 +106,5 @@ class InformationMod(loader.Module):
             await message.answer(
                 response=self.config["photo_url"],
                 photo_=True,
-                caption=self.text_(self.me),
+                caption=self.text_(self.me, (await self.bot.bot.get_me()).username),
             )

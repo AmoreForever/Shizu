@@ -17,36 +17,90 @@ class Help(loader.Module):
         "available": "{} <b>{} modules available</b>\n{}",
         "support": "🧑‍🔬 <b>If you have any questions, suggestions or bug reports, please let us know in our support chat: @shizu_talks</b>",
         "button": "🗼 Support chat",
+        "info_ub": (
+            "🐙 <b>Shizu-Userbot\n\n"
+            "• Repository: <a href='https://github.com/AmoreForever/Shizu'>GitHub</a>\n"
+            "• Support: <a href='https://t.me/shizu_talks'>Shizu Talks</a>\n"
+            "• Channel: <a href='https://t.me/shizuhub'>Shizu Hub</a>\n"
+            "• Modules: <a href='https://t.me/shizumods'>Shizu Mods</a>\n"
+            "• Developer: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
+            "© <b>Shizu-Userbot is licensed under the <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a></b>"
+        ),
     }
 
     strings_ru = {
         "available": "{} <b>{} модулей доступно</b>\n{}",
         "support": "🧑‍🔬 <b>Если у вас есть вопросы, предложения или сообщения об ошибках, сообщите нам в нашем чате поддержки: @shizu_talks</b>",
         "button": "🗼 Чат поддержки",
+        "info_ub": (
+            "🐙 <b>Shizu-Userbot\n\n"
+            "• Репозиторий: <a href='https://github.com/AmoreForever/Shizu'>GitHub</a>\n"
+            "• Поддержка: <a href='https://t.me/shizu_talks'>Shizu Talks</a>\n"
+            "• Канал: <a href='https://t.me/shizuhub'>Shizu Hub</a>\n"
+            "• Модули: <a href='https://t.me/shizumods'>Shizu Mods</a>\n"
+            "• Разработчик: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
+            "© <b>Shizu-Userbot распространяется под лицензией <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a></b>"
+        ),
     }
 
     strings_uz = {
         "available": "{} <b>{} modullar mavjud</b>\n{}",
         "support": "🧑‍🔬 <b>Savollaringiz, takliflaringiz yoki xatolaringiz bo'lsa, iltimos, bizga yordam beruvchi chatga xabar bering: @shizu_talks</b>",
         "button": "🗼 Yordam chati",
+        "info_ub": (
+            "🐙 <b>Shizu-Userbot\n\n"
+            "• Repository: <a href='https://github.com/AmoreForever/Shizu'>GitHub</a>\n"
+            "• Yordam: <a href='https://t.me/shizu_talks'>Shizu Talks</a>\n"
+            "• Kanal: <a href='https://t.me/shizuhub'>Shizu Hub</a>\n"
+            "• Modullar: <a href='https://t.me/shizumods'>Shizu Mods</a>\n"
+            "• Yaratuvchi: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
+            "© <b>Shizu-Userbot <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a> litsenziyasi ostida tarqatilgan</b>"
+        ),
     }
 
     strings_jp = {
         "available": "{} <b>利用可能な {} のモジュールがあります</b>\n{}",
         "support": "🧑‍🔬 <b>質問、提案、バグ報告がある場合は、サポートチャットでお知らせください: @shizu_talks</b>",
         "button": "🗼 サポートチャット",
+        "info_ub": (
+            "🐙 <b>Shizu-Userbot\n\n"
+            "• リポジトリ: <a href='https://github.com/AmoreForever/Shizu'>GitHub</a>\n"
+            "• サポート: <a href='https://t.me/shizu_talks'>Shizu Talks</a>\n"
+            "• チャンネル: <a href='https://t.me/shizuhub'>Shizu Hub</a>\n"
+            "• モジュール: <a href='https://t.me/shizumods'>Shizu Mods</a>\n"
+            "• 開発者: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
+            "© <b>Shizu-Userbot は <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a> ライセンスの下で配布されています</b>"
+        ),
     }
 
     strings_ua = {
         "available": "{} <b>{} модулів доступно</b>\n{}",
         "support": "🧑‍🔬 <b>Якщо у вас є питання, пропозиції або повідомлення про помилки, повідомте нам у нашому чаті підтримки: @shizu_talks</b>",
         "button": "🗼 Чат підтримки",
+        "info_ub": (
+            "🐙 <b>Shizu-Userbot\n\n"
+            "• Репозиторій: <a href='https://github.com/AmoreForever/Shizu'>GitHub</a>\n"
+            "• Підтримка: <a href='https://t.me/shizu_talks'>Shizu Talks</a>\n"
+            "• Канал: <a href='https://t.me/shizuhub'>Shizu Hub</a>\n"
+            "• Модулі: <a href='https://t.me/shizumods'>Shizu Mods</a>\n"
+            "• Розробник: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
+            "© <b>Shizu-Userbot поширюється під ліцензією <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a></b>"
+        ),
     }
 
     strings_kz = {
         "available": "{} <b>{} модуль қолжетімді</b>\n{}",
         "support": "🧑‍🔬 <b>Сұрақтарыңыз, ұсыныстарыңыз немесе қателер туралы хабарласу үшін, біздің қолдау құрамасында хабарласыңыз: @shizu_talks</b>",
         "button": "🗼 Қолдау құрамасы",
+        "info_ub": (
+            "🐙 <b>Shizu-Userbot\n\n"
+            "• Repository: <a href='https://github.com/AmoreForever/Shizu'>GitHub</a>\n"
+            "• Қолдау: <a href='https://t.me/shizu_talks'>Shizu Talks</a>\n"
+            "• Канал: <a href='https://t.me/shizuhub'>Shizu Hub</a>\n"
+            "• Модульдер: <a href='https://t.me/shizumods'>Shizu Mods</a>\n"
+            "• Дамытушы: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
+            "© <b>Shizu-Userbot <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a> лицензиясы бойынша жарияланады</b>"
+        ),
     }
 
     @loader.command()
@@ -54,12 +108,8 @@ class Help(loader.Module):
         """Show help"""
 
         args = message.get_args()
-        dop_help = (
-            "<emoji id=5100652175172830068>☁️</emoji>"
-            if message.from_user.is_premium
-            else "🔸"
-        )
-        bot_username = self.db.get("shizu.bot", "username", None)
+        dop_help = "<emoji id=5100652175172830068>🔸</emoji>"
+        bot_username = (await self.bot.bot.get_me()).username
         sorted_modules = sorted(
             self.all_modules.modules,
             key=lambda mod: (mod.name not in self.cmodules, len(mod.name)),
@@ -68,11 +118,9 @@ class Help(loader.Module):
         if not args:
             text = ""
             for module in sorted_modules:
-                if module.name.lower() == "help":
-                    continue
                 commands = inline = ""
                 commands += " <b>|</b> ".join(
-                    f"<code>{command}</code>" for command in module.command_handlers
+                    f"{command}" for command in module.command_handlers
                 )
                 if module.inline_handlers:
                     if commands:
@@ -81,8 +129,7 @@ class Help(loader.Module):
                         inline += "<b><emoji id=5258093637450866522>🤖</emoji></b>: "
 
                 inline += " <b>|</b> ".join(
-                    f"<code>{inline_command}</code>"
-                    for inline_command in module.inline_handlers
+                    f"{inline_command}" for inline_command in module.inline_handlers
                 )
 
                 if commands or inline:
@@ -136,4 +183,12 @@ class Help(loader.Module):
                 [{"text": self.strings("button"), "url": "https://t.me/shizu_talks"}]
             ],
             prev=True,
+        )
+
+    @loader.command()
+    async def ubinfo(self, app, message):
+        """Info about Shizu-Userbot"""
+        await message.answer(
+            self.strings("info_ub"),
+            disable_web_page_preview=True,
         )

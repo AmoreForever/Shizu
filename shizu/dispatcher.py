@@ -8,6 +8,7 @@
 import contextlib
 import logging
 import sys
+import traceback
 
 import inspect
 from inspect import getfullargspec, iscoroutine
@@ -80,7 +81,7 @@ class DispatcherManager:
 
         command = self.modules.aliases.get(command, command)
         func = self.modules.command_handlers.get(command.lower())
-        
+
         if not func:
             return
 
@@ -88,54 +89,29 @@ class DispatcherManager:
             return
 
         try:
-            if len(vars_ := getfullargspec(func).args) > 3 and vars_[3] == "args":
-                await func(app, message, utils.get_full_command(message)[2])
+            if (len(vars_ := getfullargspec(func).args) > 3) and (vars_[3] == "args"):
+                args = utils.get_full_command(message)[2]
+                await func(app, message, args)
             else:
-                try:
-                    await func(app, message)
-                except Exception as error:
-                    item = lo.CustomException.from_exc_info(*sys.exc_info())
-                    exc = (
-                        "\n\n"
-                        + "\n".join(item.full_stack.splitlines()[:-1])
-                        + "\n\n"
-                        + "🎈 "
-                        + item.full_stack.splitlines()[-1]
-                    )
-                    with contextlib.suppress(Exception):
-                        await app.inline_bot.send_message(
-                            app.db.get("shizu.chat", "logs", None),
-                            f"⛩ <b>Command <code>{prefix}{command}</code> failed with error:</b>\n\n"
-                            "🚇 <b>Traceback:</b>"
-                            f"{exc}\n",
-                            parse_mode="HTML",
-                        )
-                        await message.answer(
-                            f"<emoji id=5019455638053323673>❌</emoji> <b>Command <code>{prefix}{command}</code> failed with error:</b>\n"
-                            f"<code>{error}</code>\n",
-                        )
-        except Exception as error:
+                await func(app, message)
+
+        except Exception:
             item = lo.CustomException.from_exc_info(*sys.exc_info())
-            exc = (
-                "\n\n"
-                + "\n".join(item.full_stack.splitlines()[:-1])
-                + "\n\n"
-                + "🎈 "
-                + item.full_stack.splitlines()[-1]
+            exc = item.message + "\n\n" + item.full_stack
+            trace = traceback.format_exc().replace(
+                "Traceback (most recent call last):\n", ""
             )
 
             with contextlib.suppress(Exception):
-                await app.inline_bot.send_message(
+                log_message = f"⛳️ <b>Command <code>{prefix}{command}</code> failed with error:</b>\n\n{exc}\n"
+                await app.inline_bot.send_animation(
                     app.db.get("shizu.chat", "logs", None),
-                    f"⛩ <b>Command <code>{prefix}{command}</code> failed with error:</b>\n\n"
-                    "🚇 <b>Traceback:</b>"
-                    f"{exc}\n",
+                    "https://i.gifer.com/LRP3.gif",
+                    caption=log_message,
                     parse_mode="HTML",
                 )
-                await message.answer(
-                    f"<emoji id=5019455638053323673>❌</emoji> <b>Command <code>{prefix}{command}</code> failed with error:</b>\n"
-                    f"<code>{error}</code>\n",
-                )
+                answer_message = f"<emoji id=5372892693024218813>🥶</emoji> <b>Command <code>{prefix}{command}</code> failed with error:</b>\n\n<code>{trace}</code>\n"
+                await message.answer(answer_message)
 
         return message
 
@@ -145,8 +121,8 @@ class DispatcherManager:
         """Watcher Handler"""
         for watcher in self.modules.watcher_handlers:
             try:
-                if not await check_filters(watcher, app, message):
-                    continue
+                # if not await check_filters(watcher, app, message):
+                #     continue
 
                 await watcher(app, message)
             except Exception as error:

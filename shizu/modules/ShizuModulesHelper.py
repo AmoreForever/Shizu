@@ -27,7 +27,7 @@ import os
 import requests
 import inspect
 
-from aiogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import CallbackQuery
 from pyrogram import Client, types
 from .. import loader, utils
 

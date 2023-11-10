@@ -28,7 +28,7 @@ class Translator:
         self.db = db
 
     async def init(self) -> bool:
-        return True  # Не нужно читать langpack файл при инициализации
+        return True 
 
     def getkey(self, key):
         lang = self.db.get("shizu.me", "lang", "en")

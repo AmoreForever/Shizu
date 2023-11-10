@@ -5,7 +5,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-import loguru
+import logging
 from .utils import (
     answer,
     get_args,
@@ -13,7 +13,7 @@ from .utils import (
     get_args_html,
 )
 
-logger = loguru.logger
+logging = logging.getLogger(__name__)
 
 
 class MessageMagic:
@@ -48,4 +48,4 @@ class MessageMagic:
             self.message.get_args_raw = get_args_raw
             self.message.get_args_html = get_args_html
         except Exception as e:
-            logger.error(f"Error initializing MessageMagic: {str(e)}")
+            logging.error(f"Error initializing MessageMagic: {str(e)}")

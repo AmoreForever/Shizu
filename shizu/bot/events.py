@@ -30,12 +30,16 @@
 # 👤 https://t.me/hikamoru
 
 import time
-from urllib.parse import urlparse
-import os
-from types import FunctionType
+import sys
 
 import logging
 import traceback
+import asyncio
+import functools
+import contextlib
+import aiogram
+import pyrogram
+
 from aiogram.types import (
     CallbackQuery,
     InlineQuery,
@@ -49,15 +53,9 @@ from aiogram.types import (
     InlineQueryResultAudio,
     InlineQueryResultGif,
 )
-import asyncio
-import functools
-import aiogram
-
-import contextlib
-import pyrogram
 from typing import Union, List, Any, Optional
-from .. import utils
-from ..utils import rand
+
+from .. import utils, logger as lo
 from .types import Item
 from .. import database
 
@@ -85,10 +83,13 @@ async def delete(self: Any = None, form: Any = None, form_uid: Any = None) -> bo
     for internal use only, do not try to pass them
     """
     try:
+        
         await self._app.delete_messages(
             self._forms[form_uid]["chat"], self._forms[form_uid]["message_id"]
         )
+        
         del self._forms[form_uid]
+        
     except Exception:
         return False
 
@@ -195,6 +196,7 @@ class Events(Item):
                     )
                 ),
             )
+            
         if message.text == "/userbot":
             if message.chat.type != "private":
                 return False
@@ -260,6 +262,8 @@ class Events(Item):
         args = " ".join(query_[1:])
 
         func = self._all_modules.inline_handlers.get(cmd)
+        
+        
         try:
             if self._forms[query].get("type", None) == "form":
                 if self._forms[query].get("photo", None):
@@ -340,7 +344,7 @@ class Events(Item):
                 return await inline_query.answer(
                     [
                         InlineQueryResultArticle(
-                            id=rand(20),
+                            id=utils.rand(20),
                             title="Shizu",
                             input_message_content=InputTextMessageContent(
                                 self._forms[query].get(
@@ -359,7 +363,7 @@ class Events(Item):
                 return await inline_query.answer(
                     [
                         InlineQueryResultArticle(
-                            id=rand(20),
+                            id=utils.rand(20),
                             title="Shizu",
                             input_message_content=InputTextMessageContent(
                                 self._forms[query].get("text", None),
@@ -386,7 +390,7 @@ class Events(Item):
                         await inline_query.answer(
                             [
                                 InlineQueryResultArticle(
-                                    id=rand(20),
+                                    id=utils.rand(20),
                                     title=button["input"],
                                     description="⚠️ Please, do not remove identifier!",
                                     input_message_content=InputTextMessageContent(
@@ -434,7 +438,7 @@ class Events(Item):
                         return None
 
                 if "callback" in button and "_callback_data" not in button:
-                    button["_callback_data"] = rand(30)
+                    button["_callback_data"] = utils.rand(30)
                     self._custom_map[button["_callback_data"]] = button
 
                 if "handler" in button and not isinstance(button["handler"], str):
@@ -453,7 +457,7 @@ class Events(Item):
                         return None
 
                 if "input" in button and "_switch_query" not in button:
-                    button["_switch_query"] = rand(10)
+                    button["_switch_query"] = utils.rand(10)
 
         for row in (
             self._forms[form_uid]["buttons"] if isinstance(form_uid, str) else form_uid
@@ -654,6 +658,7 @@ class Events(Item):
         video: str = None,
         gif: str = None,
         audio: str = None,
+        **kwargs,
     ) -> Union[str, bool]:
         """Creates inline form with callback
 
@@ -729,7 +734,7 @@ class Events(Item):
             logger.error("Invalid type for `ttl`")
             return False
 
-        form_uid = rand(30)
+        form_uid = utils.rand(30)
 
         self._forms[form_uid] = {
             "type": "form",
@@ -762,6 +767,7 @@ class Events(Item):
                 results.query_id,
                 results.results[0].id,
                 reply_to_message_id=msg_id or None,
+                
             )
             if soo:
                 await self._app.delete_messages(soo.chat.id, soo.id)
@@ -770,6 +776,14 @@ class Events(Item):
                 "🚫 <b>A problem occurred with inline bot "
                 "while processing query. Check logs for "
                 f"further info.</b>\n\n {erro}"
+            )
+            item = lo.CustomException.from_exc_info(*sys.exc_info())
+            exc = item.message + "\n\n" + item.full_stack
+
+            log_message = "🚫 <b>Inline bot invoke failed!</b>\n\n" +  f"<code>{utils.escape_html(exc)}</code>"
+
+            await self._app.bot.send_message(
+                self._db.get("shizu.chat", "logs", None), log_message
             )
 
             del self._forms[form_uid]

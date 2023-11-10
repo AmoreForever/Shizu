@@ -3,10 +3,8 @@ import sys
 import os
 import logging
 
-
-
 if sys.version_info < (3, 7, 0):
-    logging.warning("🚫 Error: you are using Python version < 3.7")
+    print("🚫 Error: you are using Python version < 3.7")
     sys.exit(1)
 
 elif __package__ != "shizu":
@@ -22,14 +20,15 @@ else:
 
         setup_logger("INFO")
 
-        aozora = (
+        banner = (
             "\n█▀ █ █ █ ▀█ █ █"
             "\n▄█ █▀█ █ █▄ █▄█\n\n"
             f"🐙 Shuzu v{__version__} is starting...\n"
             f"🐍 Python v{sys.version}\n"
             f"👾 Pyrogram v{pyrogram.__version__}\n"
+            "🤝 Support chat: @shizu_talks\n"
         )
-        logging.info(aozora)
+        logging.info(banner)
         asyncio.run(main.main())
     except ModuleNotFoundError as module:
         print(f"🚫 Error: {module} is not installed")

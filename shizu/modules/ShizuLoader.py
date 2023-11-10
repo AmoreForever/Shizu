@@ -75,7 +75,7 @@ class Loader(loader.Module):
     strings = {
         "invalid_repo": "❌ Invalid repository link.\n",
         "no_all": "❌ The all.txt file was not found in the <a href='{}'>repository</a>.\n",
-        "mods_in_repo": "<emoji id=5974220038956124904>📥</emoji> <b>List of available modules with <a href='{}'>repository</a></b>:\n\n",
+        "mods_in_repo": "🪴 <b>List of available modules with <a href='{}'>repository</a></b>:\n\n",
         "check": "<emoji id=5280506417478903827>🛡</emoji> Analyzing the module..",
         "found_delete_": "<emoji id=5203929938024999176>🛡</emoji> <b><u>Shizu</u> protected your account from</b> <code>DeleteAccount</code>.\n<emoji id=5404380425416090434>ℹ️</emoji> <b>This module contains a dangerous code that can delete your account.</b>",
         "dep_installed_req_res": "✅ Dependencies are installed. Reboot required",
@@ -95,17 +95,16 @@ class Loader(loader.Module):
         "core_unload": "<emoji id=5364241851500997604>⚠️</emoji> You cannot unload the core modules",
         "unloaded": "<emoji id=6334471265700546607>🧹</emoji> Module <code>{}</code> unloaded",
         "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>Specify the action</b>",
-        "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Enabled, now you can load modules from <a href='https://t.me/aelis_msbot'>Aelis bot</a>",
-        "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Disabled, now you cannot load nodules from <a href='https://t.me/aelis_msbot'>Aelis bot</a>",
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>This module is not available for this account</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> All modules unloaded",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Restarting...</b>",
+        "mods_channel_button": "☁️ Mods channel",
     }
 
     strings_ru = {
         "invalid_repo": "❌ Недопустимый репозиторий.\n",
         "no_all": "❌ Не найдено all.txt в репозитории <a href='{}'>repository</a>.\n",
-        "mods_in_repo": "<emoji id=5974220038956124904>📥</emoji> <b>Список доступных модулей в <a href='{}'>repository</a></b>:\n\n",
+        "mods_in_repo": "🪴 <b>Список доступных модулей в <a href='{}'>repository</a></b>:\n\n",
         "check": "<emoji id=5280506417478903827>🛡</emoji> Проверка модуля..",
         "found_delete_": "<emoji id=5203929938024999176>🛡</emoji> <b><u>Shizu</u> защитил ваш аккаунт от</b> <code>DeleteAccount</code>.\n<emoji id=5404380425416090434>ℹ️</emoji> <b>Этот модуль содержит опасный код, который может удалить ваш аккаунт.</b>",
         "dep_installed_req_res": "✅ Зависимости установлены. Перезагрузка требуется",
@@ -125,17 +124,16 @@ class Loader(loader.Module):
         "core_unload": "<emoji id=5364241851500997604>⚠️</emoji> Вы не можете удалить встроенные модули ",
         "unloaded": "<emoji id=6334471265700546607>🧹</emoji> Модуль <code>{}</code> выгружен",
         "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>Укажите действие</b>",
-        "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Включено, теперь вы можете загружать модули с <a href='https://t.me/aelis_msbot'>Aelis бота</a>",
-        "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Отключено, теперь вы не можете загружать модули с <a href='https://t.me/aelis_msbot'>Aelis бота</a>",
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Этот модуль недоступен для этого аккаунта</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Все модули выгружены",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Перезапуск...</b>",
+        "mods_channel_button": "☁️ Канал модулей",
     }
 
     strings_uz = {
         "invalid_repo": "❌ Xatolik yuz berdi.\n",
         "no_all": "❌ All.txt fayl mavjud emas <a href='{}'>repository</a>.\n",
-        "mods_in_repo": "<emoji id=5974220038956124904>📥</emoji> <b>Modullar ro'yhati <a href='{}'>repository</a></b>:\n\n",
+        "mods_in_repo": "🪴 <b>Modullar ro'yhati <a href='{}'>repository</a></b>:\n\n",
         "check": "<emoji id=5280506417478903827>🛡</emoji> Modul tekshirilmoqda..",
         "found_delete_": "<emoji id=5203929938024999176>🛡</emoji> <b><u>Shizu</u> DeleteAccount dan hisobingizni himoya qildi</b> <code>DeleteAccount</code>.\n<emoji id=5404380425416090434>ℹ️</emoji> <b>Bu modul hisobingizni o'chirishi mumkin bo'lgan xavfsizlik kodi bor.</b>",
         "dep_installed_req_res": "✅ Zarrashilmoqda. Userbotni qayta yuklash kerak",
@@ -155,17 +153,16 @@ class Loader(loader.Module):
         "core_unload": "<emoji id=5364241851500997604>⚠️</emoji> Bu modulni userbotdan yuklanmaydi",
         "unloaded": "<emoji id=6334471265700546607>🧹</emoji> Modul <code>{}</code> ochirildi",
         "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>Nma qilishim kerak?</b>",
-        "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Endi siz modullarni botdan yuklashingiz mumkun <a href='https://t.me/aelis_msbot'>Bot</a>",
-        "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Endi siz modullarni botdan yuklay olmaysiz <a href='https://t.me/aelis_msbot'>Bot</a>",
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Bu modul ushbu akkaunt uchun mavjud emas</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Barcha modullar ochirildi",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Qayta ishlayapti...</b>",
+        "mods_channel_button": "☁️ Modullar kanali",
     }
 
     strings_jp = {
         "invalid_repo": "❌ 無効なリポジトリ.\n",
         "no_all": "❌ all.txtファイルが<a href='{}'>repository</a>に見つかりませんでした.\n",
-        "mods_in_repo": "<emoji id=5974220038956124904>📥</emoji> <b>リポジトリの利用可能なモジュールのリスト <a href='{}'>repository</a></b>:\n\n",
+        "mods_in_repo": "🪴 <b>リポジトリの利用可能なモジュールのリスト <a href='{}'>repository</a></b>:\n\n",
         "check": "<emoji id=5280506417478903827>🛡</emoji> モジュールをチェックしています..",
         "found_delete_": "<emoji id=5203929938024999176>🛡</emoji> <b><u>Shizu</u> あなたのアカウントを保護しました</b> <code>DeleteAccount</code>.\n<emoji id=5404380425416090434>ℹ️</emoji> <b>このモジュールには、アカウントを削除する可能性のある危険なコードが含まれています。</b>",
         "dep_installed_req_res": "✅ 依存関係がインストールされました。再起動が必要です",
@@ -185,17 +182,16 @@ class Loader(loader.Module):
         "core_unload": "<emoji id=5364241851500997604>⚠️</emoji> コアモジュールをアンロードすることはできません",
         "unloaded": "<emoji id=6334471265700546607>🧹</emoji> モジュール <code>{}</code> アンロードされました",
         "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>アクションを指定してください</b>",
-        "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> 有効になりました。これで<a href='https://t.me/aelis_msbot'>Aelis bot</a>からモジュールをロードできます",
-        "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> 無効になりました。これで<a href='https://t.me/aelis_msbot'>Aelis bot</a>からモジュールをロードできなくなります",
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>このアカウントではこのモジュールは利用できません</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> すべてのモジュールがアンロードされました",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> 再起動しています...</b>",
+        "mods_channel_button": "☁️ モジュールチャンネル",
     }
 
     strings_ua = {
         "invalid_repo": "❌ Невірний репозиторій.\n",
         "no_all": "❌ all.txt файл не знайдено в репозиторії <a href='{}'>repository</a>.\n",
-        "mods_in_repo": "<emoji id=5974220038956124904>📥</emoji> <b>Модулі репозиторію <a href='{}'>repository</a></b>:\n\n",
+        "mods_in_repo": "🪴 <b>Модулі репозиторію <a href='{}'>repository</a></b>:\n\n",
         "check": "<emoji id=5280506417478903827>🛡</emoji> Аналіз модуля..",
         "loaded": "<emoji id=5267468588985363056>✔️</emoji> Модуль <b>{}</b> завантажено\n"
         "<emoji id=5787544344906959608>ℹ️</emoji> {} \n\n",
@@ -204,17 +200,16 @@ class Loader(loader.Module):
         "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>Акцію вказано</b>",
         "no_repy_to_file": "❌ Не надіслати повідомлення",
         "loading": "<emoji id=5215493819641895305>🚛</emoji> <b>Модуль завантажується..</b>",
-        "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Включено. Через <a href='https://t.me/aelis_msbot'>Aelis bot</a> модуль можна завантажувати",
-        "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Вимкнено. Через <a href='https://t.me/aelis_msbot'>Aelis bot</a> модуль не можна завантажувати",
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Цей модуль недоступний для цього облікового запису</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Всі модулі вилучено",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Перезавантаження...</b>",
+        "mods_channel_button": "☁️ Канал модулів",
     }
 
     strings_kz = {
         "invalid_repo": "❌ Репозиторий жарамсыз.\n",
         "no_all": "❌ all.txt файлын табылмады <a href='{}'>repository</a>.\n",
-        "mods_in_repo": "<emoji id=5974220038956124904>📥</emoji> <b>Модульдер репозиториясы <a href='{}'>repository</a></b>:\n\n",
+        "mods_in_repo": "🪴 <b>Модульдер репозиториясы <a href='{}'>repository</a></b>:\n\n",
         "check": "<emoji id=5280506417478903827>🛡</emoji> Модульді тексеру..",
         "loaded": "<emoji id=5267468588985363056>✔️</emoji> Модуль <b>{}</b> жүктелді\n"
         "<emoji id=5787544344906959608>ℹ️</emoji> {} \n\n",
@@ -223,11 +218,10 @@ class Loader(loader.Module):
         "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>Әрекетті көрсетіңіз</b>",
         "no_repy_to_file": "❌ Файлға жауап бермеу",
         "loading": "<emoji id=5215493819641895305>🚛</emoji> <b>Модуль жүктелуде..</b>",
-        "aelis_enabled": "<emoji id=4908971422589649873>👍</emoji> Қосылды. <a href='https://t.me/aelis_msbot'>Aelis bot</a> арқылы модуль жүктей аласыз",
-        "aelis_disabled": "<emoji id=4900283627167810560>👎</emoji> Өшірілді. <a href='https://t.me/aelis_msbot'>Aelis bot</a> арқылы модуль жүктей алмайсыз",
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Бұл модуль бұл аккаунтқа қолжетімді емес</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Барлық модульдер жойылды",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Қайта іске қосу...</b>",
+        "mods_channel_button": "☁️ Модульдер каналы",
     }
 
     def __init__(self):
@@ -235,6 +229,9 @@ class Loader(loader.Module):
             "repo",
             "https://github.com/AmoreForever/ShizuMods",
             "Repository link",
+            "disable_button",
+            "False",
+            "Disable button in dlmod command",
         )
 
     @loader.command()
@@ -259,9 +256,21 @@ class Loader(loader.Module):
 
         if not args:
             text = self.strings("mods_in_repo").format(modules_repo) + "\n".join(
-                map("<code>{}</code>".format, modules)
+                map("• <code>{}</code>".format, modules)
             )
-            return await message.answer(text, disable_web_page_preview=True)
+            
+            markup = [[
+                        {
+                            "text": self.strings("mods_channel_button"),
+                            "url": "https://t.me/ShizuMods",
+                        }
+                    ]]
+
+            return await message.answer(
+                text,
+                reply_markup=markup if self.config["disable_button"] == "False" else None,
+                disable_web_page_preview=True,
+            )
 
         error_text: str = None
         module_name: str = None
@@ -407,6 +416,7 @@ class Loader(loader.Module):
     @loader.command()
     async def unloadmod(self, app: Client, message: types.Message, args: str):
         """Unload the module. Usage: unloadmod <module name>"""
+
         if not (module_name := self.all_modules.unload_module(args)):
             return await message.answer(self.strings("inc_module_name"))
 
@@ -419,16 +429,21 @@ class Loader(loader.Module):
     @loader.command()
     async def unloadall(self, app: Client, message: types.Message):
         """Unload all modules"""
+
         self._local_modules_path: str = "./shizu/modules"
+
         self.db.set("shizu.loader", "modules", [])
+
         for local_module in filter(
             lambda file_name: file_name.endswith(".py")
             and not file_name.startswith("Shizu"),
             os.listdir(self._local_modules_path),
         ):
             os.remove(f"{self._local_modules_path}/{local_module}")
+
         await message.answer(self.strings("all_unloaded"))
         ms = await message.answer(self.strings("restart"))
+
         self.db.set(
             "shizu.updater",
             "restart",
@@ -444,52 +459,3 @@ class Loader(loader.Module):
 
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
         return sys.exit(0)
-
-    @loader.command()
-    async def aelis_load(self, app: Client, message: types.Message, args: str):
-        """Enable or disable loading from Aelis bot [on/off]"""
-        if not args:
-            return await message.answer(self.strings("spec_action"))
-        if "on" in args:
-            self.db.set("shizu.loader", "aelis", True)
-            await message.answer(self.strings("aelis_enabled"))
-        if "off" in args:
-            self.db.set("shizu.loader", "aelis", False)
-            await message.answer(self.strings("aelis_disabled"))
-
-    @loader.on(lambda _, __, m: m and m.chat.id == 6417188473)
-    async def watcher(self, app: Client, message: types.Message):
-        if self.db.get("shizu.loader", "aelis") == False:
-            return
-        try:
-            if not message.text.startswith("#"):
-                return
-            load_string = base64.b64decode(message.text.split("\n")[0]).decode("utf-8")
-            await message.delete()
-            r = await utils.run_sync(requests.get, load_string)
-
-            if r.status_code == 200:
-                module_name = await self.all_modules.load_module(r.text, r.url)
-                if module_name is True:
-                    return await message.answer(self.strings("dep_installed_req_res"))
-
-                if not module_name:
-                    return await message.answer(self.strings("not_module"))
-
-                if module_name == "DAR":
-                    return await message.answer(self.strings("found_delete_"))
-
-                if module_name == "NFA":
-                    return await message.answer(self.strings("not_for_this_account"))
-
-                module = self.all_modules.get_module(module_name, True)
-                self.db.set(
-                    "shizu.loader",
-                    "modules",
-                    list(
-                        set(self.db.get("shizu.loader", "modules", []) + [load_string])
-                    ),
-                )
-                return await message.answer(f"#loaded:{module.name}:{message.id -1}")
-        except AttributeError:
-            logging.info("I see a message without text heh, just ignore this message")

@@ -22,6 +22,7 @@
 # 👤 https://t.me/hikamoru
 
 
+import contextlib
 import inspect
 import logging
 import os
@@ -39,11 +40,10 @@ from typing import Any, Callable, Dict, List, Union
 
 
 import requests
-from loguru import logger
 from pyrogram import Client, filters, types, raw
 from . import bot, database, dispatcher, utils, aelis, logger as logger_
 from .types import InfiniteLoop
-from .translater import Strings, Translator
+from .translator import Strings, Translator
 
 VALID_URL = r"[-[\]_.~:/?#@!$&'()*+,;%<=>a-zA-Z0-9]+"
 VALID_PIP_PACKAGES = re.compile(
@@ -87,7 +87,6 @@ class Module:
 
     async def on_load(self, app: Client) -> Any:
         """Called when loading the module"""
-        logger.success(f"Module {self.name} loaded")
 
 
 class StringLoader(SourceLoader):
@@ -119,6 +118,7 @@ def get_command_handlers(instance: Module) -> Dict[str, FunctionType]:
         or method_name.endswith("_cmd")
         or method_name.endswith("cmd")
     }
+
 
 def get_watcher_handlers(instance: Module) -> List[FunctionType]:
     """Returns a list of watchers"""
@@ -294,7 +294,7 @@ class ModulesManager:
         self.bot_manager: bot.BotManager = None
 
         self.root_module: Module = None
-        self.aelis = aelis.AelisAPI()
+        self.aelis = aelis.AelisAPI(self._app)
         self.cmodules = [
             "ShizuBackuper",
             "ShizuHelp",
@@ -341,7 +341,7 @@ class ModulesManager:
                 self.register_instance(module_name, file_path)
             except Exception as error:
                 logging.exception(f"Error loading local module {module_name}: {error}")
-                
+
         await self.send_on_loads()
 
         for custom_module in self._db.get(__name__, "modules", []):
@@ -352,8 +352,7 @@ class ModulesManager:
                 logging.exception(
                     f"Ошибка при загрузке стороннего модуля {custom_module}: {error}"
                 )
-        async for _ in self._app.get_dialogs():
-            pass
+                
         logging.info("Dialogs loaded")
         logging.info("Modules loaded")
         return True
@@ -435,14 +434,14 @@ class ModulesManager:
                 random.choice(string.ascii_letters + string.digits) for _ in range(10)
             )
         )
-        
+
         delete_account_re = re.compile(r"DeleteAccount", re.IGNORECASE)
         if delete_account_re.search(module_source):
             logging.error(
                 "Module %s is forbidden, because it contains DeleteAccount", module_name
             )
             return "DAR"
-        
+
         if re.search(r"# ?only: ?(.+)", module_source) and str(
             self._db.get("shizu.me", "me")
         ) not in re.search(r"# ?only: ?(.+)", module_source)[1].split(","):
@@ -451,9 +450,7 @@ class ModulesManager:
                 module_name,
             )
             return "NFA"
-        
-        
-        
+
         try:
             spec = ModuleSpec(
                 module_name, StringLoader(module_source, origin), origin=origin
@@ -575,10 +572,12 @@ class ModulesManager:
             if not (module := self.get_module(module_name)):
                 return False
 
-            path = inspect.getfile(module.__class__)
-            if os.path.exists(path):
-                os.remove(path)
+            with contextlib.suppress(TypeError):
+                path = inspect.getfile(module.__class__)
 
+                if os.path.exists(path):    
+                    os.remove(path)
+                    
             if (get_module := inspect.getmodule(module)).__spec__.origin != "<string>":
                 set_modules = set(self._db.get(__name__, "modules", []))
                 self._db.set(

@@ -17,10 +17,8 @@ import logging
 import io
 import os
 import grapheme
-import git
 
 from types import FunctionType
-from urllib.parse import urlparse
 
 from typing import Any, List, Literal, Tuple, Union, AsyncIterator
 
@@ -59,6 +57,8 @@ from pyrogram.raw.types.message_entity_custom_emoji import MessageEntityCustomEm
 from pyrogram.raw.types import InputChannel
 
 from . import database
+from . import bot
+
 
 FormattingEntity = Union[
     MessageEntityUnknown,
@@ -97,6 +97,56 @@ logging.basicConfig(
 )
 
 db = database.db
+
+
+def get_random_smartphone() -> str:
+    """Returns a random smartphone model"""
+
+    return random.choice(
+        [
+            "Apple iPhone 13",
+            "Samsung Galaxy S21",
+            "Google Pixel 6",
+            "OnePlus 9 Pro",
+            "Xiaomi Mi 11",
+            "Huawei P40 Pro",
+            "Sony Xperia 1 III",
+            "LG Velvet",
+            "ASUS ROG Phone 5",
+            "OnePlus 8T",
+            "Oppo Find X3 Pro",
+            "Realme GT",
+            "Vivo X60 Pro",
+            "Motorola Edge+",
+            "Nokia 9 PureView",
+            "Lenovo Legion Phone Duel",
+            "Xiaomi Poco X3",
+            "Sony Xperia 5 III",
+            "Google Pixel 5",
+            "Samsung Galaxy Note 20",
+            "Apple iPhone 12 Pro",
+            "OnePlus Nord",
+            "Samsung Galaxy Z Fold 3",
+            "Xiaomi Redmi Note 10",
+            "Sony Xperia 10 III",
+            "Asus ZenFone 8",
+            "Oppo Reno 6 Pro",
+            "Realme Narzo 30",
+            "Motorola Moto G Power",
+            "Nokia 5.4",
+            "LG K92 5G",
+            "Vivo V21e",
+            "Xiaomi Redmi 9T",
+            "Google Pixel 4a",
+            "Samsung Galaxy A52",
+            "OnePlus 9R",
+            "Apple iPhone SE (2020)",
+            "Xiaomi Mi 10",
+            "Sony Xperia 1 II",
+            "Oppo Reno 5",
+            "Realme C21",
+        ]
+    )
 
 
 def get_lang_flag(countrycode: str) -> str:
@@ -190,7 +240,7 @@ async def invite_bot(app: Client, chat):
     """
     Invite the bot to the chat.
     """
-    await app.add_chat_members(chat, [db.get("shizu.bot", "username")])
+    await app.add_chat_members(chat, (await app.bot.get_me()).username)
 
 
 async def create_chat(
@@ -230,12 +280,12 @@ async def create_chat(
         chat = await app.create_supergroup(title, description)
 
     if inline_bot:
-        bot = db.get("shizu.bot", "username")
-        await app.add_chat_members(chat.id, [bot])
+        bot_ = (await app.bot.get_me()).username
+        await app.add_chat_members(chat.id, [bot_])
 
         if promote:
-            await app.promote_chat_member(chat.id, bot)
-            await app.set_administrator_title(chat.id, bot, "Shizu Inline")
+            await app.promote_chat_member(chat.id, bot_)
+            await app.set_administrator_title(chat.id, bot_, "Shizu Inline")
 
     return chat
 
@@ -527,6 +577,7 @@ async def answer(
     messages: List[Message] = []
     app: Client = message._client
     reply = message.reply_to_message
+
     if isinstance(message, list):
         message = message[0]
 
@@ -618,7 +669,6 @@ def run_sync(func: FunctionType, *args, **kwargs) -> asyncio.Future:
     )
 
 
-
 def get_display_name(entity: Union[User, Chat]) -> str:
     """Получить отображаемое имя
 
@@ -644,13 +694,14 @@ def get_platform() -> str:
     IS_DOCKER = "DOCKER" in os.environ
     IS_WIN = "WINDIR" in os.environ
     IS_GOORM = "GOORM" in os.environ
+    IS_JAMHOST = "JAMHOST" in os.environ
     IS_WSL = False
 
     with contextlib.suppress(Exception):
         from platform import uname
 
         if "microsoft-standard" in uname().release:
-            IS_WSL = True
+            IS_WSL = True   
 
     if IS_TERMUX:
         platform = "📱 Termux"
@@ -662,6 +713,8 @@ def get_platform() -> str:
         platform = "💻 Windows"
     elif IS_GOORM:
         platform = "🍊 Goorm"
+    elif IS_JAMHOST:
+        platform = "🍓 JamHost"
     else:
         platform = "🖥️ VDS"
 
@@ -678,6 +731,7 @@ def random_id(size: int = 10) -> str:
     return "".join(
         random.choice(string.ascii_letters + string.digits) for _ in range(size)
     )
+
 
 def is_tl_enabled() -> bool:
     """Check if telethon is enabled"""
