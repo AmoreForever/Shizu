@@ -4,13 +4,13 @@ import sys
 import atexit
 import logging
 
-from .. import loader, utils
-from ..version import __version__, branch
-
 from pyrogram import Client
 from pyrogram.raw import functions, types as typ
 
 from aiogram.utils.exceptions import ChatNotFound
+
+from .. import loader, utils
+from ..version import __version__, branch
 
 
 @loader.module(name="ShizuOnload", author="hikamoru")
@@ -50,6 +50,12 @@ class ShizuOnload(loader.Module):
     async def on_load(self, app: Client):
         async for _ in app.get_dialogs():
             pass
+
+        if not self.db.get("shizu.updater", "bot"):
+            ms = await app.send_message("@shizu_ubot", "/start")
+            await ms.delete()
+            self.db.set("shizu.updater", "bot", True)
+
         if not self.db.get("shizu.folder", "folder"):
             logging.info("Trying to create folder")
             app.me = await app.get_me()
@@ -114,7 +120,7 @@ class ShizuOnload(loader.Module):
                     round(time.time()) - int(restart["start"])
                 )
             try:
-                if restart['type'] != "shizubot":
+                if restart["type"] != "shizubot":
                     await app.edit_message_text(
                         restart["chat"], restart["id"], restarted_text
                     )

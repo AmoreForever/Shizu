@@ -33,8 +33,6 @@ from pyrogram import Client, types, enums
 from .. import loader, utils
 from ..version import __version__, branch
 
-from aiogram.utils.exceptions import ChatNotFound
-
 
 @loader.module(name="ShizuUpdater", author="shizu")
 class UpdateMod(loader.Module):
@@ -133,8 +131,11 @@ class UpdateMod(loader.Module):
                 message.from_user.username == "shizu_ubot"
                 or message.sender_chat.username == "shizu_ubot"
             ) and message.text == "#force_update":
+                
                 check_output("git stash", shell=True).decode()
+                
                 output = check_output("git pull", shell=True).decode()
+                
                 if "Already up to date." in output:
                     return await self.app.send_message("@shizu_ubot", "#last")
 
