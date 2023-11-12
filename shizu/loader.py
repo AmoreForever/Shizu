@@ -74,7 +74,7 @@ def module(
         instance.version = version
         return instance
 
-    return decorator
+    return decorator   
 
 
 @module(name="Unknown")
@@ -450,6 +450,12 @@ class ModulesManager:
                 module_name,
             )
             return "NFA"
+
+        if re.search(r"# ?tl-only", module_source) and not utils.is_tl_enabled():
+            logging.error(
+                "You have not enabled telethon, so you can't use module %s", module_name
+            )
+            return "OTL"
 
         try:
             spec = ModuleSpec(

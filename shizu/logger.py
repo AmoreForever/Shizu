@@ -278,14 +278,13 @@ class Telegramhandler(logging.Handler):
 
     async def send_logs(self, msgs):
         """Send logs to chat"""
-        
+
         ms = "\n".join(msgs)
-        
+
         if len(ms) > 4096:
-            
             logs = io.BytesIO(ms.encode("utf-8"))
             logs.name = "logs.txt"
-                
+
             await bot.send_document(
                 self.chat,
                 document=logs,
@@ -293,17 +292,16 @@ class Telegramhandler(logging.Handler):
                 parse_mode="HTML",
             )
             self.msgs.clear()
-            
+
             return
-        
+
         await bot.send_message(
             self.chat,
             "\n".join(self.msgs)
             + f"\n\n<b>⏳ Logged time:</b> <code>{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</code>",
             parse_mode=ParseMode.HTML,
-        ); self.msgs.clear()
-        
-        
+        )
+        self.msgs.clear()
 
 
 def override_text(exception: Exception) -> typing.Optional[str]:
@@ -323,9 +321,8 @@ def setup_logger(level: Union[str, int]):
     logging.getLogger().addHandler(tg)
     logging.basicConfig(handlers=[handler, tg], level=level, force=True)
 
-    for ignore in [
-        "pyrogram.session",
-        "pyrogram.connection",
-        "pyrogram.methods.utilities.idle",
-    ]:
-        logger.disable(ignore)
+    logging.getLogger("pyrogram").setLevel(logging.WARNING)
+    logging.getLogger("aiogram").setLevel(logging.WARNING)
+    logging.getLogger("telethon").setLevel(logging.WARNING)
+    logging.getLogger("aiohttp").setLevel(logging.WARNING)
+    

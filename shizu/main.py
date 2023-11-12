@@ -22,8 +22,6 @@ from . import auth, database, loader, utils, extrapatchs
 async def main():
     """Main function"""
 
-    print("shizu is starting...")
-    
     me, app, tapp = await auth.Auth().authorize()
 
     await app.initialize()
@@ -45,7 +43,7 @@ async def main():
         id_ = (await app.get_me()).id
         db.set("shizu.me", "me", id_)
 
-    if pyrogram.__version__ != "2.0.106.8":
+    if pyrogram.__version__ != "2.0.106.12":
         logging.info("Installing shizu-pyrogram...")
 
         subprocess.run(

@@ -69,7 +69,7 @@ class Auth:
                 device_model=device_model,
                 session_string=cfg.get("pyrogram", "string_session", fallback=None),
             )
-        
+
         elif utils.is_tl_enabled():
             self.tapp = TelegramClient(
                 "shizu-tl",
@@ -85,6 +85,7 @@ class Auth:
                 api_hash=cfg.get("pyrogram", "api_hash"),
                 device_model=device_model,
             )
+        
 
     def _check_api_tokens(self) -> bool:
         cfg = cp.ConfigParser()
@@ -96,10 +97,10 @@ class Auth:
             }
             with open("./config.ini", "w", encoding="utf-8") as file:
                 cfg.write(file)
+                
         return True
 
     async def send_code(self) -> Tuple[str, str]:
-    
         while True:
             error_text: str = ""
             try:
@@ -158,7 +159,9 @@ class Auth:
                         )
                     except errors.exceptions.unauthorized_401.SessionPasswordNeeded:
                         me: types.User = (
-                            await self.app.get_me() if logged else await self.enter_2fa()
+                            await self.app.get_me()
+                            if logged
+                            else await self.enter_2fa()
                         )
                         break
                     if isinstance(
@@ -179,18 +182,19 @@ class Auth:
                     tries += 1
                     await asyncio.sleep(1)
             else:
-                
                 phone, phone_code_hash = await self.send_code()
                 logged = await self.enter_code(phone, phone_code_hash)
+
                 me: types.User = (
                     await self.app.get_me() if logged else await self.enter_2fa()
                 )
-                
+
                 if "JAMHOST" in os.environ:
-                    cfg["pyrogram"]["string_session"] = await self.app.export_session_string()
+                    cfg["pyrogram"][
+                        "string_session"
+                    ] = await self.app.export_session_string()
                     with open("./config.ini", "w", encoding="utf-8") as file:
                         cfg.write(file)
-                
 
         except errors.SessionRevoked:
             logging.error(
@@ -201,5 +205,5 @@ class Auth:
 
         if utils.is_tl_enabled():
             return me, self.app, self.tapp
-
+        
         return me, self.app, None

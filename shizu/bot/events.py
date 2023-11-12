@@ -162,8 +162,27 @@ async def edit(
             await query.answer(
                 "I should have edited some message, but it is deleted :("
             )
-            # remove preloader from user's button, if message
-            # was deleted
+
+async def answer(
+    text: str = None,
+    app: Any = None,
+    message: Message = None,
+    parse_mode: str = "HTML",
+    disable_web_page_preview: bool = True,
+    **kwargs,
+) -> bool:
+    try:
+        await app.bot.send_message(
+            message.chat.id,
+            text,
+            parse_mode=parse_mode,
+            disable_web_page_preview=disable_web_page_preview,
+            **kwargs,
+        )
+    except Exception:
+        return False
+
+    return True
 
 
 class InlineCall:
@@ -202,12 +221,16 @@ class Events(Item):
                 return False
             await message.answer(TEXT, parse_mode="HTML", disable_web_page_preview=True)
 
+        setattr(
+                message, "answer", functools.partial(answer, app=self, message=message)
+            )
+
         for func in self._all_modules.message_handlers.values():
             if not await self._check_filters(func, func.__self__, message):
                 continue
             try:
                 await func(self._app, message)
-            except Exception as error:
+            except Exception as error: 
                 logging.exception(error)
         return message
 
@@ -788,7 +811,7 @@ class Events(Item):
 
             log_message = (
                 "🚫 <b>Inline bot invoke failed!</b>\n\n"
-                + f"<code>{utils.escape_html(exc)}</code>"
+                + f"{(exc)}"
             )
 
             await self._app.bot.send_message(

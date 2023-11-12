@@ -91,6 +91,7 @@ class DispatcherManager:
             if (len(vars_ := getfullargspec(func).args) > 3) and (vars_[3] == "args"):
                 args = utils.get_full_command(message)[2]
                 await func(app, message, args)
+                
             else:
                 await func(app, message)
 
@@ -119,7 +120,7 @@ class DispatcherManager:
     ) -> types.Message:
         """Watcher Handler"""
         if isinstance(raw.types, raw.types.UpdatesTooLong):
-            return 
+            return
 
         for watcher in self.modules.watcher_handlers:
             try:

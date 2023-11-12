@@ -578,23 +578,23 @@ async def answer(
     app: Client = message._client
     reply = message.reply_to_message
 
-    if isinstance(message, list):
-        message = message[0]
-
     if isinstance(response, str) and not doc and not photo_:
         info = await app.parser.parse(response, kwargs.get("parse_mode", None))
         text, entities = str(info["message"]), info.get("entities", [])
         if len(text) >= 4096:
             try:
+                
                 strings = [
                     txt
                     async for txt in smart_split(app, escape_html(text), entities, 4096)
                 ]
                 return await app._inline.list(message, strings, **kwargs)
+
             except Exception:
                 file = io.BytesIO(text.encode())
                 file.name = "output.txt"
                 return await message.reply_document(file, **kwargs)
+
         outputs = [response[i : i + 4096] for i in range(0, len(response), 4096)]
 
         messages.append(

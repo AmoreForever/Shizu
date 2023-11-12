@@ -95,7 +95,7 @@ class ShizuSettings(loader.Module):
         "congratulations": "🎉 <b>おめでとうございます！ telethonを正常に有効にしました！</b>\n<i>ただし、変更を適用するにはボットを再起動する必要があります</i>",
         "already_enabled": "🧞 <b>telethonはすでに有効になっています</b>",
         "are_sure_to_stop": "🤔 <b>ボットを停止してもよろしいですか？ 次回は手動で起動する必要があります</b> ",
-        "shutted_down": "🩹 <b>ボットがシャットダウンされました</b>"
+        "shutted_down": "🩹 <b>ボットがシャットダウンされました</b>,"
     }
 
     strings_ua = {
@@ -139,11 +139,10 @@ class ShizuSettings(loader.Module):
     }
 
     async def on_load(self, app):
-        
         if not self.db.get("shizu.me", "me", None):
             id_ = (await app.get_me()).id
             self.db.set("shizu.me", "me", id_)
-            
+
         app.is_tl_enabled = utils.is_tl_enabled()
 
     def markup_(self, purpose):
@@ -157,7 +156,7 @@ class ShizuSettings(loader.Module):
                 {
                     "text": self.strings["no_button"],
                     "callback": self.close,
-                    "args": (purpose,)
+                    "args": (purpose,),
                 },
             ]
         ]
@@ -245,12 +244,16 @@ class ShizuSettings(loader.Module):
             except FloodWaitError as e:
                 return await call.edit(f"Too many attempts, please wait  {e.seconds}")
 
-            async for message in self.app.get_chat_history(777000, limit=1, offset_id=-1):
+            async for message in self.app.get_chat_history(
+                777000, limit=1, offset_id=-1
+            ):
                 t = message.text
 
             code = re.findall(r"(\d{5})", t)[0]
 
-            client = TelegramClient("shizu-tl", api_id, api_hash, device_model="Shizu-Tl")
+            client = TelegramClient(
+                "shizu-tl", api_id, api_hash, device_model="Shizu-Tl"
+            )
 
             await client.connect()
 
@@ -269,7 +272,7 @@ class ShizuSettings(loader.Module):
                 await call.edit(
                     "\n\nPlease temporarily disable 2FA\n\n <i># Hikamoru too lazy to extend this module</i>"
                 )
-        
+
         if purpose == "stopshizu":
             await call.edit(self.strings["shutted_down"])
             sys.exit(0)
@@ -285,11 +288,11 @@ class ShizuSettings(loader.Module):
             )
 
         await message.answer(self.strings["already_enabled"])
-        
+
     @loader.command()
     async def stopshizu(self, app, message):
         """Just turn off the bot"""
-        
+
         await message.answer(
             self.strings["are_sure_to_stop"],
             reply_markup=self.markup_("stopshizu"),

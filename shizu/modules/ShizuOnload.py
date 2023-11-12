@@ -115,7 +115,7 @@ class ShizuOnload(loader.Module):
                 )
             if restart["type"] == "shizubot":
                 await self.app.send_message("@shizu_ubot", "#updated")
-            else:
+            if restart["type"] == "update":
                 restarted_text = self.strings("start_u").format(
                     round(time.time()) - int(restart["start"])
                 )
@@ -127,7 +127,7 @@ class ShizuOnload(loader.Module):
             except Exception as why:
                 logging.error(f"Failed to edit message: {why}")
 
-            logging.info("Successfully started!")
+            
             self.db.pop("shizu.updater", "restart")
 
         started_text = (

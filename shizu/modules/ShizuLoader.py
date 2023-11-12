@@ -98,7 +98,7 @@ class Loader(loader.Module):
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>This module is not available for this account</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> All modules unloaded",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Restarting...</b>",
-        "mods_channel_button": "☁️ Mods channel",
+        "only_telethon": "<b><emoji id=5818764548080930127>⛰</emoji>You have not enabled Telethon mode, thus it is not possible to use this module</b>",
     }
 
     strings_ru = {
@@ -127,7 +127,7 @@ class Loader(loader.Module):
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Этот модуль недоступен для этого аккаунта</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Все модули выгружены",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Перезапуск...</b>",
-        "mods_channel_button": "☁️ Канал модулей",
+        "only_telethon": "<b><emoji id=5818764548080930127>⛰</emoji>Вы не включили Телетон мод, поэтому он недоступен</b>",
     }
 
     strings_uz = {
@@ -156,7 +156,7 @@ class Loader(loader.Module):
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Bu modul ushbu akkaunt uchun mavjud emas</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Barcha modullar ochirildi",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Qayta ishlayapti...</b>",
-        "mods_channel_button": "☁️ Modullar kanali",
+        "only_telethon": "<b><emoji id=5818764548080930127>⛰</emoji>Telethon mod ishlatilmadi shuning uchun modul zagruzka bolmadi</b>",
     }
 
     strings_jp = {
@@ -185,7 +185,7 @@ class Loader(loader.Module):
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>このアカウントではこのモジュールは利用できません</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> すべてのモジュールがアンロードされました",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> 再起動しています...</b>",
-        "mods_channel_button": "☁️ モジュールチャンネル",
+        "only_telethon": "<b><emoji id=5818764548080930127>⛰</emoji>テレソンモードが有効になっていないため、このモジュールを使用することはできません</b>",
     }
 
     strings_ua = {
@@ -203,7 +203,7 @@ class Loader(loader.Module):
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Цей модуль недоступний для цього облікового запису</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Всі модулі вилучено",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Перезавантаження...</b>",
-        "mods_channel_button": "☁️ Канал модулів",
+        "only_telethon": "<b><emoji id=5818764548080930127>⛰</emoji>Ви не включили Телетон мод, тому він недоступний</b>",
     }
 
     strings_kz = {
@@ -221,17 +221,12 @@ class Loader(loader.Module):
         "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>Бұл модуль бұл аккаунтқа қолжетімді емес</b>",
         "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> Барлық модульдер жойылды",
         "restart": "<b><emoji id=5328274090262275771>🔁</emoji> Қайта іске қосу...</b>",
-        "mods_channel_button": "☁️ Модульдер каналы",
+        "only_telethon": "<b><emoji id=5818764548080930127>⛰</emoji>Телетон модты қоспағансыз сондықтан ол қолжетімді емес</b>",
     }
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "repo",
-            "https://github.com/AmoreForever/ShizuMods",
-            "Repository link",
-            "disable_button",
-            "False",
-            "Disable button in dlmod command",
+            "repo", "https://github.com/AmoreForever/ShizuMods", "Repository link"
         )
 
     @loader.command()
@@ -258,17 +253,9 @@ class Loader(loader.Module):
             text = self.strings("mods_in_repo").format(modules_repo) + "\n".join(
                 map("• <code>{}</code>".format, modules)
             )
-            
-            markup = [[
-                        {
-                            "text": self.strings("mods_channel_button"),
-                            "url": "https://t.me/ShizuMods",
-                        }
-                    ]]
 
             return await message.answer(
                 text,
-                reply_markup=markup if self.config["disable_button"] == "False" else None,
                 disable_web_page_preview=True,
             )
 
@@ -289,6 +276,8 @@ class Loader(loader.Module):
                 error_text = self.strings("found_delete_")
             if module_name == "NFA":
                 error_text = self.strings("not_for_this_account")
+            if module_name == "OTL":
+                error_text = self.strings("only_telethon")
             if module_name is True:
                 error_text = self.strings("dep_installed_req_res")
             if not module_name:
@@ -380,6 +369,9 @@ class Loader(loader.Module):
 
         if module_name == "NFA":
             return await message.answer(self.strings("not_for_this_account"))
+
+        if module_name == "OTL":
+            return await message.answer(self.strings("only_telethon"))
 
         module = "_".join(module_name.lower().split())
         with open(f"shizu/modules/{module}.py", "w", encoding="utf-8") as file:
