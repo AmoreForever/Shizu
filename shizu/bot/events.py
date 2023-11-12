@@ -31,6 +31,7 @@
 
 import time
 import sys
+import inspect
 
 import logging
 import traceback
@@ -83,13 +84,12 @@ async def delete(self: Any = None, form: Any = None, form_uid: Any = None) -> bo
     for internal use only, do not try to pass them
     """
     try:
-        
         await self._app.delete_messages(
             self._forms[form_uid]["chat"], self._forms[form_uid]["message_id"]
         )
-        
+
         del self._forms[form_uid]
-        
+
     except Exception:
         return False
 
@@ -196,7 +196,7 @@ class Events(Item):
                     )
                 ),
             )
-            
+
         if message.text == "/userbot":
             if message.chat.type != "private":
                 return False
@@ -261,9 +261,16 @@ class Events(Item):
         cmd = query_[0]
         args = " ".join(query_[1:])
 
-        func = self._all_modules.inline_handlers.get(cmd)
-        
-        
+        if func := self._all_modules.inline_handlers.get(cmd):
+            if (
+                len(vars_ := inspect.getfullargspec(func).args) > 3
+                and vars_[3] == "args"
+            ):
+                await func(self._app, inline_query, args)
+            else:
+                await func(self._app, inline_query)
+            
+
         try:
             if self._forms[query].get("type", None) == "form":
                 if self._forms[query].get("photo", None):
@@ -767,7 +774,6 @@ class Events(Item):
                 results.query_id,
                 results.results[0].id,
                 reply_to_message_id=msg_id or None,
-                
             )
             if soo:
                 await self._app.delete_messages(soo.chat.id, soo.id)
@@ -780,7 +786,10 @@ class Events(Item):
             item = lo.CustomException.from_exc_info(*sys.exc_info())
             exc = item.message + "\n\n" + item.full_stack
 
-            log_message = "🚫 <b>Inline bot invoke failed!</b>\n\n" +  f"<code>{utils.escape_html(exc)}</code>"
+            log_message = (
+                "🚫 <b>Inline bot invoke failed!</b>\n\n"
+                + f"<code>{utils.escape_html(exc)}</code>"
+            )
 
             await self._app.bot.send_message(
                 self._db.get("shizu.chat", "logs", None), log_message

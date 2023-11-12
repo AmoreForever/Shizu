@@ -15,7 +15,7 @@ from inspect import getfullargspec, iscoroutine
 
 from types import FunctionType
 
-from pyrogram import Client, filters, types
+from pyrogram import Client, filters, types, raw
 from pyrogram.handlers import MessageHandler, EditedMessageHandler
 
 from . import loader, utils, database, logger as lo
@@ -73,7 +73,6 @@ class DispatcherManager:
     ) -> types.Message:
         """Обработчик сообщений"""
         await self._handle_watchers(app, message)
-        await self._handle_other_handlers(app, message)
 
         prefix, command, args = utils.get_full_command(message)
         if not (command or args):
@@ -119,6 +118,9 @@ class DispatcherManager:
         self, app: Client, message: types.Message
     ) -> types.Message:
         """Watcher Handler"""
+        if isinstance(raw.types, raw.types.UpdatesTooLong):
+            return 
+
         for watcher in self.modules.watcher_handlers:
             try:
                 # if not await check_filters(watcher, app, message):
@@ -128,30 +130,4 @@ class DispatcherManager:
             except Exception as error:
                 logging.exception(error)
 
-        return message
-
-    async def _handle_other_handlers(
-        self, app: Client, message: types.Message
-    ) -> types.Message:
-        """Handler for other handlers"""
-        for handler in app.dispatcher.groups[0]:
-            if (
-                getattr(handler.callback, "__func__", None)
-                == DispatcherManager._handle_message
-            ):
-                continue
-
-            coro = handler.filters(app, message)
-            if iscoroutine(coro):
-                coro = await coro
-
-            if not coro:
-                continue
-
-            try:
-                handler = handler.callback(app, message)
-                if iscoroutine(handler):
-                    await handler
-            except Exception as error:
-                logging.exception(error)
         return message
