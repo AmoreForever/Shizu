@@ -22,6 +22,7 @@ from . import auth, database, loader, utils, extrapatchs
 async def main():
     """Main function"""
 
+    print("shizu is starting...")
     me, app, tapp = await auth.Auth().authorize()
 
     await app.initialize()

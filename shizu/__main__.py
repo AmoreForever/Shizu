@@ -38,4 +38,4 @@ else:
         )
         os.popen("pip3 install -r requirements.txt").read()
         print("👍 Dependencies installed")
-        print("🔁 Retrying to run bot again please wait..")
+        print("🔁 Retry to run bot again please wait..")

@@ -69,19 +69,21 @@ class Auth:
                 device_model=device_model,
                 session_string=cfg.get("pyrogram", "string_session", fallback=None),
             )
+        
+        elif utils.is_tl_enabled():
+            self.tapp = TelegramClient(
+                "shizu-tl",
+                api_id=cfg.get("pyrogram", "api_id"),
+                api_hash=cfg.get("pyrogram", "api_hash"),
+                device_model="Shizu-TL",
+            )
+
         else:
             self.app = Client(
                 name=session_name,
                 api_id=cfg.get("pyrogram", "api_id"),
                 api_hash=cfg.get("pyrogram", "api_hash"),
                 device_model=device_model,
-            )
-        if utils.is_tl_enabled():
-            self.tapp = TelegramClient(
-                "shizu-tl",
-                api_id=cfg.get("pyrogram", "api_id"),
-                api_hash=cfg.get("pyrogram", "api_hash"),
-                device_model="Shizu-TL",
             )
 
     def _check_api_tokens(self) -> bool:
@@ -97,6 +99,7 @@ class Auth:
         return True
 
     async def send_code(self) -> Tuple[str, str]:
+    
         while True:
             error_text: str = ""
             try:
@@ -179,9 +182,10 @@ class Auth:
                 phone, phone_code_hash = await self.send_code()
                 logged = await self.enter_code(phone, phone_code_hash)
                 
-                cfg["pyrogram"]["string_session"] = await self.app.export_session_string()
-                with open("./config.ini", "w", encoding="utf-8") as file:
-                    cfg.write(file)
+                if "JAMHOST" in os.environ:
+                    cfg["pyrogram"]["string_session"] = await self.app.export_session_string()
+                    with open("./config.ini", "w", encoding="utf-8") as file:
+                        cfg.write(file)
                 
 
         except errors.SessionRevoked:
