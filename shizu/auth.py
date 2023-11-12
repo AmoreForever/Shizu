@@ -179,6 +179,9 @@ class Auth:
                     tries += 1
                     await asyncio.sleep(1)
             else:
+                me: types.User = (
+                    await self.app.get_me() if logged else await self.enter_2fa()
+                )
                 phone, phone_code_hash = await self.send_code()
                 logged = await self.enter_code(phone, phone_code_hash)
                 
