@@ -1,3 +1,4 @@
+import contextlib
 import time
 import os
 import sys
@@ -48,14 +49,15 @@ class ShizuOnload(loader.Module):
     }
 
     async def on_load(self, app: Client):
-        async for _ in app.get_dialogs():
-            pass
+        with contextlib.suppress(Exception):
+            async for _ in app.get_dialogs():
+                pass
 
-        if not self.db.get("shizu.updater", "bot"):
-            ms = await app.send_message("@shizu_ubot", "/start")
-            await ms.delete()
-            self.db.set("shizu.updater", "bot", True)
-
+            if not self.db.get("shizu.updater", "bot"):
+                ms = await app.send_message("@shizu_ubot", "/start")
+                await ms.delete()
+                self.db.set("shizu.updater", "bot", True)
+                
         if not self.db.get("shizu.folder", "folder"):
             logging.info("Trying to create folder")
             app.me = await app.get_me()
@@ -127,7 +129,7 @@ class ShizuOnload(loader.Module):
             except Exception as why:
                 logging.error(f"Failed to edit message: {why}")
 
-            
+
             self.db.pop("shizu.updater", "restart")
 
         started_text = (
