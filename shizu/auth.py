@@ -70,20 +70,20 @@ class Auth:
                 session_string=cfg.get("pyrogram", "string_session", fallback=None),
             )
 
-        elif utils.is_tl_enabled():
-            self.tapp = TelegramClient(
-                "shizu-tl",
-                api_id=cfg.get("pyrogram", "api_id"),
-                api_hash=cfg.get("pyrogram", "api_hash"),
-                device_model="Shizu-TL",
-            )
-
         else:
             self.app = Client(
                 name=session_name,
                 api_id=cfg.get("pyrogram", "api_id"),
                 api_hash=cfg.get("pyrogram", "api_hash"),
                 device_model=device_model,
+            )
+
+        if utils.is_tl_enabled():
+            self.tapp = TelegramClient(
+                "shizu-tl",
+                api_id=cfg.get("pyrogram", "api_id"),
+                api_hash=cfg.get("pyrogram", "api_hash"),
+                device_model="Shizu-TL",
             )
         
 
