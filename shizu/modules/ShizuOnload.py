@@ -57,7 +57,7 @@ class ShizuOnload(loader.Module):
                 ms = await app.send_message("@shizu_ubot", "/start")
                 await ms.delete()
                 self.db.set("shizu.updater", "bot", True)
-                
+
         if not self.db.get("shizu.folder", "folder"):
             logging.info("Trying to create folder")
             app.me = await app.get_me()
@@ -128,7 +128,6 @@ class ShizuOnload(loader.Module):
                     )
             except Exception as why:
                 logging.error(f"Failed to edit message: {why}")
-
 
             self.db.pop("shizu.updater", "restart")
 

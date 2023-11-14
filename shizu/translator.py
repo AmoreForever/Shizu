@@ -13,13 +13,10 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-import logging
 import os
 import json
 
 from . import utils
-
-logger = logging.getLogger(__name__)
 
 
 class Translator:
@@ -28,7 +25,7 @@ class Translator:
         self.db = db
 
     async def init(self) -> bool:
-        return True 
+        return True
 
     def getkey(self, key):
         lang = self.db.get("shizu.me", "lang", "en")

@@ -843,6 +843,7 @@ class Events(Item):
         manual_security: Optional[bool] = False,
         disable_security: Optional[bool] = False,
         ttl: Optional[Union[int, bool]] = False,
+        **kwargs
     ) -> Union[bool]:
         """
         Send inline list to chat
@@ -998,16 +999,19 @@ class Events(Item):
             results = await self._app.get_inline_bot_results(
                 (await self._app.inline_bot.get_me()).username, unit_id
             )
+
             if status_message:
                 await self._app.delete_messages(
                     status_message.chat.id, status_message.id
                 )
+
             await self._app.send_inline_bot_result(
                 message.chat.id,
                 results.query_id,
                 results.results[0].id,
                 reply_to_message_id=status_message.id if status_message else None,
             )
+            
         except Exception as e:
             logger.exception("Can't send list")
 
@@ -1057,6 +1061,7 @@ class Events(Item):
                     self._forms[unit_id]["current_index"]
                 ],
                 reply_markup=self._list_markup(unit_id),
+                disable_web_page_preview=True
             )
             await call.answer()
         except aiogram.utils.exceptions.RetryAfter as e:
@@ -1090,6 +1095,7 @@ class Events(Item):
                     self._forms[unit_id]["current_index"]
                 ],
                 reply_markup=self._list_markup(unit_id),
+                disable_web_page_preview=True
             )
             await call.answer()
         except aiogram.utils.exceptions.RetryAfter as e:
@@ -1137,6 +1143,7 @@ class Events(Item):
         return markup
 
     async def _list_show_current(self, call: CallbackQuery, unit_id: str = None):
+
         await call.answer(
             f"Current page: {self._forms[unit_id]['current_index'] + 1} / {len(self._forms[unit_id]['strings'])}",
             show_alert=True,

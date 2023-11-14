@@ -325,4 +325,3 @@ def setup_logger(level: Union[str, int]):
     logging.getLogger("aiogram").setLevel(logging.WARNING)
     logging.getLogger("telethon").setLevel(logging.WARNING)
     logging.getLogger("aiohttp").setLevel(logging.WARNING)
-    

@@ -23,7 +23,7 @@ from types import FunctionType
 from typing import Any, List, Literal, Tuple, Union, AsyncIterator
 
 from pyrogram.types import Chat, Message, User
-from pyrogram import Client, enums, types
+from pyrogram import Client, enums, types, raw
 from pyrogram.raw.base import Updates
 from pyrogram.raw.base.messages import ForumTopics
 from pyrogram.raw.functions.channels import (
@@ -181,7 +181,7 @@ def get_full_command(
     """Output tuple from prefix, command and arguments
 
     Parameters:
-        message (``program.types.Message`):
+        message (`program.types.Message`):
     Message
     """
     message.text = str(message.text or message.caption)
@@ -302,29 +302,6 @@ def get_dir(mod: str) -> str:
     return os.path.abspath(os.path.dirname(os.path.abspath(mod)))
 
 
-async def get_forum(app, chat_id: int) -> str:
-    """Get forum of given chat_id"""
-    chat_ = await app.resolve_peer(chat_id)
-    channel_ = InputChannel(channel_id=chat_.channel_id, access_hash=chat_.access_hash)
-    get_topics_ = GetForumTopics(
-        channel=channel_, offset_date=0, offset_topic=0, offset_id=0, limit=1
-    )
-    topics: ForumTopics = await app.invoke(get_topics_)
-    topics.order_by_create_date = True
-    return topics.topics
-
-
-async def create_topic(app, chat_id: int, title: str) -> str:
-    """Create topic in given chat_id"""
-    chat_ = await app.resolve_peer(chat_id)
-    channel_ = InputChannel(channel_id=chat_.channel_id, access_hash=chat_.access_hash)
-    create_topic_ = CreateForumTopic(
-        channel=channel_, title=title, random_id=random.randint(10000000, 99999999)
-    )
-    updates: Updates = await app.invoke(create_topic_)
-    return updates
-
-
 async def smart_split(
     client: Client,
     text: str,
@@ -344,13 +321,6 @@ async def smart_split(
     :param min_length: ignore any matches on [split_on] strings before this number of characters into each message
     :return: iterator, which returns strings
 
-    :example:
-        >>> utils.smart_split(
-            *hikkatl.extensions.html.parse(
-                "<b>Hello, world!</b>"
-            )
-        )
-        <<< ["<b>Hello, world!</b>"]
     """
 
     # Authored by @bsolute
@@ -461,7 +431,6 @@ async def smart_split(
                     )
                 )
             elif entity.offset + entity.length > split_offset_utf16 + exclude:
-                # wholly right
                 pending_entities.append(
                     _copy_tl(
                         entity,
@@ -481,19 +450,19 @@ async def smart_split(
 
 def _copy_tl(o: FormattingEntity, client, **kwargs):
     if isinstance(o, types.MessageEntity):
-        x: dict = o.default(o)  # type: ignore
+        x: dict = o.default(o)
         del x["_"]
         x |= kwargs
         return type(o)(**x)
 
-    d: dict = o.default(o)  # type: ignore
+    d: dict = o.default(o)
     del d["_"]
     d |= kwargs
     entity = type(o)(**d)
-    # print(entity, d, o)
+
     if isinstance(entity, InputMessageEntityMentionName):
         entity_type = enums.MessageEntityType.TEXT_MENTION
-        user_id = entity.user_id.user_id  # type: ignore
+        user_id = entity.user_id.user_id
     else:
         info = {
             isinstance(
@@ -540,10 +509,10 @@ def _copy_tl(o: FormattingEntity, client, **kwargs):
         type=entity_type,
         offset=entity.offset,
         length=entity.length,
-        url=getattr(entity, "url", None),  # type: ignore
-        user=types.User._parse(client, {}.get(user_id, None)),  # type: ignore
-        language=getattr(entity, "language", None),  # type: ignore
-        custom_emoji_id=getattr(entity, "document_id", None),  # type: ignore
+        url=getattr(entity, "url", None),
+        user=types.User._parse(client, {}.get(user_id)),
+        language=getattr(entity, "language", None),
+        custom_emoji_id=getattr(entity, "document_id", None),
         client=client,
     )
 
@@ -583,7 +552,6 @@ async def answer(
         text, entities = str(info["message"]), info.get("entities", [])
         if len(text) >= 4096:
             try:
-                
                 strings = [
                     txt
                     async for txt in smart_split(app, escape_html(text), entities, 4096)
@@ -615,10 +583,11 @@ async def answer(
                 **kwargs,
             )
             if message.from_user.id == db.get("shizu.me", "me")
-            else await message.reply(
+            else await app.send_message(
+                message.chat.id,
                 outputs[0],
-                **kwargs,
                 reply_to_message_id=reply.id if reply else None,
+                **kwargs,
             )
         )
     if doc:
@@ -701,7 +670,7 @@ def get_platform() -> str:
         from platform import uname
 
         if "microsoft-standard" in uname().release:
-            IS_WSL = True   
+            IS_WSL = True
 
     if IS_TERMUX:
         platform = "📱 Termux"
