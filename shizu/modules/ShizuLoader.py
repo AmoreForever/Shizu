@@ -338,18 +338,18 @@ class Loader(loader.Module):
 
             module_name = await self.all_modules.load_module(r.text, r.url)
 
-        if args in modulesP:
+        if self.config["private_repo"] and self.config["private_token"] and args in modulesP:
             args = api_resultP + args + ".py"
-
+        
             headers = {"Authorization": f"token {private[1]}"}
-
+        
             r = await utils.run_sync(requests.get, args, headers=headers)
-
+        
             if r.status_code != 200:
                 raise requests.exceptions.ConnectionError
-
+        
             await message.answer(self.strings("check"))
-
+        
             module_name = await self.all_modules.load_module(r.text, "<string>")
             is_private = True
 
