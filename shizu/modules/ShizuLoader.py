@@ -271,6 +271,7 @@ class Loader(loader.Module):
         private = self.config["private_repo"], self.config["private_token"]
 
         api_result = await self.get_git_raw_link(modules_repo)
+        
         if not api_result:
             return await message.answer(self.strings("invalid_repo"))
 
@@ -285,8 +286,9 @@ class Loader(loader.Module):
 
         modules: List[str] = modules.text.splitlines()
 
-        if private:
+        if self.config["private_repo"] and self.config["private_token"]:
             api_resultP = await self.get_git_raw_link(private[0], private[1])
+
             if not api_resultP:
                 return await message.answer(self.strings("invalid_repo"))
 
@@ -309,7 +311,7 @@ class Loader(loader.Module):
                 map("• <code>{}</code>".format, modules)
             )
 
-            if private:
+            if self.config["private_repo"] and self.config["private_token"]:
                 textP = self.strings("mods_in_repo").format(
                     "🫦", private[0]
                 ) + "\n".join(map("• <code>{}</code>".format, modulesP))
@@ -413,14 +415,15 @@ class Loader(loader.Module):
         )
 
     async def get_git_raw_link(self, repo_url: str, token: str = None):
+        print(repo_url)
         match = GIT_REGEX.search(repo_url)
         if not match:
             return False
 
         repo_path, branch, path = match.group(1), match.group(2), match.group(3)
 
-        headers = {"Authorization": f"token {token}"}
         if token:
+            headers = {"Authorization": f"token {token}"}
             r = await utils.run_sync(
                 requests.get,
                 f"https://api.github.com/repos{repo_path}",
