@@ -834,7 +834,7 @@ class Events(Item):
 
     async def list(
         self,
-        message: Union[Message, int],
+        message: Message,
         strings: List[str],
         prev: bool = True,
         *,

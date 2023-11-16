@@ -337,7 +337,6 @@ class ModulesManager:
             file_path = os.path.join(
                 os.path.abspath("."), self._local_modules_path, local_module
             )
-
             try:
                 self.register_instance(module_name, file_path)
             except Exception as error:

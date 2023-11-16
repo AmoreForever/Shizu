@@ -54,10 +54,10 @@ from pyrogram.raw.types.message_entity_blockquote import MessageEntityBlockquote
 from pyrogram.raw.types.message_entity_bank_card import MessageEntityBankCard
 from pyrogram.raw.types.message_entity_spoiler import MessageEntitySpoiler
 from pyrogram.raw.types.message_entity_custom_emoji import MessageEntityCustomEmoji
-from pyrogram.raw.types import InputChannel
+
 
 from . import database
-from . import bot
+
 
 
 FormattingEntity = Union[

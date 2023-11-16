@@ -23,7 +23,6 @@
 
 
 import atexit
-import base64
 import logging
 import os
 import re
@@ -415,7 +414,7 @@ class Loader(loader.Module):
         )
 
     async def get_git_raw_link(self, repo_url: str, token: str = None):
-        print(repo_url)
+        
         match = GIT_REGEX.search(repo_url)
         if not match:
             return False

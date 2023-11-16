@@ -13,7 +13,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-import logging
+
 from .. import loader, utils
 from pyrogram import Client
 from ..bot import core

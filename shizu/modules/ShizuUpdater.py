@@ -21,6 +21,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
+import contextlib
 import os
 import sys
 import time
@@ -126,7 +127,7 @@ class UpdateMod(loader.Module):
     async def watcher(
         self, app: Client, message: types.Message
     ):  # update from @shizihub channel
-        try:
+        with contextlib.suppress(Exception):
             if (
                 message.from_user.username == "shizu_ubot"
                 or message.sender_chat.username == "shizu_ubot"
@@ -147,5 +148,3 @@ class UpdateMod(loader.Module):
                 )
                 atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
                 return sys.exit(0)
-        except:
-            pass
