@@ -59,7 +59,6 @@ from pyrogram.raw.types.message_entity_custom_emoji import MessageEntityCustomEm
 from . import database
 
 
-
 FormattingEntity = Union[
     MessageEntityUnknown,
     MessageEntityMention,
@@ -524,75 +523,28 @@ async def answer(
     photo_: bool = False,
     reply_markup: Any = None,
     **kwargs,
-) -> List[Message]:
-    """Basically it's a regular message.edit, but:
-        - If the message content exceeds the limit (4096 characters),
-            then several split messages will be sent
-        - Message.reply works if the command was not called by the account owner
-
-    Parameters:
-        message (``program.types.Message`` | ``typing.List[pyrogram.types.Message]`):
-    Message
-
-        response (`str` | `typing.Any"):
-    The text or object to be sent
-
-        doc/photo (`bool", optional):
-    If `True`, the message will be sent as a document/photo or by link
-
-        **kwargs (`dict`, optional):
-    Parameters for sending a message
+):
     """
-    messages: List[Message] = []
-    app: Client = message._client
+    Sends a response message based on the given parameters.
+
+    Args:
+        message: The message or list of messages to respond to.
+        response: The response message or content.
+        doc: If True, sends the response as a document.
+        photo_: If True, sends the response as a photo.
+        reply_markup: The reply markup for the response.
+        **kwargs: Additional keyword arguments.
+
+
+    """
+    messages = []
+    app = message._client
     reply = message.reply_to_message
 
-    if isinstance(response, str) and not doc and not photo_:
-        info = await app.parser.parse(response, kwargs.get("parse_mode", None))
-        text, entities = str(info["message"]), info.get("entities", [])
-        if len(text) >= 4096:
-            try:
-                strings = [
-                    txt
-                    async for txt in smart_split(app, escape_html(text), entities, 4096)
-                ]
-                return await app._inline.list(message, strings, **kwargs)
-
-            except Exception:
-                file = io.BytesIO(text.encode())
-                file.name = "output.txt"
-                return await message.reply_document(file, **kwargs)
-
-        outputs = [response[i : i + 4096] for i in range(0, len(response), 4096)]
-
-        messages.append(
-            await app._inline.form(
-                message=message,
-                text=response,
-                reply_markup=reply_markup,
-                msg_id=reply.id
-                if reply
-                else message.topics.id
-                if message.topics
-                else None,
-                **kwargs,
-            )
-            if reply_markup
-            else await message.edit(
-                outputs[0],
-                **kwargs,
-            )
-            if message.from_user.id == db.get("shizu.me", "me")
-            else await app.send_message(
-                message.chat.id,
-                outputs[0],
-                reply_to_message_id=reply.id if reply else None,
-                **kwargs,
-            )
-        )
     if doc:
         app.me = await app.get_me()
         messages.append(await message.reply_document(response, **kwargs))
+        return messages
 
     if photo_:
         app.me = await app.get_me()
@@ -609,8 +561,52 @@ async def answer(
                 response, reply_to_message_id=reply.id if reply else None, **kwargs
             )
         )
+        return messages
 
-    return message if len(messages) == 1 else messages
+    if isinstance(response, str):
+        info = await app.parser.parse(response, kwargs.get("parse_mode", None))
+        text, entities = str(info["message"]), info.get("entities", [])
+        if len(text) >= 4096:
+            try:
+                strings = [
+                    txt
+                    async for txt in smart_split(app, escape_html(text), entities, 4096)
+                ]
+                messages.append(await app._inline.list(message, strings, **kwargs))
+            except Exception:
+                file = io.BytesIO(text.encode())
+                file.name = "output.txt"
+                messages.append(await message.reply_document(file, **kwargs))
+        else:
+            messages.append(
+                await app._inline.form(
+                    message=message,
+                    text=response,
+                    reply_markup=reply_markup,
+                    msg_id=reply.id
+                    if reply
+                    else message.topics.id
+                    if message.topics
+                    else None,
+                    **kwargs,
+                )
+                if reply_markup
+                else (
+                    await message.edit(
+                        text=response,
+                        **kwargs,
+                    )
+                    if message.outgoing
+                    else await app.send_message(
+                        message.chat.id,
+                        response,
+                        reply_to_message_id=reply.id if reply else None,
+                        **kwargs,
+                    )
+                )
+            )
+
+    return messages[0]
 
 
 def rand(size: int, /) -> str:

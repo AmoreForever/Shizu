@@ -11,7 +11,7 @@ import sys
 import traceback
 
 import inspect
-from inspect import getfullargspec, iscoroutine
+from inspect import getfullargspec
 
 from types import FunctionType
 

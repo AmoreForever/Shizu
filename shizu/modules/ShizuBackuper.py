@@ -111,12 +111,15 @@ class BackupMod(loader.Module):
         """Easy restore database"""
         reply = message.reply_to_message
         if not reply or not reply.document:
-            return await message.answer("❌ Нет файла")
+            return await message.answer(self.strings("invalid"))
+
         await message.answer(self.strings("restoring"))
         file = await app.download_media(reply.document)
         decoded_text = json.loads(io.open(file, "r", encoding="utf-8").read())
+        
         if not file.endswith(".json"):
             return await message.answer(self.strings("invalid"))
+
         self.db.reset()
         self.db.update(**decoded_text)
         self.db.save()

@@ -105,8 +105,11 @@ class TesterMod(loader.Module):
     async def ping(self, app: Client, message: types.Message, args: str):
         """Checks the response rate of the user bot"""
         start = time.perf_counter_ns()
-        await message.answer("<emoji id=5267444331010074275>▫️</emoji>")
+
+        ms = await message.answer("<emoji id=5267444331010074275>▫️</emoji>")
+
         ping = round((time.perf_counter_ns() - start) / 10**6, 3)
-        await message.answer(
+        
+        await ms.edit(
             self.strings("ping").format(ping),
         )

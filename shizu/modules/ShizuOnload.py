@@ -1,3 +1,10 @@
+# █ █ █ █▄▀ ▄▀█ █▀▄▀█ █▀█ █▀█ █ █
+# █▀█ █ █ █ █▀█ █ ▀ █ █▄█ █▀▄ █▄█
+
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# 👤 https://t.me/hikamoru
+
 import contextlib
 import time
 import os
