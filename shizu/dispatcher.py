@@ -60,7 +60,7 @@ class DispatcherManager:
         self.modules = modules
 
     async def load(self) -> bool:
-        """Загружает менеджер диспетчера"""
+        """Loads dispatcher"""
         self.app.add_handler(handler=MessageHandler(self._handle_message, filters.all))
         self.app.add_handler(
             handler=EditedMessageHandler(self._handle_message, filters.all)
@@ -71,7 +71,7 @@ class DispatcherManager:
     async def _handle_message(
         self, app: Client, message: types.Message
     ) -> types.Message:
-        """Обработчик сообщений"""
+        """Handle message"""""
         await self._handle_watchers(app, message)
 
         prefix, command, args = utils.get_full_command(message)
@@ -91,7 +91,7 @@ class DispatcherManager:
             if (len(vars_ := getfullargspec(func).args) > 3) and (vars_[3] == "args"):
                 args = utils.get_full_command(message)[2]
                 await func(app, message, args)
-                
+
             else:
                 await func(app, message)
 

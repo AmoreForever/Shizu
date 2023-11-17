@@ -597,6 +597,7 @@ async def answer(
                         **kwargs,
                     )
                     if message.outgoing
+                    or message.chat.id == database.db.get("shizu.me", "me")
                     else await app.send_message(
                         message.chat.id,
                         response,

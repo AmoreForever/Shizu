@@ -95,7 +95,7 @@ class ShizuSettings(loader.Module):
         "congratulations": "🎉 <b>おめでとうございます！ telethonを正常に有効にしました！</b>\n<i>ただし、変更を適用するにはボットを再起動する必要があります</i>",
         "already_enabled": "🧞 <b>telethonはすでに有効になっています</b>",
         "are_sure_to_stop": "🤔 <b>ボットを停止してもよろしいですか？ 次回は手動で起動する必要があります</b> ",
-        "shutted_down": "🩹 <b>ボットがシャットダウンされました</b>,"
+        "shutted_down": "🩹 <b>ボットがシャットダウンされました</b>"
     }
 
     strings_ua = {

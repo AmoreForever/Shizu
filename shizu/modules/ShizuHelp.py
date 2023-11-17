@@ -134,7 +134,6 @@ class Help(loader.Module):
                 )
 
                 if commands or inline:
-
                     module_emoji = "🀄️" if module.name in self.cmodules else "🎴"
 
                     text += (
