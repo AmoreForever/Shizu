@@ -217,8 +217,13 @@ def iter_attrs(obj: typing.Any, /) -> typing.List[typing.Tuple[str, typing.Any]]
     return ((attr, getattr(obj, attr)) for attr in dir(obj))
 
 
-def command() -> Callable[[Callable], Callable]:
-    def decorator(func: Callable) -> Callable:
+def command(aliases: list = None):
+    def decorator(func):
+        if aliases:
+            al = database.db.get(__name__, "aliases", {})
+            for alias in aliases:
+                al[alias] = func.__name__
+            database.db.set(__name__, "aliases", al)
 
         func.is_command = True
         return func
@@ -471,7 +476,7 @@ class ModulesManager:
 
             if instance.name in banned_modules:
                 self.unload_module(instance.name)
-                return "BAN" 
+                return "BAN"
 
             if only_ban:
                 if not instance:

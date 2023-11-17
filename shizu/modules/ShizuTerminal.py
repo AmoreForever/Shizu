@@ -25,14 +25,13 @@ import asyncio
 from pyrogram import Client, types
 
 from .. import loader, utils
-from ..wrappers import wrap_function_to_async
 
 
 @loader.module(name="ShizuTerminal", author="shizu")
 class TerminalMod(loader.Module):
     """Terminal"""
 
-    @loader.command()
+    @loader.command(aliases=['t'])
     async def terminal(self, app: Client, message: types.Message, args: str):
         await message.answer("<emoji id=5325822763447884498>💠</emoji> <b>wait...</b>")
         output = await self.run_command(args)

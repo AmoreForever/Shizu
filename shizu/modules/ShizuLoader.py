@@ -260,7 +260,7 @@ class Loader(loader.Module):
             "Private repository token",
         )
 
-    @loader.command()
+    @loader.command(aliases=['dlm'])
     async def dlmod(self, app: Client, message: types.Message, args: str):
         """Download module by link. Usage: dlmod <link or all or nothing>"""
 
@@ -440,7 +440,7 @@ class Loader(loader.Module):
 
         return f"https://raw.githubusercontent.com{repo_path}/{branch}{path or ''}/"
 
-    @loader.command()
+    @loader.command(aliases=["lm"])
     async def loadmod(self, app: Client, message: types.Message):
         """Load the module by file. Usage: <replay per file>"""
         reply = message.reply_to_message

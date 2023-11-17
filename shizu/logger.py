@@ -265,7 +265,7 @@ class Telegramhandler(logging.Handler):
 
         if "The server sent an unknown constructor:" in record.msg:
             return
-        
+
         self.msgs.append(
             f"<code>{utils.escape_html(FORMAT_FOR_TGLOG.format(record))}</code>"
         )
