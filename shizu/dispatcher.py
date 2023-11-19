@@ -5,6 +5,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
+import random
 import contextlib
 import logging
 import sys
@@ -15,7 +16,7 @@ from inspect import getfullargspec
 
 from types import FunctionType
 
-from pyrogram import Client, filters, types, raw
+from pyrogram import Client, filters, types
 from pyrogram.handlers import MessageHandler, EditedMessageHandler
 
 from . import loader, utils, database, logger as lo
@@ -62,9 +63,7 @@ class DispatcherManager:
     async def load(self) -> bool:
         """Loads dispatcher"""
         self.app.add_handler(handler=MessageHandler(self._handle_message, filters.all))
-        self.app.add_handler(
-            handler=EditedMessageHandler(self._handle_message, filters.all)
-        )
+        self.app.add_handler(handler=EditedMessageHandler(self._handle_message, filters.all), group=random.randint(1, 1000))
 
         return True
 
@@ -119,7 +118,7 @@ class DispatcherManager:
         self, app: Client, message: types.Message
     ) -> types.Message:
         """Watcher Handler"""
-    
+       
         for watcher in self.modules.watcher_handlers:
             try:
                 # if not await check_filters(watcher, app, message):

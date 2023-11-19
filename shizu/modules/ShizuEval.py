@@ -26,7 +26,7 @@ class DeleteAccountIsForbidden(Exception):
 class EvaluatorMod(loader.Module):
     """Execute python code"""
 
-    @loader.command(aliases=['e'])
+    @loader.command(aliases=["e"])
     async def eval(self, app: Client, message: types.Message):
         """Execute python code and return result"""
         args = message.get_args_raw()

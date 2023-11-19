@@ -235,7 +235,6 @@ def on_bot(custom_filters):
     """Creates a filter for bot command"""
     return lambda func: setattr(func, "_filters", custom_filters) or func
 
-
 class ModuleConfig(dict):
     """Like a dict but contains doc for each key"""
 
