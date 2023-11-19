@@ -329,7 +329,7 @@ class Loader(loader.Module):
         module_name: str = None
         is_private = False
         
-        if args not in modules or private and args not in modulesP:
+        if args not in modules and private[0] and private[1] and args not in modulesP:
             r = await utils.run_sync(requests.get, args)
             if r.status_code != 200:
                 raise requests.exceptions.ConnectionError
