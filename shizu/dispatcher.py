@@ -119,9 +119,7 @@ class DispatcherManager:
         self, app: Client, message: types.Message
     ) -> types.Message:
         """Watcher Handler"""
-        if isinstance(raw.types, raw.types.UpdatesTooLong):
-            return
-
+    
         for watcher in self.modules.watcher_handlers:
             try:
                 # if not await check_filters(watcher, app, message):
