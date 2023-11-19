@@ -270,7 +270,7 @@ class Loader(loader.Module):
         private = self.config["private_repo"], self.config["private_token"]
 
         api_result = await self.get_git_raw_link(modules_repo)
-        print(api_result)
+        
         
         if not api_result:
             return await message.answer(self.strings("invalid_repo"))
@@ -334,7 +334,7 @@ class Loader(loader.Module):
             if r.status_code != 200:
                 raise requests.exceptions.ConnectionError
 
-            m = await message.answer(self.strings("check"))
+            await message.answer(self.strings("check"))
 
             module_name = await self.all_modules.load_module(r.text, r.url)
 
@@ -344,7 +344,7 @@ class Loader(loader.Module):
             if r.status_code != 200:
                 raise requests.exceptions.ConnectionError
 
-            m = await message.answer(self.strings("check"))
+            await message.answer(self.strings("check"))
 
             module_name = await self.all_modules.load_module(r.text, r.url)
 
@@ -358,7 +358,7 @@ class Loader(loader.Module):
             if r.status_code != 200:
                 raise requests.exceptions.ConnectionError
         
-            m = await message.answer(self.strings("check"))
+            await message.answer(self.strings("check"))
         
             module_name = await self.all_modules.load_module(r.text, "<string>")
             is_private = True
@@ -381,7 +381,7 @@ class Loader(loader.Module):
             error_text = self.strings("unex_error")
 
         if error_text:
-            return await m.edit(error_text)
+            return await message.answer(error_text)
 
         if args in modules:
             self.db.set(
@@ -420,7 +420,7 @@ class Loader(loader.Module):
             if module.author
             else ""
         )
-        return await m.edit(
+        return await message.answer(
             header + command_descriptions + "\n" + inline_descriptions + "\n" + footer,
         )
 

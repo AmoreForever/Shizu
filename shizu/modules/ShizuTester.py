@@ -26,11 +26,10 @@ import time
 import io
 
 import logging
-from .. import logger
 
 from pyrogram import Client, types
 
-from .. import loader, utils
+from .. import loader, utils, logger
 
 
 @loader.module(name="ShizuTester", author="shizu")
@@ -109,7 +108,7 @@ class TesterMod(loader.Module):
         ms = await message.answer("<emoji id=5267444331010074275>▫️</emoji>")
 
         ping = round((time.perf_counter_ns() - start) / 10**6, 3)
-        
+
         await ms.edit(
             self.strings("ping").format(ping),
         )

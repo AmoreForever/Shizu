@@ -31,7 +31,7 @@ from .. import loader, utils
 class TerminalMod(loader.Module):
     """Terminal"""
 
-    @loader.command(aliases=['t'])
+    @loader.command(aliases=["t"])
     async def terminal(self, app: Client, message: types.Message, args: str):
         await message.answer("<emoji id=5325822763447884498>💠</emoji> <b>wait...</b>")
         output = await self.run_command(args)
