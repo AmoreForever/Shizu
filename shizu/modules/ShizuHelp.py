@@ -121,8 +121,11 @@ class Help(loader.Module):
             for module in sorted_modules:
                 commands = inline = ""
                 commands += " <b>|</b> ".join(
-                    f"{command}" for command in module.command_handlers
+                    f"{command}"
+                    for command in module.command_handlers
+                    if command not in self.hidden
                 )
+
                 if module.inline_handlers:
                     if commands:
                         inline += " <b><emoji id=5258093637450866522>🤖</emoji></b> "

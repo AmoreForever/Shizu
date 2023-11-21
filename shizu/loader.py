@@ -217,13 +217,19 @@ def iter_attrs(obj: typing.Any, /) -> typing.List[typing.Tuple[str, typing.Any]]
     return ((attr, getattr(obj, attr)) for attr in dir(obj))
 
 
-def command(aliases: list = None):
+def command(aliases: list = None, validator: Callable = None, hidden: bool = False):
     def decorator(func):
+        if validator and validator() is False:
+            return
+
+        if hidden:
+            func.is_hidden = True
+
         if aliases:
-            al = database.db.get(__name__, "aliases", {})
+            list_ = database.db.get(__name__, "aliases", {})
             for alias in aliases:
-                al[alias] = func.__name__
-            database.db.set(__name__, "aliases", al)
+                list_[alias] = func.__name__
+                database.db.set(__name__, "aliases", list_)
 
         func.is_command = True
         return func
@@ -234,6 +240,7 @@ def command(aliases: list = None):
 def on_bot(custom_filters):
     """Creates a filter for bot command"""
     return lambda func: setattr(func, "_filters", custom_filters) or func
+
 
 class ModuleConfig(dict):
     """Like a dict but contains doc for each key"""
@@ -316,6 +323,7 @@ class ModulesManager:
             "ShizuSettings",
             "ShizuOwner",
         ]
+        self.hidden = []
         app.db = db
 
     async def load(self, app: Client) -> bool:
@@ -374,6 +382,7 @@ class ModulesManager:
         spec.loader.exec_module(module)
 
         instance = None
+
         for key, value in vars(module).items():
             if not inspect.isclass(value) or not issubclass(value, Module):
                 continue
@@ -402,6 +411,7 @@ class ModulesManager:
             instance.reconfmod = self.config_reconfigure
             instance.aelis = self.aelis
             instance.shizu = True
+            instance.hidden = self.hidden
 
             instance.command_handlers = get_command_handlers(instance)
             instance.watcher_handlers = get_watcher_handlers(instance)
@@ -420,6 +430,10 @@ class ModulesManager:
 
         if not instance:
             logging.warning(f"Module {module_name} not found")
+
+        for name, func in instance.command_handlers.copy().items():
+            if getattr(func, "is_hidden", ""):
+                self.hidden.append(name)
 
         return instance
 

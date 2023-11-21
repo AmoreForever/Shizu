@@ -8,6 +8,7 @@
 
 import sys
 import re
+import os
 import logging
 from meval import meval
 from pyrogram import Client, types
@@ -21,10 +22,10 @@ class DeleteAccountIsForbidden(Exception):
     def __init__(self, message):
         super().__init__(message)
 
-
 @loader.module(name="ShizuEval", author="hikamoru")
 class EvaluatorMod(loader.Module):
     """Execute python code"""
+    
 
     @loader.command(aliases=["e"])
     async def eval(self, app: Client, message: types.Message):

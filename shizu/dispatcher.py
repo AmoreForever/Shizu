@@ -16,7 +16,7 @@ from inspect import getfullargspec
 
 from types import FunctionType
 
-from pyrogram import Client, filters, types
+from pyrogram import Client, filters, types, raw
 from pyrogram.handlers import MessageHandler, EditedMessageHandler
 
 from . import loader, utils, database, logger as lo
@@ -118,12 +118,11 @@ class DispatcherManager:
         self, app: Client, message: types.Message
     ) -> types.Message:
         """Watcher Handler"""
-       
+        if isinstance(raw.types, raw.types.UpdatesTooLong):
+            return 
+        
         for watcher in self.modules.watcher_handlers:
             try:
-                # if not await check_filters(watcher, app, message):
-                #     continue
-
                 await watcher(app, message)
             except Exception as error:
                 logging.exception(error)
