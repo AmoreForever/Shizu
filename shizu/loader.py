@@ -229,7 +229,8 @@ def command(aliases: list = None, validator: Callable = None, hidden: bool = Fal
             list_ = database.db.get(__name__, "aliases", {})
             for alias in aliases:
                 list_[alias] = func.__name__
-                database.db.set(__name__, "aliases", list_)
+                
+            database.db.set(__name__, "aliases", list_)
 
         func.is_command = True
         return func
