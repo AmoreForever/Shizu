@@ -27,8 +27,6 @@ from . import utils, database
 
 Session.notice_displayed: bool = True
 
-db = database.Database("auth.json")
-
 
 def colored_input(prompt: str = "", hide: bool = False) -> str:
     frame = sys._getframe(1)
@@ -63,23 +61,17 @@ class Auth:
             with open("./config.ini", "w", encoding="utf-8") as file:
                 cfg.write(file)
 
-        if "JAMHOST" in os.environ and db.get("status", "hosted", False) is False:
-            self.app = Client(
-                name=session_name,
-                api_id=cfg.get("pyrogram", "api_id"),
-                api_hash=cfg.get("pyrogram", "api_hash"),
-                device_model=device_model,
-                session_string=cfg.get("pyrogram", "string_session", fallback=None),
-            )
-            db.set("status", "hosted", True)
-
-        else:
-            self.app = Client(
-                name=session_name,
-                api_id=cfg.get("pyrogram", "api_id"),
-                api_hash=cfg.get("pyrogram", "api_hash"),
-                device_model=device_model,
-            )
+        self.app = Client(
+            name=session_name,
+            api_id=cfg.get("pyrogram", "api_id"),
+            api_hash=cfg.get("pyrogram", "api_hash"),
+            device_model=device_model,
+            session_string=(
+                cfg.get("pyrogram", "string_session")
+                if "JAMHOST" in os.environ
+                else None
+            ),
+        )
 
         if utils.is_tl_enabled():
             self.tapp = TelegramClient(
