@@ -135,14 +135,17 @@ class ShizuGpt(loader.Module):
         )
         if resp.get("error", None):
             return f"🚫 {resp['error']['message']}"
+        
         return resp["choices"][0]["message"]["content"]
 
     @loader.command()
     async def gpt(self, app: Client, message: types.Message):
         """Ask question to GPT"""
         args = message.get_args_raw()
+        
         if not args:
             return await message.answer(self.strings("what_ask"))
+        
         token = self.config["GPT_KEY"]
         if not token:
             return await message.answer(self.strings("no_token"))

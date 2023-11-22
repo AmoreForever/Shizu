@@ -8,7 +8,6 @@
 
 import sys
 import re
-import os
 import logging
 from meval import meval
 from pyrogram import Client, types

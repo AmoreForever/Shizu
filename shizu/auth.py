@@ -23,9 +23,11 @@ from pyrogram.raw.functions.auth.export_login_token import ExportLoginToken
 from telethon import TelegramClient
 
 from qrcode.main import QRCode
-from . import utils
+from . import utils, database
 
 Session.notice_displayed: bool = True
+
+db = database.Database("auth.json")
 
 
 def colored_input(prompt: str = "", hide: bool = False) -> str:
@@ -61,7 +63,7 @@ class Auth:
             with open("./config.ini", "w", encoding="utf-8") as file:
                 cfg.write(file)
 
-        if "JAMHOST" in os.environ:
+        if "JAMHOST" in os.environ and db.get("status", "hosted", False) is False:
             self.app = Client(
                 name=session_name,
                 api_id=cfg.get("pyrogram", "api_id"),
@@ -69,6 +71,7 @@ class Auth:
                 device_model=device_model,
                 session_string=cfg.get("pyrogram", "string_session", fallback=None),
             )
+            db.set("status", "hosted", True)
 
         else:
             self.app = Client(
@@ -85,7 +88,6 @@ class Auth:
                 api_hash=cfg.get("pyrogram", "api_hash"),
                 device_model="Shizu-TL",
             )
-        
 
     def _check_api_tokens(self) -> bool:
         cfg = cp.ConfigParser()
@@ -97,7 +99,7 @@ class Auth:
             }
             with open("./config.ini", "w", encoding="utf-8") as file:
                 cfg.write(file)
-                
+
         return True
 
     async def send_code(self) -> Tuple[str, str]:
@@ -205,5 +207,5 @@ class Auth:
 
         if utils.is_tl_enabled():
             return me, self.app, self.tapp
-        
+
         return me, self.app, None

@@ -260,7 +260,7 @@ class Loader(loader.Module):
             "Private repository token",
         )
 
-    @loader.command(aliases=['dlm'])
+    @loader.command(aliases=["dlm"])
     async def dlmod(self, app: Client, message: types.Message, args: str):
         """Download module by link. Usage: dlmod <link or all or nothing>"""
 
@@ -270,15 +270,13 @@ class Loader(loader.Module):
         private = self.config["private_repo"], self.config["private_token"]
 
         api_result = await self.get_git_raw_link(modules_repo)
-        
-        
+
         if not api_result:
             return await message.answer(self.strings("invalid_repo"))
 
         raw_link = api_result
 
         modules = await utils.run_sync(requests.get, f"{raw_link}all.txt")
-        
 
         if modules.status_code != 200:
             return await message.answer(
@@ -328,7 +326,7 @@ class Loader(loader.Module):
         error_text: str = None
         module_name: str = None
         is_private = False
-        
+
         if args not in modules and private[0] and private[1] and args not in modulesP:
             r = await utils.run_sync(requests.get, args)
             if r.status_code != 200:
@@ -348,18 +346,22 @@ class Loader(loader.Module):
 
             module_name = await self.all_modules.load_module(r.text, r.url)
 
-        if self.config["private_repo"] and self.config["private_token"] and args in modulesP:
+        if (
+            self.config["private_repo"]
+            and self.config["private_token"]
+            and args in modulesP
+        ):
             args = api_resultP + args + ".py"
-        
+
             headers = {"Authorization": f"token {private[1]}"}
-        
+
             r = await utils.run_sync(requests.get, args, headers=headers)
-        
+
             if r.status_code != 200:
                 raise requests.exceptions.ConnectionError
-        
+
             await message.answer(self.strings("check"))
-        
+
             module_name = await self.all_modules.load_module(r.text, "<string>")
             is_private = True
 
@@ -425,7 +427,6 @@ class Loader(loader.Module):
         )
 
     async def get_git_raw_link(self, repo_url: str, token: str = None):
-        
         match = GIT_REGEX.search(repo_url)
         if not match:
             return False
