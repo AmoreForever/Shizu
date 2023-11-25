@@ -28,7 +28,7 @@ import requests
 import inspect
 
 from aiogram.types import CallbackQuery
-from pyrogram import Client, types, emoji
+from pyrogram import Client, types
 
 from .. import loader, utils
 
@@ -182,12 +182,17 @@ class ModulesLinkMod(loader.Module):
     async def aeliscmd(self, app, message):
         """Search module in Aelis API"""
         args = message.get_args_raw()
+
         if not args:
             return await message.answer(self.strings("what_"))
+
         await message.answer(self.strings("search_"))
+
         module = await self.aelis.search(args)
+
         if not module:
             return await message.answer(self.strings("nope_"))
+
         text = self.strings("module_").format(
             f"https://aelis.hikamoru.uz/view/{module['name']}",
             module["name"],
@@ -197,6 +202,7 @@ class ModulesLinkMod(loader.Module):
             ),
             module["link"],
         )
+
         return await message.answer(
             text,
             reply_markup=[
@@ -212,8 +218,11 @@ class ModulesLinkMod(loader.Module):
 
     async def module_load(self, call: CallbackQuery, link: str, text: str):
         r = await utils.run_sync(requests.get, link)
+
         mod = await self.all_modules.load_module(r.text, r.url)
+
         module = self.all_modules.get_module(mod, True)
+
         if module is True:
             return await call.edit(
                 text,

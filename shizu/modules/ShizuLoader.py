@@ -471,7 +471,7 @@ class Loader(loader.Module):
             return await message.answer(self.strings("no_repy_to_file"))
 
         await message.answer(self.strings("loading"))
-        file = await reply.download()
+        file = await file.download()
 
         for mod in self.cmodules:
             if file == mod:
@@ -617,7 +617,7 @@ class Loader(loader.Module):
                 else None
             )
 
-            source = await reply.download()
+            source = await file.download()
 
             with open(source, "r", encoding="utf-8") as file:
                 module_source = file.read()

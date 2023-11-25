@@ -51,7 +51,7 @@ class Auth:
         cfg = cp.ConfigParser()
         cfg.read("./config.ini")
 
-        try:  # TODO: Remove this in the future
+        try:
             device_model = cfg["pyrogram"]["device_model"]
         except KeyError:
             device_model = utils.get_random_smartphone()

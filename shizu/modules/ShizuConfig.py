@@ -226,7 +226,6 @@ class ShizuConfig(loader.Module):
         else:
             await call.edit(self.strings("configure"), reply_markup=kb)
 
-    
     async def configcmd(self, app, message: Message) -> None:
         """Configure modules"""
         await self.inline__global_config(message)

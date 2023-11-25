@@ -116,7 +116,7 @@ class BackupMod(loader.Module):
         await message.answer(self.strings("restoring"))
         file = await app.download_media(reply.document)
         decoded_text = json.loads(io.open(file, "r", encoding="utf-8").read())
-        
+
         if not file.endswith(".json"):
             return await message.answer(self.strings("invalid"))
 
@@ -145,6 +145,6 @@ class BackupMod(loader.Module):
                 "type": "restart",
             },
         )
-        logging.info("restart...")
+
         atexit.register(restart)
         return sys.exit(0)
