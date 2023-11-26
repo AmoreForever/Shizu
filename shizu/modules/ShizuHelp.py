@@ -111,6 +111,7 @@ class Help(loader.Module):
         args = message.get_args()
         dop_help = "<emoji id=5100652175172830068>🔸</emoji>"
         bot_username = (await self.bot.bot.get_me()).username
+
         sorted_modules = sorted(
             self.all_modules.modules,
             key=lambda mod: (mod.name not in self.cmodules, len(mod.name)),

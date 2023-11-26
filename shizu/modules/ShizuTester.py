@@ -73,8 +73,11 @@ class TesterMod(loader.Module):
     }
 
     @loader.command()
-    async def logs(self, app: Client, message: types.Message, args: str):
+    async def logs(self, app: Client, message: types.Message):
         """To get logs. Usage: logs (verbosity level)"""
+        
+        args = message.get_args()
+        
         lvl = 40  # ERROR
 
         if args and not (lvl := logger.get_valid_level(args)):
@@ -101,7 +104,7 @@ class TesterMod(loader.Module):
         )
 
     @loader.command()
-    async def ping(self, app: Client, message: types.Message, args: str):
+    async def ping(self, app: Client, message: types.Message):
         """Checks the response rate of the user bot"""
         start = time.perf_counter_ns()
 

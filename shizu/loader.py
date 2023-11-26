@@ -26,6 +26,8 @@ import contextlib
 import inspect
 import logging
 import os
+import requests
+import asyncio
 import random
 import re
 import string
@@ -37,10 +39,9 @@ from importlib.machinery import ModuleSpec
 from importlib.util import module_from_spec, spec_from_file_location
 from types import FunctionType
 from typing import Any, Callable, Dict, List, Union
+from functools import wraps
 
-
-import requests
-from pyrogram import Client, filters, types, raw
+from pyrogram import Client, filters, types
 from . import bot, database, dispatcher, utils, aelis, logger as logger_
 from .types import InfiniteLoop
 from .translator import Strings, Translator
@@ -217,16 +218,15 @@ def iter_attrs(obj: typing.Any, /) -> typing.List[typing.Tuple[str, typing.Any]]
     return ((attr, getattr(obj, attr)) for attr in dir(obj))
 
 
-def command(aliases: list = None, validator: Callable = None, hidden: bool = False):
+def command(aliases: list = None, hidden: bool = False  ):
     def decorator(func):
-        if validator and validator() is False:
-            return
 
         if hidden:
             func.is_hidden = True
 
         if aliases:
             list_ = database.db.get(__name__, "aliases", {})
+            
             for alias in aliases:
                 list_[alias] = func.__name__
 

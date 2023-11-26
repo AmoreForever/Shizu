@@ -140,8 +140,11 @@ class ModulesLinkMod(loader.Module):
     }
 
     @loader.command()
-    async def ml(self, app: Client, message: types.Message, args: str):
+    async def ml(self, app: Client, message: types.Message):
         """Get a link or a module file. Usage: ml <module name or command>"""
+        
+        args = message.get_args_raw()
+        
         if not args:
             return await message.answer(
                 self.strings("what_"),

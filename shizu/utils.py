@@ -11,6 +11,7 @@ import asyncio
 import functools
 import random
 import string
+import git
 import typing
 import contextlib
 import logging
@@ -23,13 +24,7 @@ from types import FunctionType
 from typing import Any, List, Literal, Tuple, Union, AsyncIterator
 
 from pyrogram.types import Chat, Message, User
-from pyrogram import Client, enums, types, raw
-from pyrogram.raw.base import Updates
-from pyrogram.raw.base.messages import ForumTopics
-from pyrogram.raw.functions.channels import (
-    GetForumTopics,
-    CreateForumTopic,
-)
+from pyrogram import Client, enums, types
 
 from pyrogram.raw.types.message_entity_unknown import MessageEntityUnknown
 from pyrogram.raw.types.message_entity_mention import MessageEntityMention
@@ -85,15 +80,6 @@ FormattingEntity = Union[
 
 ListLike = Union[list, set, tuple]
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    datefmt="%d-%m-%Y %H:%M:%S",
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler("shizu.log"),
-    ],
-)
 
 db = database.db
 
@@ -702,3 +688,8 @@ def random_id(size: int = 10) -> str:
 def is_tl_enabled() -> bool:
     """Check if telethon is enabled"""
     return any("shizu-tl.session" in i for i in os.listdir())
+
+
+def available_branches() -> List[str]:
+    """Returns a list of available branches"""
+    return [head.name.split("/")[-1] for head in git.Repo().heads]

@@ -109,6 +109,7 @@ class UpdateMod(loader.Module):
     @loader.command()
     async def restart(self, app: Client, message: types.Message):
         """Rebooting the user bot"""
+        
         ms = await message.answer(self.strings("reboot_"))
         self.db.set(
             "shizu.updater",
@@ -126,7 +127,7 @@ class UpdateMod(loader.Module):
 
     async def watcher(
         self, app: Client, message: types.Message
-    ):  # update from @shizihub channel
+    ):
         with contextlib.suppress(Exception):
             if (
                 message.from_user.username == "shizu_ubot"

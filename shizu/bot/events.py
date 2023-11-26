@@ -215,7 +215,7 @@ class Events(Item):
                     ),
                     InlineKeyboardButton(
                         text="🪭 Chief Developer", url="https://t.me/hikamoru"
-                    )
+                    ),
                 ),
             )
 

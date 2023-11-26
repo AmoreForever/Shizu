@@ -261,8 +261,10 @@ class Loader(loader.Module):
         )
 
     @loader.command(aliases=["dlm"])
-    async def dlmod(self, app: Client, message: types.Message, args: str):
+    async def dlmod(self, app: Client, message: types.Message):
         """Download module by link. Usage: dlmod <link or all or nothing>"""
+
+        args = message.get_args_raw()
 
         bot_username = (await self.bot.bot.get_me()).username
         dop_help = "<emoji id=5100652175172830068>▫️</emoji>"
@@ -537,8 +539,10 @@ class Loader(loader.Module):
         )
 
     @loader.command()
-    async def unloadmod(self, app: Client, message: types.Message, args: str):
+    async def unloadmod(self, app: Client, message: types.Message):
         """Unload the module. Usage: unloadmod <module name>"""
+
+        args = message.get_args_raw()
 
         if not (module_name := self.all_modules.unload_module(args)):
             return await message.answer(self.strings("inc_module_name"))

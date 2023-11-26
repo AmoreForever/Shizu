@@ -18,11 +18,10 @@ import ast
 import contextlib
 import logging
 
+from typing import Union
 from pyrogram.types import Message
 
 from .. import loader, utils
-from ..utils import chunks
-from typing import Union
 
 logger = logging.getLogger(__name__)
 
@@ -193,7 +192,7 @@ class ShizuConfig(loader.Module):
                         ]
         await call.edit(
             self.strings("configuring_mod").format(utils.escape_html(mod)),
-            reply_markup=list(chunks(btns, 2))
+            reply_markup=list(utils.chunks(btns, 2))
             + [
                 [
                     {
@@ -212,7 +211,7 @@ class ShizuConfig(loader.Module):
             mod.name for mod in self.all_modules.modules if hasattr(mod, "config")
         ]
         kb = []
-        for mod_row in chunks(to_config, 3):
+        for mod_row in utils.chunks(to_config, 3):
             row = [
                 {"text": btn, "callback": self.inline__configure, "args": (btn,)}
                 for btn in mod_row
