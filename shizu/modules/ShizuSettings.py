@@ -165,8 +165,10 @@ class ShizuSettings(loader.Module):
         await call.delete()
 
     @loader.command()
-    async def setprefix(self, app: Client, message: types.Message, args: str):
+    async def setprefix(self, app: Client, message: types.Message):
         """To change the prefix, you can have several pieces separated by a space. Usage: setprefix (prefix) [prefix, ...]"""
+        args = utils.get_args_raw(message)
+        
         if not (args := args.split()):
             return await message.answer(self.strings("ch_prefix"))
 
@@ -175,8 +177,11 @@ class ShizuSettings(loader.Module):
         return await message.answer(self.strings("prefix_changed").format(prefixes))
 
     @loader.command()
-    async def addalias(self, app: Client, message: types.Message, args: str):
+    async def addalias(self, app: Client, message: types.Message):
         """Add an alias. Usage: addalias (new alias) (command)"""
+        
+        args = utils.get_args_raw(message)
+        
         if not (args := args.lower().split(maxsplit=1)):
             return await message.answer(self.strings("which_alias"))
 
@@ -201,8 +206,11 @@ class ShizuSettings(loader.Module):
         )
 
     @loader.command()
-    async def delalias(self, app: Client, message: types.Message, args: str):
+    async def delalias(self, app: Client, message: types.Message):
         """Delete the alias. Usage: delalas (alias)"""
+        
+        args = utils.get_args_raw(message)
+        
         if not (args := args.lower()):
             return await message.answer(self.strings("which_delete"))
 

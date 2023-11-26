@@ -94,6 +94,7 @@ class DispatcherManager:
             await app.read_chat_history(message.chat.id)
 
         except Exception:
+            logging.exception("Error while executing command %s", command)
             item = lo.CustomException.from_exc_info(*sys.exc_info())
             exc = item.message + "\n\n" + item.full_stack
             trace = traceback.format_exc().replace(
