@@ -58,7 +58,6 @@ class Loader(loader.Module):
         "no_all": "❌ The all.txt file was not found in the <a href='{}'>repository</a>.\n",
         "mods_in_repo": "{} <b>List of available modules in <a href='{}'>repository</a></b>:\n\n",
         "check": "<emoji id=5280506417478903827>🛡</emoji> Analyzing the module..",
-        "found_delete_": "<emoji id=5203929938024999176>🛡</emoji> <b><u>Shizu</u> protected your account from</b> <code>DeleteAccount</code>.\n<emoji id=5404380425416090434>ℹ️</emoji> <b>This module contains a dangerous code that can delete your account.</b>",
         "dep_installed_req_res": "✅ Dependencies are installed. Reboot required",
         "not_module": "❌ Failed to load the module. See the logs for details",
         "inc_link": "❌ The link is incorrect",
@@ -94,7 +93,6 @@ class Loader(loader.Module):
         "no_all": "❌ Не найдено all.txt в репозитории <a href='{}'>repository</a>.\n",
         "mods_in_repo": "{} <b>Список доступных модулей в <a href='{}'>repository</a></b>:\n\n",
         "check": "<emoji id=5280506417478903827>🛡</emoji> Проверка модуля..",
-        "found_delete_": "<emoji id=5203929938024999176>🛡</emoji> <b><u>Shizu</u> защитил ваш аккаунт от</b> <code>DeleteAccount</code>.\n<emoji id=5404380425416090434>ℹ️</emoji> <b>Этот модуль содержит опасный код, который может удалить ваш аккаунт.</b>",
         "dep_installed_req_res": "✅ Зависимости установлены. Перезагрузка требуется",
         "not_module": "❌ Не удалось загрузить модуль. Проверьте логи",
         "inc_link": "❌ Ссылка некорректна",
@@ -130,7 +128,6 @@ class Loader(loader.Module):
         "no_all": "❌ All.txt fayl mavjud emas <a href='{}'>repository</a>.\n",
         "mods_in_repo": "{} <b>Modullar ro'yhati <a href='{}'>repository</a></b>:\n\n",
         "check": "<emoji id=5280506417478903827>🛡</emoji> Modul tekshirilmoqda..",
-        "found_delete_": "<emoji id=5203929938024999176>🛡</emoji> <b><u>Shizu</u> DeleteAccount dan hisobingizni himoya qildi</b> <code>DeleteAccount</code>.\n<emoji id=5404380425416090434>ℹ️</emoji> <b>Bu modul hisobingizni o'chirishi mumkin bo'lgan xavfsizlik kodi bor.</b>",
         "dep_installed_req_res": "✅ Zarrashilmoqda. Userbotni qayta yuklash kerak",
         "not_module": "❌ Modul yuklanmadi. Loglaridan foydalaning",
         "inc_link": "❌ Link xato",
@@ -166,7 +163,6 @@ class Loader(loader.Module):
         "no_all": "❌ all.txtファイルが<a href='{}'>repository</a>に見つかりませんでした.\n",
         "mods_in_repo": "{} <b>リポジトリの利用可能なモジュールのリスト <a href='{}'>repository</a></b>:\n\n",
         "check": "<emoji id=5280506417478903827>🛡</emoji> モジュールをチェックしています..",
-        "found_delete_": "<emoji id=5203929938024999176>🛡</emoji> <b><u>Shizu</u> あなたのアカウントを保護しました</b> <code>DeleteAccount</code>.\n<emoji id=5404380425416090434>ℹ️</emoji> <b>このモジュールには、アカウントを削除する可能性のある危険なコードが含まれています。</b>",
         "dep_installed_req_res": "✅ 依存関係がインストールされました。再起動が必要です",
         "not_module": "❌ モジュールをロードできませんでした。詳細についてはログを参照してください",
         "inc_link": "❌ リンクが無効です",
@@ -368,8 +364,6 @@ class Loader(loader.Module):
             is_private = True
 
         try:
-            if module_name == "DAR":
-                error_text = self.strings("found_delete_")
             if module_name == "NFA":
                 error_text = self.strings("not_for_this_account")
             if module_name is True:
@@ -494,9 +488,6 @@ class Loader(loader.Module):
         if not module_name:
             return await message.answer(self.strings("not_module"))
 
-        if module_name == "DAR":
-            return await message.answer(self.strings("found_delete_"))
-
         if module_name == "NFA":
             return await message.answer(self.strings("not_for_this_account"))
 
@@ -586,83 +577,3 @@ class Loader(loader.Module):
 
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
         return sys.exit(0)
-
-    @loader.command()
-    async def banmodslist(self, app: Client, message: types.Message):
-        """Show banned modules list"""
-
-        modules = self.db.get("shizu.loader", "banned", [])
-
-        if not modules:
-            return await message.answer(self.strings("no_banned"))
-
-        text = self.strings("banned_list").format(
-            "\n".join(map("• <code>{}</code>".format, modules))
-        )
-
-        return await message.answer(text)
-
-    @loader.command()
-    async def blockmodule(self, app: Client, message: types.Message):
-        """It will block the module the next time u cannot load it"""
-
-        reply = message.reply_to_message
-        args = message.get_args_raw()
-
-        if not reply and not args:
-            return await message.answer(self.strings("spec_action"))
-
-        if reply:
-            file = (
-                message
-                if message.document
-                else reply
-                if reply and reply.document
-                else None
-            )
-
-            source = await file.download()
-
-            with open(source, "r", encoding="utf-8") as file:
-                module_source = file.read()
-
-            module_name = await self.all_modules.load_module(
-                module_source, only_ban=True
-            )
-
-            if not module_name:
-                return await message.answer(self.strings("not_module"))
-
-            await message.answer(self.strings("module_banned").format(module_name))
-
-        if args:
-            r = await utils.run_sync(requests.get, args)
-
-            if r.status_code != 200:
-                raise requests.exceptions.ConnectionError
-
-            module_name = await self.all_modules.load_module(
-                r.text, r.url, only_ban=True
-            )
-
-            if not module_name:
-                return await message.answer(self.strings("not_module"))
-
-            await message.answer(self.strings("module_banned").format(module_name))
-
-    @loader.command()
-    async def unblockmodule(self, app: Client, message: types.Message):
-        """Unblock the module"""
-
-        args = message.get_args_raw()
-
-        if not args:
-            return await message.answer(self.strings("specify_to_unblock"))
-
-        if args in self.db.get("shizu.loader", "banned", []):
-            self.db.set(
-                "shizu.loader",
-                "banned",
-                list(set(self.db.get("shizu.loader", "banned", [])) - {args}),
-            )
-            return await message.answer(self.strings("unblocked").format(args))

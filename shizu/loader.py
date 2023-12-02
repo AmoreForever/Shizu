@@ -449,60 +449,33 @@ class ModulesManager:
         module_source: str,
         origin: str = "<string>",
         did_requirements: bool = False,
-        only_ban: bool = False,
     ) -> str:
         """Loads a third-party module"""
 
         module_name = f"shizu.modules.{self.me.id}-{''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))}"
 
-        if not only_ban:
-            forbidden_keywords = ["DeleteAccount"]
-            if any(keyword in module_source for keyword in forbidden_keywords):
+
+        if match := re.search(r"# ?only: ?(.+)", module_source):
+            allowed_accounts = match[1].split(",") if match else []
+            if str((await self._app.get_me()).id) not in allowed_accounts:
                 logging.error(
-                    "Module %s is forbidden, because it contains DeleteAccount",
+                    "Module %s is forbidden, because it is not for this account",
                     module_name,
                 )
-                return "DAR"
+                return "NFA"
 
-            if match := re.search(r"# ?only: ?(.+)", module_source):
-                allowed_accounts = match[1].split(",") if match else []
-                if str((await self._app.get_me()).id) not in allowed_accounts:
-                    logging.error(
-                        "Module %s is forbidden, because it is not for this account",
-                        module_name,
-                    )
-                    return "NFA"
-
-            if re.search(r"# ?tl-only", module_source) and not utils.is_tl_enabled():
-                logging.error(
-                    "You have not enabled telethon, so you can't use module %s",
-                    module_name,
-                )
-                return "OTL"
+        if re.search(r"# ?tl-only", module_source) and not utils.is_tl_enabled():
+            logging.error(
+                "You have not enabled telethon, so you can't use module %s",
+                module_name,
+            )
+            return "OTL"
 
         try:
             spec = ModuleSpec(
                 module_name, StringLoader(module_source, origin), origin=origin
             )
             instance = self.register_instance(module_name, spec=spec)
-
-            banned_modules = self._db.get("shizu.loader", "banned", [])
-
-            if instance.name in banned_modules:
-                self.unload_module(instance.name)
-                return "BAN"
-
-            if only_ban:
-                if not instance:
-                    return "NFM"
-
-                self.unload_module(instance.name)
-                self._db.set(
-                    "shizu.loader",
-                    "banned",
-                    list(set(banned_modules + [instance.name])),
-                )
-                return instance.name
 
         except ImportError as error:
             logging.error(error)

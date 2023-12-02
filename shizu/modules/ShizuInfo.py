@@ -13,8 +13,6 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-import requests
-
 from pyrogram import Client, types
 from .. import loader, utils, version
 
