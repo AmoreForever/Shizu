@@ -21,7 +21,9 @@ with contextlib.suppress(Exception):
 class BotManager(Events, TokenManager):
     """Bot manager"""
 
-    def __init__(self, app: Client, db: database.Database, all_modules: types.ModulesManager) -> None:
+    def __init__(
+        self, app: Client, db: database.Database, all_modules: types.ModulesManager
+    ) -> None:
         """Initializing a class
 
         Parameters:

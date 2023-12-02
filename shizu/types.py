@@ -6,23 +6,21 @@
 # 👤 https://t.me/hikamoru
 
 
+import asyncio
+
 from types import FunctionType
 from typing import Any, Dict, List, Union
-
-from . import database
+from logging import getLogger
 
 from pyrogram import Client, types
 
-
-from logging import getLogger
+from . import database
 
 logger = getLogger(__name__)
 
-import asyncio
-
 
 class Module:
-    """Описание модуля"""
+    """Base class for modules"""
 
     name: str
     author: str

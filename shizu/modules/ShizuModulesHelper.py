@@ -29,6 +29,7 @@ import inspect
 
 from aiogram.types import CallbackQuery
 from pyrogram import Client, types
+
 from .. import loader, utils
 
 
@@ -41,13 +42,13 @@ class ModulesLinkMod(loader.Module):
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Module search...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Couldn't find the module</b>",
         "module_": (
-            "📁 <b><a href='{}'>{}</a></b>\n"
+            "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
             "▫️ <b>Commands</b>: {}\n\n"
-            "🌐 <b>Download link:</b> <code>{}</code>"
+            "⛩ <b>Download link:</b> <code>{}</code>"
         ),
         "success": "✅ Installed",
-        "install": "📥 Install",
+        "install": "🌘 Install",
         "restart": "🔄 Restart required",
         "error": "🚫 Error",
         "source": "📁 Source",
@@ -58,13 +59,13 @@ class ModulesLinkMod(loader.Module):
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Поиск модуля...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Не удалось найти модуль</b>",
         "module_": (
-            "📁 <b><a href='{}'>{}</a></b>\n"
+            "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
             "▫️ <b>Команды</b>: {}\n\n"
-            "🌐 <b>Ссылка на скачивание:</b> <code>{}</code>"
+            "⛩ <b>Ссылка на скачивание:</b> <code>{}</code>"
         ),
         "success": "✅ Установлен",
-        "install": "📥 Установить",
+        "install": "🌘 Установить",
         "restart": "🔄 Требуется перезагрузка",
         "error": "🚫 Ошибка",
         "source": "📁 Исходный код",
@@ -75,13 +76,13 @@ class ModulesLinkMod(loader.Module):
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Qidiruv...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Qidiruv topilmadi</b>",
         "module_": (
-            "📁 <b><a href='{}'>{}</a></b>\n"
+            "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
             "▫️ <b>Buyruqlar</b>: {}\n\n"
-            "🌐 <b>Yuklab olish linki:</b> <code>{}</code>"
+            "⛩ <b>Yuklab olish linki:</b> <code>{}</code>"
         ),
         "success": "✅ O'rnatildi",
-        "install": "📥 O'rnatish",
+        "install": "🌘 O'rnatish",
         "restart": "🔄 Qayta yuklash talab qilinadi",
         "error": "🚫 Xato",
         "source": "📁 Manba",
@@ -92,13 +93,13 @@ class ModulesLinkMod(loader.Module):
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>モジュール検索...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>モジュールが見つかりませんでした</b>",
         "module_": (
-            "📁 <b><a href='{}'>{}</a></b>\n"
+            "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
             "▫️ <b>コマンド</b>: {}\n\n"
-            "🌐 <b>ダウンロードリンク:</b> <code>{}</code>"
+            "⛩ <b>ダウンロードリンク:</b> <code>{}</code>"
         ),
         "success": "✅ インストール済み",
-        "install": "📥 インストール",
+        "install": "🌘 インストール",
         "restart": "🔄 再起動が必要",
         "error": "🚫 エラー",
         "source": "📁 ソース",
@@ -109,13 +110,13 @@ class ModulesLinkMod(loader.Module):
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Пошук модуля...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Не вдалося знайти модуль</b>",
         "module_": (
-            "📁 <b><a href='{}'>{}</a></b>\n"
+            "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
             "▫️ <b>Команди</b>: {}\n\n"
-            "🌐 <b>Посилання на завантаження:</b> <code>{}</code>"
+            "⛩ <b>Посилання на завантаження:</b> <code>{}</code>"
         ),
         "success": "✅ Встановлено",
-        "install": "📥 Встановити",
+        "install": "🌘 Встановити",
         "restart": "🔄 Потрібне перезавантаження",
         "error": "🚫 Помилка",
         "source": "📁 Вихідний код",
@@ -126,21 +127,24 @@ class ModulesLinkMod(loader.Module):
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Модульді іздеу...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Модуль табылмады</b>",
         "module_": (
-            "📁 <b><a href='{}'>{}</a></b>\n"
+            "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
             "▫️ <b>Бұйрықтар</b>: {}\n\n"
-            "🌐 <b>Жүктеу сілтемесі:</b> <code>{}</code>"
+            "⛩ <b>Жүктеу сілтемесі:</b> <code>{}</code>"
         ),
         "success": "✅ Орнатылды",
-        "install": "📥 Орнату",
+        "install": "🌘 Орнату",
         "restart": "🔄 Қайта жүктеу қажет",
         "error": "🚫 Қате",
         "source": "📁 Мәнбе",
     }
 
     @loader.command()
-    async def ml(self, app: Client, message: types.Message, args: str):
+    async def ml(self, app: Client, message: types.Message):
         """Get a link or a module file. Usage: ml <module name or command>"""
+        
+        args = message.get_args_raw()
+        
         if not args:
             return await message.answer(
                 self.strings("what_"),
@@ -181,12 +185,17 @@ class ModulesLinkMod(loader.Module):
     async def aeliscmd(self, app, message):
         """Search module in Aelis API"""
         args = message.get_args_raw()
+
         if not args:
             return await message.answer(self.strings("what_"))
+
         await message.answer(self.strings("search_"))
+
         module = await self.aelis.search(args)
+
         if not module:
             return await message.answer(self.strings("nope_"))
+
         text = self.strings("module_").format(
             f"https://aelis.hikamoru.uz/view/{module['name']}",
             module["name"],
@@ -196,14 +205,11 @@ class ModulesLinkMod(loader.Module):
             ),
             module["link"],
         )
+
         return await message.answer(
             text,
             reply_markup=[
                 [
-                    {
-                        "text": self.strings("source"),
-                        "url": f"https://aelis.hikamoru.uz/view/{module['name']}",
-                    },
                     {
                         "text": self.strings("install"),
                         "callback": self.module_load,
@@ -215,8 +221,11 @@ class ModulesLinkMod(loader.Module):
 
     async def module_load(self, call: CallbackQuery, link: str, text: str):
         r = await utils.run_sync(requests.get, link)
+
         mod = await self.all_modules.load_module(r.text, r.url)
+
         module = self.all_modules.get_module(mod, True)
+
         if module is True:
             return await call.edit(
                 text,

@@ -21,34 +21,23 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-from subprocess import check_output
+import asyncio
 from pyrogram import Client, types
 
 from .. import loader, utils
-from ..wrappers import wrap_function_to_async
-
-
-@wrap_function_to_async
-def bash_exec(args: str):
-    try:
-        output = check_output(args.strip(), shell=True)
-        output = output.decode()
-
-        return output
-    except UnicodeDecodeError:
-        return check_output(args.strip(), shell=True)
-    except Exception as error:
-        return error
 
 
 @loader.module(name="ShizuTerminal", author="shizu")
 class TerminalMod(loader.Module):
     """Terminal"""
 
-    @loader.command()
-    async def terminal(self, app: Client, message: types.Message, args: str):
+    @loader.command(aliases=["t"])
+    async def terminal(self, app: Client, message: types.Message):
+        
+        args = message.get_args_raw()
+        
         await message.answer("<emoji id=5325822763447884498>💠</emoji> <b>wait...</b>")
-        output = await bash_exec(args)
+        output = await self.run_command(args)
 
         await message.answer(
             f"⌨️ <b>Command:</b> <pre language='shell'>{args.strip()}</pre>\n"
@@ -56,3 +45,14 @@ class TerminalMod(loader.Module):
             f"<pre language='shell'>{output}</pre>"
             f"</code>",
         )
+
+    async def run_command(self, cmd):
+        process = await asyncio.create_subprocess_shell(
+            cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            stdin=asyncio.subprocess.PIPE,
+            cwd=utils.get_base_dir(),
+        )
+        stdout, stderr = await process.communicate()
+        return str(stdout.decode().strip()) + str(stderr.decode().strip())

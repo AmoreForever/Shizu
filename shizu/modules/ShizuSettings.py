@@ -139,11 +139,10 @@ class ShizuSettings(loader.Module):
     }
 
     async def on_load(self, app):
-        
         if not self.db.get("shizu.me", "me", None):
             id_ = (await app.get_me()).id
             self.db.set("shizu.me", "me", id_)
-            
+
         app.is_tl_enabled = utils.is_tl_enabled()
 
     def markup_(self, purpose):
@@ -157,7 +156,7 @@ class ShizuSettings(loader.Module):
                 {
                     "text": self.strings["no_button"],
                     "callback": self.close,
-                    "args": (purpose,)
+                    "args": (purpose,),
                 },
             ]
         ]
@@ -166,8 +165,10 @@ class ShizuSettings(loader.Module):
         await call.delete()
 
     @loader.command()
-    async def setprefix(self, app: Client, message: types.Message, args: str):
+    async def setprefix(self, app: Client, message: types.Message):
         """To change the prefix, you can have several pieces separated by a space. Usage: setprefix (prefix) [prefix, ...]"""
+        args = utils.get_args_raw(message)
+        
         if not (args := args.split()):
             return await message.answer(self.strings("ch_prefix"))
 
@@ -176,8 +177,11 @@ class ShizuSettings(loader.Module):
         return await message.answer(self.strings("prefix_changed").format(prefixes))
 
     @loader.command()
-    async def addalias(self, app: Client, message: types.Message, args: str):
+    async def addalias(self, app: Client, message: types.Message):
         """Add an alias. Usage: addalias (new alias) (command)"""
+        
+        args = utils.get_args_raw(message)
+        
         if not (args := args.lower().split(maxsplit=1)):
             return await message.answer(self.strings("which_alias"))
 
@@ -202,8 +206,11 @@ class ShizuSettings(loader.Module):
         )
 
     @loader.command()
-    async def delalias(self, app: Client, message: types.Message, args: str):
+    async def delalias(self, app: Client, message: types.Message):
         """Delete the alias. Usage: delalas (alias)"""
+        
+        args = utils.get_args_raw(message)
+        
         if not (args := args.lower()):
             return await message.answer(self.strings("which_delete"))
 
@@ -245,12 +252,16 @@ class ShizuSettings(loader.Module):
             except FloodWaitError as e:
                 return await call.edit(f"Too many attempts, please wait  {e.seconds}")
 
-            async for message in self.app.get_chat_history(777000, limit=1, offset_id=-1):
+            async for message in self.app.get_chat_history(
+                777000, limit=1, offset_id=-1
+            ):
                 t = message.text
 
             code = re.findall(r"(\d{5})", t)[0]
 
-            client = TelegramClient("shizu-tl", api_id, api_hash, device_model="Shizu-Tl")
+            client = TelegramClient(
+                "shizu-tl", api_id, api_hash, device_model="Shizu-Tl"
+            )
 
             await client.connect()
 
@@ -269,7 +280,7 @@ class ShizuSettings(loader.Module):
                 await call.edit(
                     "\n\nPlease temporarily disable 2FA\n\n <i># Hikamoru too lazy to extend this module</i>"
                 )
-        
+
         if purpose == "stopshizu":
             await call.edit(self.strings["shutted_down"])
             sys.exit(0)
@@ -285,11 +296,11 @@ class ShizuSettings(loader.Module):
             )
 
         await message.answer(self.strings["already_enabled"])
-        
+
     @loader.command()
     async def stopshizu(self, app, message):
         """Just turn off the bot"""
-        
+
         await message.answer(
             self.strings["are_sure_to_stop"],
             reply_markup=self.markup_("stopshizu"),

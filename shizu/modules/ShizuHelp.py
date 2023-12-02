@@ -5,6 +5,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
+
 from pyrogram import Client, types
 from .. import loader, utils
 
@@ -110,6 +111,7 @@ class Help(loader.Module):
         args = message.get_args()
         dop_help = "<emoji id=5100652175172830068>🔸</emoji>"
         bot_username = (await self.bot.bot.get_me()).username
+
         sorted_modules = sorted(
             self.all_modules.modules,
             key=lambda mod: (mod.name not in self.cmodules, len(mod.name)),
@@ -120,8 +122,11 @@ class Help(loader.Module):
             for module in sorted_modules:
                 commands = inline = ""
                 commands += " <b>|</b> ".join(
-                    f"{command}" for command in module.command_handlers
+                    f"{command}"
+                    for command in module.command_handlers
+                    if command not in self.hidden
                 )
+
                 if module.inline_handlers:
                     if commands:
                         inline += " <b><emoji id=5258093637450866522>🤖</emoji></b> "
@@ -134,6 +139,7 @@ class Help(loader.Module):
 
                 if commands or inline:
                     module_emoji = "🀄️" if module.name in self.cmodules else "🎴"
+
                     text += (
                         f"\n<b>{module_emoji} {module.name}</b> - [ "
                         + (commands or "")

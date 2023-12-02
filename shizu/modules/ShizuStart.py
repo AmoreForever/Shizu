@@ -13,10 +13,9 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-import logging
-from .. import loader, utils
+
 from pyrogram import Client
-from ..bot import core
+from .. import loader, utils
 
 
 @loader.module("ShizuStart", "hikamoru")
@@ -34,13 +33,13 @@ class ShizuStart(loader.Module):
 
 💁‍♀️ Let's get you started quickly:
 
-1️⃣ Just enter <code>.help</code> to see all available modules.
-2️⃣ If you need help with a specific module, try <code>.help (ModuleName/command)</code>.
-3️⃣ Want to grab a module from a link? Easy, just use <code>.dlmod (link)</code>.
-4️⃣ To install a module from a file, reply with <code>.loadmod</code> to the file.
-5️⃣ Deactivate a specific module by using <code>.unloadmod (ModuleName)</code>.
-6️⃣ If you're searching for modules by name, give <code>.aelis (ModuleName)</code> a shot.
-7️⃣ Explore available languages with <code>.langs</code>, and switch your language with <code>.setlang (lang)</code>.
+▫️ Just enter <code>.help</code> to see all available modules.
+▫️ If you need help with a specific module, try <code>.help (ModuleName/command)</code>.
+▫️ Want to grab a module from a link? Easy, just use <code>.dlmod (link)</code>.
+▫️ To install a module from a file, reply with <code>.loadmod</code> to the file.
+▫️ Deactivate a specific module by using <code>.unloadmod (ModuleName)</code>.
+▫️ If you're searching for modules by name, give <code>.aelis (ModuleName)</code> a shot.
+▫️ Explore available languages with <code>.langs</code>, and switch your language with <code>.setlang (lang)</code>.
 
 📢 Stay tuned for exciting updates in our channel. Join us at @shizuhub to be the first to know about our latest features.
 

@@ -26,11 +26,10 @@ import time
 import io
 
 import logging
-from .. import logger
 
 from pyrogram import Client, types
 
-from .. import loader, utils
+from .. import loader, utils, logger
 
 
 @loader.module(name="ShizuTester", author="shizu")
@@ -74,8 +73,11 @@ class TesterMod(loader.Module):
     }
 
     @loader.command()
-    async def logs(self, app: Client, message: types.Message, args: str):
+    async def logs(self, app: Client, message: types.Message):
         """To get logs. Usage: logs (verbosity level)"""
+        
+        args = message.get_args()
+        
         lvl = 40  # ERROR
 
         if args and not (lvl := logger.get_valid_level(args)):
@@ -102,11 +104,14 @@ class TesterMod(loader.Module):
         )
 
     @loader.command()
-    async def ping(self, app: Client, message: types.Message, args: str):
+    async def ping(self, app: Client, message: types.Message):
         """Checks the response rate of the user bot"""
         start = time.perf_counter_ns()
-        await message.answer("<emoji id=5267444331010074275>▫️</emoji>")
+
+        ms = await message.answer("<emoji id=5267444331010074275>▫️</emoji>")
+
         ping = round((time.perf_counter_ns() - start) / 10**6, 3)
-        await message.answer(
+
+        await ms.edit(
             self.strings("ping").format(ping),
         )

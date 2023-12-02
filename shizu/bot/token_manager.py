@@ -20,7 +20,7 @@ class TokenManager(Item):
 
     async def _find_bot(self) -> Union[Tuple[str, str], None]:
         """Find the bot"""
-        
+
         async with fsm.Conversation(self._app, "@BotFather") as conv:
             logging.info("Checking for the presence of a bot...")
 
@@ -31,13 +31,13 @@ class TokenManager(Item):
 
             await conv.get_response()
             await conv.ask("/mybots")
-            
+
             time.sleep(1)
-            
+
             r = await conv.get_response()
-            
+
             time.sleep(1)
-            
+
             if not r.reply_markup:
                 return False
 
@@ -45,7 +45,7 @@ class TokenManager(Item):
             buttons_text = [button.text for row in data for button in row]
 
             buttons = [i for i in buttons_text if "shizu" in i]
-            
+
             if not buttons:
                 return False
 

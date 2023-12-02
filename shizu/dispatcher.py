@@ -5,13 +5,14 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
+import random
 import contextlib
 import logging
 import sys
 import traceback
 
 import inspect
-from inspect import getfullargspec, iscoroutine
+from inspect import getfullargspec
 
 from types import FunctionType
 
@@ -60,10 +61,11 @@ class DispatcherManager:
         self.modules = modules
 
     async def load(self) -> bool:
-        """Загружает менеджер диспетчера"""
+        """Loads dispatcher"""
         self.app.add_handler(handler=MessageHandler(self._handle_message, filters.all))
         self.app.add_handler(
-            handler=EditedMessageHandler(self._handle_message, filters.all)
+            handler=EditedMessageHandler(self._handle_message, filters.all),
+            group=random.randint(1, 1000),
         )
 
         return True
@@ -71,7 +73,7 @@ class DispatcherManager:
     async def _handle_message(
         self, app: Client, message: types.Message
     ) -> types.Message:
-        """Обработчик сообщений"""
+        """Handle message"""
         await self._handle_watchers(app, message)
 
         prefix, command, args = utils.get_full_command(message)
@@ -88,13 +90,11 @@ class DispatcherManager:
             return
 
         try:
-            if (len(vars_ := getfullargspec(func).args) > 3) and (vars_[3] == "args"):
-                args = utils.get_full_command(message)[2]
-                await func(app, message, args)
-            else:
-                await func(app, message)
+            await func(app, message)
+            await app.read_chat_history(message.chat.id)
 
         except Exception:
+            logging.exception("Error while executing command %s", command)
             item = lo.CustomException.from_exc_info(*sys.exc_info())
             exc = item.message + "\n\n" + item.full_stack
             trace = traceback.format_exc().replace(
@@ -118,14 +118,12 @@ class DispatcherManager:
         self, app: Client, message: types.Message
     ) -> types.Message:
         """Watcher Handler"""
+
         if isinstance(raw.types, raw.types.UpdatesTooLong):
-            return 
+            return
 
         for watcher in self.modules.watcher_handlers:
             try:
-                # if not await check_filters(watcher, app, message):
-                #     continue
-
                 await watcher(app, message)
             except Exception as error:
                 logging.exception(error)

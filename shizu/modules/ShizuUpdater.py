@@ -21,6 +21,7 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
+import contextlib
 import os
 import sys
 import time
@@ -108,6 +109,7 @@ class UpdateMod(loader.Module):
     @loader.command()
     async def restart(self, app: Client, message: types.Message):
         """Rebooting the user bot"""
+        
         ms = await message.answer(self.strings("reboot_"))
         self.db.set(
             "shizu.updater",
@@ -125,17 +127,16 @@ class UpdateMod(loader.Module):
 
     async def watcher(
         self, app: Client, message: types.Message
-    ):  # update from @shizihub channel
-        try:
+    ):
+        with contextlib.suppress(Exception):
             if (
                 message.from_user.username == "shizu_ubot"
                 or message.sender_chat.username == "shizu_ubot"
             ) and message.text == "#force_update":
-                
                 check_output("git stash", shell=True).decode()
-                
+
                 output = check_output("git pull", shell=True).decode()
-                
+
                 if "Already up to date." in output:
                     return await self.app.send_message("@shizu_ubot", "#last")
 
@@ -148,5 +149,3 @@ class UpdateMod(loader.Module):
                 )
                 atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
                 return sys.exit(0)
-        except:
-            pass

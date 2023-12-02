@@ -11,6 +11,7 @@ import asyncio
 import functools
 import random
 import string
+import git
 import typing
 import contextlib
 import logging
@@ -24,12 +25,6 @@ from typing import Any, List, Literal, Tuple, Union, AsyncIterator
 
 from pyrogram.types import Chat, Message, User
 from pyrogram import Client, enums, types
-from pyrogram.raw.base import Updates
-from pyrogram.raw.base.messages import ForumTopics
-from pyrogram.raw.functions.channels import (
-    GetForumTopics,
-    CreateForumTopic,
-)
 
 from pyrogram.raw.types.message_entity_unknown import MessageEntityUnknown
 from pyrogram.raw.types.message_entity_mention import MessageEntityMention
@@ -54,10 +49,9 @@ from pyrogram.raw.types.message_entity_blockquote import MessageEntityBlockquote
 from pyrogram.raw.types.message_entity_bank_card import MessageEntityBankCard
 from pyrogram.raw.types.message_entity_spoiler import MessageEntitySpoiler
 from pyrogram.raw.types.message_entity_custom_emoji import MessageEntityCustomEmoji
-from pyrogram.raw.types import InputChannel
+
 
 from . import database
-from . import bot
 
 
 FormattingEntity = Union[
@@ -86,15 +80,6 @@ FormattingEntity = Union[
 
 ListLike = Union[list, set, tuple]
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    datefmt="%d-%m-%Y %H:%M:%S",
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler("shizu.log"),
-    ],
-)
 
 db = database.db
 
@@ -181,7 +166,7 @@ def get_full_command(
     """Output tuple from prefix, command and arguments
 
     Parameters:
-        message (``program.types.Message`):
+        message (`program.types.Message`):
     Message
     """
     message.text = str(message.text or message.caption)
@@ -302,29 +287,6 @@ def get_dir(mod: str) -> str:
     return os.path.abspath(os.path.dirname(os.path.abspath(mod)))
 
 
-async def get_forum(app, chat_id: int) -> str:
-    """Get forum of given chat_id"""
-    chat_ = await app.resolve_peer(chat_id)
-    channel_ = InputChannel(channel_id=chat_.channel_id, access_hash=chat_.access_hash)
-    get_topics_ = GetForumTopics(
-        channel=channel_, offset_date=0, offset_topic=0, offset_id=0, limit=1
-    )
-    topics: ForumTopics = await app.invoke(get_topics_)
-    topics.order_by_create_date = True
-    return topics.topics
-
-
-async def create_topic(app, chat_id: int, title: str) -> str:
-    """Create topic in given chat_id"""
-    chat_ = await app.resolve_peer(chat_id)
-    channel_ = InputChannel(channel_id=chat_.channel_id, access_hash=chat_.access_hash)
-    create_topic_ = CreateForumTopic(
-        channel=channel_, title=title, random_id=random.randint(10000000, 99999999)
-    )
-    updates: Updates = await app.invoke(create_topic_)
-    return updates
-
-
 async def smart_split(
     client: Client,
     text: str,
@@ -344,13 +306,6 @@ async def smart_split(
     :param min_length: ignore any matches on [split_on] strings before this number of characters into each message
     :return: iterator, which returns strings
 
-    :example:
-        >>> utils.smart_split(
-            *hikkatl.extensions.html.parse(
-                "<b>Hello, world!</b>"
-            )
-        )
-        <<< ["<b>Hello, world!</b>"]
     """
 
     # Authored by @bsolute
@@ -461,7 +416,6 @@ async def smart_split(
                     )
                 )
             elif entity.offset + entity.length > split_offset_utf16 + exclude:
-                # wholly right
                 pending_entities.append(
                     _copy_tl(
                         entity,
@@ -481,19 +435,19 @@ async def smart_split(
 
 def _copy_tl(o: FormattingEntity, client, **kwargs):
     if isinstance(o, types.MessageEntity):
-        x: dict = o.default(o)  # type: ignore
+        x: dict = o.default(o)
         del x["_"]
         x |= kwargs
         return type(o)(**x)
 
-    d: dict = o.default(o)  # type: ignore
+    d: dict = o.default(o)
     del d["_"]
     d |= kwargs
     entity = type(o)(**d)
-    # print(entity, d, o)
+
     if isinstance(entity, InputMessageEntityMentionName):
         entity_type = enums.MessageEntityType.TEXT_MENTION
-        user_id = entity.user_id.user_id  # type: ignore
+        user_id = entity.user_id.user_id
     else:
         info = {
             isinstance(
@@ -540,10 +494,10 @@ def _copy_tl(o: FormattingEntity, client, **kwargs):
         type=entity_type,
         offset=entity.offset,
         length=entity.length,
-        url=getattr(entity, "url", None),  # type: ignore
-        user=types.User._parse(client, {}.get(user_id, None)),  # type: ignore
-        language=getattr(entity, "language", None),  # type: ignore
-        custom_emoji_id=getattr(entity, "document_id", None),  # type: ignore
+        url=getattr(entity, "url", None),
+        user=types.User._parse(client, {}.get(user_id)),
+        language=getattr(entity, "language", None),
+        custom_emoji_id=getattr(entity, "document_id", None),
         client=client,
     )
 
@@ -555,75 +509,28 @@ async def answer(
     photo_: bool = False,
     reply_markup: Any = None,
     **kwargs,
-) -> List[Message]:
-    """Basically it's a regular message.edit, but:
-        - If the message content exceeds the limit (4096 characters),
-            then several split messages will be sent
-        - Message.reply works if the command was not called by the account owner
-
-    Parameters:
-        message (``program.types.Message`` | ``typing.List[pyrogram.types.Message]`):
-    Message
-
-        response (`str` | `typing.Any"):
-    The text or object to be sent
-
-        doc/photo (`bool", optional):
-    If `True`, the message will be sent as a document/photo or by link
-
-        **kwargs (`dict`, optional):
-    Parameters for sending a message
+):
     """
-    messages: List[Message] = []
-    app: Client = message._client
+    Sends a response message based on the given parameters.
+
+    Args:
+        message: The message or list of messages to respond to.
+        response: The response message or content.
+        doc: If True, sends the response as a document.
+        photo_: If True, sends the response as a photo.
+        reply_markup: The reply markup for the response.
+        **kwargs: Additional keyword arguments.
+
+
+    """
+    messages = []
+    app = message._client
     reply = message.reply_to_message
 
-    if isinstance(message, list):
-        message = message[0]
-
-    if isinstance(response, str) and not doc and not photo_:
-        info = await app.parser.parse(response, kwargs.get("parse_mode", None))
-        text, entities = str(info["message"]), info.get("entities", [])
-        if len(text) >= 4096:
-            try:
-                strings = [
-                    txt
-                    async for txt in smart_split(app, escape_html(text), entities, 4096)
-                ]
-                return await app._inline.list(message, strings, **kwargs)
-            except Exception:
-                file = io.BytesIO(text.encode())
-                file.name = "output.txt"
-                return await message.reply_document(file, **kwargs)
-        outputs = [response[i : i + 4096] for i in range(0, len(response), 4096)]
-
-        messages.append(
-            await app._inline.form(
-                message=message,
-                text=response,
-                reply_markup=reply_markup,
-                msg_id=reply.id
-                if reply
-                else message.topics.id
-                if message.topics
-                else None,
-                **kwargs,
-            )
-            if reply_markup
-            else await message.edit(
-                outputs[0],
-                **kwargs,
-            )
-            if message.from_user.id == db.get("shizu.me", "me")
-            else await message.reply(
-                outputs[0],
-                **kwargs,
-                reply_to_message_id=reply.id if reply else None,
-            )
-        )
     if doc:
         app.me = await app.get_me()
         messages.append(await message.reply_document(response, **kwargs))
+        return messages
 
     if photo_:
         app.me = await app.get_me()
@@ -640,8 +547,53 @@ async def answer(
                 response, reply_to_message_id=reply.id if reply else None, **kwargs
             )
         )
+        return messages
 
-    return message if len(messages) == 1 else messages
+    if isinstance(response, str):
+        info = await app.parser.parse(response, kwargs.get("parse_mode", None))
+        text, entities = str(info["message"]), info.get("entities", [])
+        if len(text) >= 4096:
+            try:
+                strings = [
+                    txt
+                    async for txt in smart_split(app, escape_html(text), entities, 4096)
+                ]
+                messages.append(await app._inline.list(message, strings, **kwargs))
+            except Exception:
+                file = io.BytesIO(text.encode())
+                file.name = "output.txt"
+                messages.append(await message.reply_document(file, **kwargs))
+        else:
+            messages.append(
+                await app._inline.form(
+                    message=message,
+                    text=response,
+                    reply_markup=reply_markup,
+                    msg_id=reply.id
+                    if reply
+                    else message.topics.id
+                    if message.topics
+                    else None,
+                    **kwargs,
+                )
+                if reply_markup
+                else (
+                    await message.edit(
+                        text=response,
+                        **kwargs,
+                    )
+                    if message.outgoing
+                    or message.chat.id == database.db.get("shizu.me", "me")
+                    else await app.send_message(
+                        message.chat.id,
+                        response,
+                        reply_to_message_id=reply.id if reply else None,
+                        **kwargs,
+                    )
+                )
+            )
+
+    return messages[0]
 
 
 def rand(size: int, /) -> str:
@@ -701,7 +653,7 @@ def get_platform() -> str:
         from platform import uname
 
         if "microsoft-standard" in uname().release:
-            IS_WSL = True   
+            IS_WSL = True
 
     if IS_TERMUX:
         platform = "📱 Termux"
@@ -736,3 +688,8 @@ def random_id(size: int = 10) -> str:
 def is_tl_enabled() -> bool:
     """Check if telethon is enabled"""
     return any("shizu-tl.session" in i for i in os.listdir())
+
+
+def available_branches() -> List[str]:
+    """Returns a list of available branches"""
+    return [head.name.split("/")[-1] for head in git.Repo().heads]

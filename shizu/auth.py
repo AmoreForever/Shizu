@@ -23,7 +23,7 @@ from pyrogram.raw.functions.auth.export_login_token import ExportLoginToken
 from telethon import TelegramClient
 
 from qrcode.main import QRCode
-from . import utils
+from . import utils, database
 
 Session.notice_displayed: bool = True
 
@@ -51,7 +51,7 @@ class Auth:
         cfg = cp.ConfigParser()
         cfg.read("./config.ini")
 
-        try:  # TODO: Remove this in the future
+        try:
             device_model = cfg["pyrogram"]["device_model"]
         except KeyError:
             device_model = utils.get_random_smartphone()
@@ -61,29 +61,24 @@ class Auth:
             with open("./config.ini", "w", encoding="utf-8") as file:
                 cfg.write(file)
 
-        if "JAMHOST" in os.environ:
-            self.app = Client(
-                name=session_name,
-                api_id=cfg.get("pyrogram", "api_id"),
-                api_hash=cfg.get("pyrogram", "api_hash"),
-                device_model=device_model,
-                session_string=cfg.get("pyrogram", "string_session", fallback=None),
-            )
-        
-        elif utils.is_tl_enabled():
+        self.app = Client(
+            name=session_name,
+            api_id=cfg.get("pyrogram", "api_id"),
+            api_hash=cfg.get("pyrogram", "api_hash"),
+            device_model=device_model,
+            session_string=(
+                cfg.get("pyrogram", "string_session")
+                if "JAMHOST" in os.environ
+                else None
+            ),
+        )
+
+        if utils.is_tl_enabled():
             self.tapp = TelegramClient(
                 "shizu-tl",
                 api_id=cfg.get("pyrogram", "api_id"),
                 api_hash=cfg.get("pyrogram", "api_hash"),
                 device_model="Shizu-TL",
-            )
-
-        else:
-            self.app = Client(
-                name=session_name,
-                api_id=cfg.get("pyrogram", "api_id"),
-                api_hash=cfg.get("pyrogram", "api_hash"),
-                device_model=device_model,
             )
 
     def _check_api_tokens(self) -> bool:
@@ -96,10 +91,10 @@ class Auth:
             }
             with open("./config.ini", "w", encoding="utf-8") as file:
                 cfg.write(file)
+
         return True
 
     async def send_code(self) -> Tuple[str, str]:
-    
         while True:
             error_text: str = ""
             try:
@@ -158,7 +153,9 @@ class Auth:
                         )
                     except errors.exceptions.unauthorized_401.SessionPasswordNeeded:
                         me: types.User = (
-                            await self.app.get_me() if logged else await self.enter_2fa()
+                            await self.app.get_me()
+                            if logged
+                            else await self.enter_2fa()
                         )
                         break
                     if isinstance(
@@ -179,18 +176,19 @@ class Auth:
                     tries += 1
                     await asyncio.sleep(1)
             else:
-                
                 phone, phone_code_hash = await self.send_code()
                 logged = await self.enter_code(phone, phone_code_hash)
+
                 me: types.User = (
                     await self.app.get_me() if logged else await self.enter_2fa()
                 )
-                
+
                 if "JAMHOST" in os.environ:
-                    cfg["pyrogram"]["string_session"] = await self.app.export_session_string()
+                    cfg["pyrogram"][
+                        "string_session"
+                    ] = await self.app.export_session_string()
                     with open("./config.ini", "w", encoding="utf-8") as file:
                         cfg.write(file)
-                
 
         except errors.SessionRevoked:
             logging.error(

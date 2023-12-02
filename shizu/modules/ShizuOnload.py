@@ -1,3 +1,11 @@
+# █ █ █ █▄▀ ▄▀█ █▀▄▀█ █▀█ █▀█ █ █
+# █▀█ █ █ █ █▀█ █ ▀ █ █▄█ █▀▄ █▄█
+
+# 🔒 Licensed under the GNU GPLv3
+# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
+# 👤 https://t.me/hikamoru
+
+import contextlib
 import time
 import os
 import sys
@@ -48,13 +56,14 @@ class ShizuOnload(loader.Module):
     }
 
     async def on_load(self, app: Client):
-        async for _ in app.get_dialogs():
-            pass
+        with contextlib.suppress(Exception):
+            async for _ in app.get_dialogs():
+                pass
 
-        if not self.db.get("shizu.updater", "bot"):
-            ms = await app.send_message("@shizu_ubot", "/start")
-            await ms.delete()
-            self.db.set("shizu.updater", "bot", True)
+            if not self.db.get("shizu.updater", "bot"):
+                ms = await app.send_message("@shizu_ubot", "/start")
+                await ms.delete()
+                self.db.set("shizu.updater", "bot", True)
 
         if not self.db.get("shizu.folder", "folder"):
             logging.info("Trying to create folder")
@@ -115,7 +124,7 @@ class ShizuOnload(loader.Module):
                 )
             if restart["type"] == "shizubot":
                 await self.app.send_message("@shizu_ubot", "#updated")
-            else:
+            if restart["type"] == "update":
                 restarted_text = self.strings("start_u").format(
                     round(time.time()) - int(restart["start"])
                 )
@@ -127,7 +136,6 @@ class ShizuOnload(loader.Module):
             except Exception as why:
                 logging.error(f"Failed to edit message: {why}")
 
-            logging.info("Successfully started!")
             self.db.pop("shizu.updater", "restart")
 
         started_text = (

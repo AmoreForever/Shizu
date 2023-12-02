@@ -5,10 +5,9 @@
 # 🌐 https://www.gnu.org/licenses/agpl-3.0.html
 # 👤 https://t.me/hikamoru
 
-from .. import loader, utils
-
 import logging
 
+from .. import loader, utils
 
 logger = logging.getLogger(__name__)
 

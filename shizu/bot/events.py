@@ -162,8 +162,28 @@ async def edit(
             await query.answer(
                 "I should have edited some message, but it is deleted :("
             )
-            # remove preloader from user's button, if message
-            # was deleted
+
+
+async def answer(
+    text: str = None,
+    app: Any = None,
+    message: Message = None,
+    parse_mode: str = "HTML",
+    disable_web_page_preview: bool = True,
+    **kwargs,
+) -> bool:
+    try:
+        await app.bot.send_message(
+            message.chat.id,
+            text,
+            parse_mode=parse_mode,
+            disable_web_page_preview=disable_web_page_preview,
+            **kwargs,
+        )
+    except Exception:
+        return False
+
+    return True
 
 
 class InlineCall:
@@ -183,17 +203,19 @@ class Events(Item):
         self._me = database.db.get("shizu.me", "me")
 
     async def _message_handler(self, message: Message) -> Message:
-        """Обработчик сообщений"""
         if message.text == "/start":
             if message.chat.type != "private":
                 return
             await message.answer_photo(
-                open("assets/Shizu.jpg", "rb"),
-                caption="🐙 <b>Shizu – Your Secret Telegram Weapon! With plugin support and effortless setup, this bot unlocks a world of possibilities in Telegram. Dive in and experience the extraordinary!</b>\n\n🧑‍💻 <b>hikamoru.t.me</b>",
+                open("assets/shizubanner.jpg", "rb"),
+                caption="🐙 <b>Shizu – Your Secret Telegram Weapon! With plugin support and effortless setup, this bot unlocks a world of possibilities in Telegram. Dive in and experience the extraordinary!</b>",
                 reply_markup=InlineKeyboardMarkup().add(
                     InlineKeyboardButton(
-                        text="🌍 Github", url="https://github.com/AmoreForever/Shizu"
-                    )
+                        text="🐈‍⬛ Source", url="https://github.com/AmoreForever/Shizu"
+                    ),
+                    InlineKeyboardButton(
+                        text="🪭 Chief Developer", url="https://t.me/hikamoru"
+                    ),
                 ),
             )
 
@@ -201,6 +223,8 @@ class Events(Item):
             if message.chat.type != "private":
                 return False
             await message.answer(TEXT, parse_mode="HTML", disable_web_page_preview=True)
+
+        setattr(message, "answer", functools.partial(answer, app=self, message=message))
 
         for func in self._all_modules.message_handlers.values():
             if not await self._check_filters(func, func.__self__, message):
@@ -240,7 +264,7 @@ class Events(Item):
                     )
 
             message = InputTextMessageContent(
-                f"👇 <b>Available commands</b>\n" f"{commands}"
+                f"👇 <b>Available commands</b>\n" f"{commands}" if commands else "\xad"
             )
 
             return await inline_query.answer(
@@ -248,9 +272,17 @@ class Events(Item):
                     InlineQueryResultArticle(
                         id=utils.random_id(),
                         title="Available commands",
-                        description="👇 Available commands",
+                        description=(
+                            "👇 Available commands"
+                            if commands
+                            else "🚫 There is no inline commands"
+                        ),
                         input_message_content=message,
-                        thumb_url="https://cdn-icons-png.flaticon.com/512/5278/5278692.png",
+                        thumb_url=(
+                            "https://cdn-icons-png.flaticon.com/512/5278/5278692.png"
+                            if commands
+                            else "https://cdn-icons-png.flaticon.com/512/2190/2190577.png"
+                        ),
                     )
                 ],
                 cache_time=0,
@@ -269,7 +301,6 @@ class Events(Item):
                 await func(self._app, inline_query, args)
             else:
                 await func(self._app, inline_query)
-            
 
         try:
             if self._forms[query].get("type", None) == "form":
@@ -786,10 +817,7 @@ class Events(Item):
             item = lo.CustomException.from_exc_info(*sys.exc_info())
             exc = item.message + "\n\n" + item.full_stack
 
-            log_message = (
-                "🚫 <b>Inline bot invoke failed!</b>\n\n"
-                + f"<code>{utils.escape_html(exc)}</code>"
-            )
+            log_message = "🚫 <b>Inline bot invoke failed!</b>\n\n" + f"{(exc)}"
 
             await self._app.bot.send_message(
                 self._db.get("shizu.chat", "logs", None), log_message
@@ -811,7 +839,7 @@ class Events(Item):
 
     async def list(
         self,
-        message: Union[Message, int],
+        message: Message,
         strings: List[str],
         prev: bool = True,
         *,
@@ -820,6 +848,7 @@ class Events(Item):
         manual_security: Optional[bool] = False,
         disable_security: Optional[bool] = False,
         ttl: Optional[Union[int, bool]] = False,
+        **kwargs,
     ) -> Union[bool]:
         """
         Send inline list to chat
@@ -975,16 +1004,19 @@ class Events(Item):
             results = await self._app.get_inline_bot_results(
                 (await self._app.inline_bot.get_me()).username, unit_id
             )
+
             if status_message:
                 await self._app.delete_messages(
                     status_message.chat.id, status_message.id
                 )
+
             await self._app.send_inline_bot_result(
                 message.chat.id,
                 results.query_id,
                 results.results[0].id,
                 reply_to_message_id=status_message.id if status_message else None,
             )
+
         except Exception as e:
             logger.exception("Can't send list")
 
@@ -1034,6 +1066,7 @@ class Events(Item):
                     self._forms[unit_id]["current_index"]
                 ],
                 reply_markup=self._list_markup(unit_id),
+                disable_web_page_preview=True,
             )
             await call.answer()
         except aiogram.utils.exceptions.RetryAfter as e:
@@ -1067,6 +1100,7 @@ class Events(Item):
                     self._forms[unit_id]["current_index"]
                 ],
                 reply_markup=self._list_markup(unit_id),
+                disable_web_page_preview=True,
             )
             await call.answer()
         except aiogram.utils.exceptions.RetryAfter as e:

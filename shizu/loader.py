@@ -26,6 +26,8 @@ import contextlib
 import inspect
 import logging
 import os
+import requests
+import asyncio
 import random
 import re
 import string
@@ -37,10 +39,9 @@ from importlib.machinery import ModuleSpec
 from importlib.util import module_from_spec, spec_from_file_location
 from types import FunctionType
 from typing import Any, Callable, Dict, List, Union
+from functools import wraps
 
-
-import requests
-from pyrogram import Client, filters, types, raw
+from pyrogram import Client, filters, types
 from . import bot, database, dispatcher, utils, aelis, logger as logger_
 from .types import InfiniteLoop
 from .translator import Strings, Translator
@@ -217,8 +218,20 @@ def iter_attrs(obj: typing.Any, /) -> typing.List[typing.Tuple[str, typing.Any]]
     return ((attr, getattr(obj, attr)) for attr in dir(obj))
 
 
-def command() -> Callable[[Callable], Callable]:
-    def decorator(func: Callable) -> Callable:
+def command(aliases: list = None, hidden: bool = False  ):
+    def decorator(func):
+
+        if hidden:
+            func.is_hidden = True
+
+        if aliases:
+            list_ = database.db.get(__name__, "aliases", {})
+            
+            for alias in aliases:
+                list_[alias] = func.__name__
+
+            database.db.set(__name__, "aliases", list_)
+
         func.is_command = True
         return func
 
@@ -311,6 +324,7 @@ class ModulesManager:
             "ShizuSettings",
             "ShizuOwner",
         ]
+        self.hidden = []
         app.db = db
 
     async def load(self, app: Client) -> bool:
@@ -336,7 +350,6 @@ class ModulesManager:
             file_path = os.path.join(
                 os.path.abspath("."), self._local_modules_path, local_module
             )
-
             try:
                 self.register_instance(module_name, file_path)
             except Exception as error:
@@ -352,7 +365,7 @@ class ModulesManager:
                 logging.exception(
                     f"Ошибка при загрузке стороннего модуля {custom_module}: {error}"
                 )
-                
+
         logging.info("Dialogs loaded")
         logging.info("Modules loaded")
         return True
@@ -362,10 +375,15 @@ class ModulesManager:
     ) -> Module:
         """Registers the module"""
         spec = spec or spec_from_file_location(module_name, file_path)
+
         module = module_from_spec(spec)
+
         sys.modules[module.__name__] = module
+
         spec.loader.exec_module(module)
+
         instance = None
+
         for key, value in vars(module).items():
             if not inspect.isclass(value) or not issubclass(value, Module):
                 continue
@@ -394,6 +412,7 @@ class ModulesManager:
             instance.reconfmod = self.config_reconfigure
             instance.aelis = self.aelis
             instance.shizu = True
+            instance.hidden = self.hidden
 
             instance.command_handlers = get_command_handlers(instance)
             instance.watcher_handlers = get_watcher_handlers(instance)
@@ -413,6 +432,10 @@ class ModulesManager:
         if not instance:
             logging.warning(f"Module {module_name} not found")
 
+        for name, func in instance.command_handlers.copy().items():
+            if getattr(func, "is_hidden", ""):
+                self.hidden.append(name)
+
         return instance
 
     def _lookup(self, modname: str):
@@ -428,34 +451,32 @@ class ModulesManager:
         did_requirements: bool = False,
     ) -> str:
         """Loads a third-party module"""
-        module_name = "shizu.modules." + (
-            f"{self.me.id}-"
-            + "".join(
-                random.choice(string.ascii_letters + string.digits) for _ in range(10)
-            )
-        )
 
-        delete_account_re = re.compile(r"DeleteAccount", re.IGNORECASE)
-        if delete_account_re.search(module_source):
-            logging.error(
-                "Module %s is forbidden, because it contains DeleteAccount", module_name
-            )
-            return "DAR"
+        module_name = f"shizu.modules.{self.me.id}-{''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))}"
 
-        if re.search(r"# ?only: ?(.+)", module_source) and str(
-            self._db.get("shizu.me", "me")
-        ) not in re.search(r"# ?only: ?(.+)", module_source)[1].split(","):
+
+        if match := re.search(r"# ?only: ?(.+)", module_source):
+            allowed_accounts = match[1].split(",") if match else []
+            if str((await self._app.get_me()).id) not in allowed_accounts:
+                logging.error(
+                    "Module %s is forbidden, because it is not for this account",
+                    module_name,
+                )
+                return "NFA"
+
+        if re.search(r"# ?tl-only", module_source) and not utils.is_tl_enabled():
             logging.error(
-                "Module %s is forbidden, because it is not for this account",
+                "You have not enabled telethon, so you can't use module %s",
                 module_name,
             )
-            return "NFA"
+            return "OTL"
 
         try:
             spec = ModuleSpec(
                 module_name, StringLoader(module_source, origin), origin=origin
             )
             instance = self.register_instance(module_name, spec=spec)
+
         except ImportError as error:
             logging.error(error)
 
@@ -517,8 +538,10 @@ class ModulesManager:
         try:
             await self.send_on_load(instance, Translator(self._app, self._db))
             self.config_reconfigure(instance, self._db)
+
         except Exception as error:
             return logging.error(error)
+
         return instance.name
 
     async def send_on_loads(self) -> bool:
@@ -575,9 +598,9 @@ class ModulesManager:
             with contextlib.suppress(TypeError):
                 path = inspect.getfile(module.__class__)
 
-                if os.path.exists(path):    
+                if os.path.exists(path):
                     os.remove(path)
-                    
+
             if (get_module := inspect.getmodule(module)).__spec__.origin != "<string>":
                 set_modules = set(self._db.get(__name__, "modules", []))
                 self._db.set(

@@ -13,6 +13,7 @@ from .utils import (
     get_args_html,
 )
 
+
 logging = logging.getLogger(__name__)
 
 
@@ -47,5 +48,6 @@ class MessageMagic:
             self.message.get_args = get_args
             self.message.get_args_raw = get_args_raw
             self.message.get_args_html = get_args_html
+
         except Exception as e:
             logging.error(f"Error initializing MessageMagic: {str(e)}")
