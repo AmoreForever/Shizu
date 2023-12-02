@@ -47,10 +47,7 @@ async def check_filters(
     ) in db.get("shizu.me", "owners", []) and db.get("shizu.owner", "status", False):
         return True
 
-    if not message.outgoing:
-        return False
-
-    return True
+    return bool(message.outgoing)
 
 
 class DispatcherManager:
