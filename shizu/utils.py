@@ -1,9 +1,17 @@
-# █ █ █ █▄▀ ▄▀█ █▀▄▀█ █▀█ █▀█ █ █
-# █▀█ █ █ █ █▀█ █ ▀ █ █▄█ █▀▄ █▄█
+# Shizu Copyright (C) 2023-2024  AmoreForever
 
-# 🔒 Licensed under the GNU GPLv3
-# 🌐 https://www.gnu.org/licenses/agpl-3.0.html
-# 👤 https://t.me/hikamoru
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # some piece of code taken from: https://github.com/hikariatama/Hikka/blob/master/hikka/utils.py
 
@@ -14,7 +22,6 @@ import string
 import git
 import typing
 import contextlib
-import logging
 import io
 import os
 import grapheme
@@ -582,8 +589,7 @@ async def answer(
                         text=response,
                         **kwargs,
                     )
-                    if message.outgoing
-                    or message.chat.id == database.db.get("shizu.me", "me")
+                    if message.outgoing or message.from_user.is_self
                     else await app.send_message(
                         message.chat.id,
                         response,
