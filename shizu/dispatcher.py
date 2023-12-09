@@ -20,7 +20,6 @@ import sys
 import traceback
 
 import inspect
-from inspect import getfullargspec
 
 from types import FunctionType
 
@@ -125,9 +124,11 @@ class DispatcherManager:
     async def _handle_watchers(
         self, app: Client, message: types.Message
     ) -> types.Message:
-        """Watcher Handler"""
-
-        if isinstance(raw.types, raw.types.UpdatesTooLong):
+        
+        if isinstance(raw.types, raw.types.UpdatesTooLong) or isinstance(
+            raw.functions,
+            raw.functions.updates.get_channel_difference.GetChannelDifference,
+        ):
             return
 
         for watcher in self.modules.watcher_handlers:
