@@ -190,8 +190,8 @@ class ModulesLinkMod(loader.Module):
         await m.delete()
         return await message.answer(source_code, doc=True, caption=caption)
 
-    @loader.command()
-    async def aeliscmd(self, app, message):
+    
+    async def aelis_(self, app, message):
         """Search module in Aelis API"""
         args = message.get_args_raw()
 

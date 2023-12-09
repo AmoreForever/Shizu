@@ -228,15 +228,14 @@ def iter_attrs(obj: typing.Any, /) -> typing.List[typing.Tuple[str, typing.Any]]
     return ((attr, getattr(obj, attr)) for attr in dir(obj))
 
 
-def command(aliases: list = None, hidden: bool = False  ):
+def command(aliases: list = None, hidden: bool = False):
     def decorator(func):
-
         if hidden:
             func.is_hidden = True
 
         if aliases:
             list_ = database.db.get(__name__, "aliases", {})
-            
+
             for alias in aliases:
                 list_[alias] = func.__name__
 
@@ -317,7 +316,7 @@ class ModulesManager:
         self.bot_manager: bot.BotManager = None
 
         self.root_module: Module = None
-        self.aelis = aelis.AelisAPI(self._app)
+        # self.aelis = aelis.AelisAPI(self._app)
         self.cmodules = [
             "ShizuBackuper",
             "ShizuHelp",
@@ -420,7 +419,7 @@ class ModulesManager:
 
             instance = value()
             instance.reconfmod = self.config_reconfigure
-            instance.aelis = self.aelis
+            # instance.aelis = self.aelis
             instance.shizu = True
             instance.hidden = self.hidden
 
@@ -463,7 +462,6 @@ class ModulesManager:
         """Loads a third-party module"""
 
         module_name = f"shizu.modules.{self.me.id}-{''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))}"
-
 
         if match := re.search(r"# ?only: ?(.+)", module_source):
             allowed_accounts = match[1].split(",") if match else []
@@ -607,9 +605,9 @@ class ModulesManager:
 
             with contextlib.suppress(TypeError):
                 path = inspect.getfile(module.__class__)
-                
+
                 logging.info(f"Removing {path}")
-                
+
                 if os.path.exists(path):
                     os.remove(path)
 
