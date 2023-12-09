@@ -30,10 +30,11 @@ from datetime import datetime
 
 from typing import Union
 from aiogram import Bot, Dispatcher
-from aiogram.utils.exceptions import NetworkError, MessageIsTooLong
+from aiogram.utils.exceptions import NetworkError
 from loguru._better_exceptions import ExceptionFormatter
 from loguru._colorizer import Colorizer
 from loguru import logger
+from logging.handlers import RotatingFileHandler
 
 from aiogram.types import ParseMode
 
@@ -324,18 +325,33 @@ def override_text(exception: Exception) -> typing.Optional[str]:
         return "✈️ <b>You have problems with internet connection on your server.</b>"
 
     return None
+    
+        
 
-
-def setup_logger(level: Union[str, int]):
+def setup_logger(level: Union[str, int], log_file_path: str = "shizu.log"):
     """Setup logger"""
 
     level = get_valid_level(level) or 20
+
     handler = MemoryHandler(level)
+
     tg = Telegramhandler(level)
+
+    file_handler = RotatingFileHandler(
+        log_file_path, maxBytes=5 * 1024 * 1024, backupCount=5
+    )
+
+    file_handler.setFormatter(
+        logging.Formatter("[%(levelname)s] %(name)s: %(message)s")
+    )
+
+    logging.getLogger().addHandler(file_handler)
     logging.getLogger().addHandler(tg)
+
     logging.basicConfig(handlers=[handler, tg], level=level, force=True)
 
-    logging.getLogger("pyrogram").setLevel(logging.WARNING)
+    logging.getLogger("pyrogram").setLevel(logging.CRITICAL)
     logging.getLogger("aiogram").setLevel(logging.WARNING)
     logging.getLogger("telethon").setLevel(logging.WARNING)
+    logging.getLogger("asyncio").setLevel(logging.WARNING)
     logging.getLogger("aiohttp").setLevel(logging.WARNING)
