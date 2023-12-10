@@ -578,8 +578,8 @@ async def answer(
                     reply_markup=reply_markup,
                     msg_id=reply.id
                     if reply
-                    else message.topics.id
-                    if message.topics
+                    else message.topic.id
+                    if message.topic
                     else None,
                     **kwargs,
                 )
