@@ -92,12 +92,6 @@ class BotManager(Events, TokenManager):
         self._dp.register_callback_query_handler(
             self._callback_query_handler, lambda _: True
         )
-        await self._dp.bot.set_my_commands(
-            [
-                aiotypes.BotCommand("start", "start"),
-                aiotypes.BotCommand("userbot", "little info about userbot"),
-            ]
-        )
 
         asyncio.ensure_future(self._dp.start_polling())
 

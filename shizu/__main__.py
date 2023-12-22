@@ -40,7 +40,6 @@ try:
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main.main())
     
-    
 except ModuleNotFoundError as module:
     print(f"🚫 Error: {module} is not installed")
     print("⌛ Attempting dependencies installation... Just wait.")

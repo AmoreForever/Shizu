@@ -47,6 +47,20 @@ class ShizuConfig(loader.Module):
         "close": "🚫 Close",
         "enter_value": "✍️ Enter new configuration value for this option",
         "ent_value": "✍️ Enter value",
+        "restore_def_button": "🦖 Restore default",
+        "restored": "🦖 <b>Configurations restored to default!</b>",
+        "advanced_button": "🔧 Advanced",
+        "advanced": "⚙️ <b>Advanced configuration of module <code>{}</code></b>",
+        "true_false_button": "📟 True/False",
+        "true_false": "⚙️ <b>Choose True or False</b>",
+        "add_value_to_list_button": "➕ Add value to list",
+        "remove_value_from_list_button": "➖ Remove value from list",
+        "true": "✅ True",
+        "false": "❌ False",
+        "add_delete_button": "🔌 Add/Delete",
+        "option_added": "⚙️ <b>Option </b><code>{}</code><b> added!</b>",
+        "option_removed": "⚙️ <b>Option </b><code>{}</code><b> removed!</b>",
+        "choose_button": "🎛 Choose",
     }
 
     strings_ru = {
@@ -58,6 +72,21 @@ class ShizuConfig(loader.Module):
         "close": "🚫 Закрыть",
         "enter_value": "✍️ Введите новое значение конфигурации для этой опции",
         "ent_value": "✍️ Введите значение",
+        "restore_def_button": "🦖 Восстановить по умолчанию",
+        "restored": "🦖 <b>Конфигурации восстановлены по умолчанию!</b>",
+        "advanced_button": "🔧 Расширенный",
+        "advanced": "⚙️ <b>Расширенная конфигурация модуля <code>{}</code></b>",
+        "true_false_button": "📟 True/False",
+        "true_false": "⚙️ <b>Выберите True или False</b>",
+        "add_delete": "⚙️ <b>Значение для списка</b>",
+        "add_value_to_list_button": "➕ Добавить значение в список",
+        "remove_value_from_list_button": "➖ Удалить значение из списка",
+        "true": "✅ True",
+        "false": "❌ False",
+        "add_delete_button": "🔌 Добавить/Удалить",
+        "option_added": "⚙️ <b>Опция </b><code>{}</code><b> добавлена!</b>",
+        "option_removed": "⚙️ <b>Опция </b><code>{}</code><b> удалена!</b>",
+        "choose_button": "🎛 Выбрать",
     }
 
     strings_uz = {
@@ -69,6 +98,21 @@ class ShizuConfig(loader.Module):
         "close": "🚫 Yopish",
         "enter_value": "✍️ Ushbu variant uchun yangi konfiguratsiya qiymatini kiriting",
         "ent_value": "✍️ Qiymatni kiriting",
+        "restore_def_button": "🦖 Standartga tiklash",
+        "restored": "🦖 <b>Konfiguratsiya standartga tiklandi!</b>",
+        "advanced_button": "🔧 Kengaytirilgan",
+        "advanced": "⚙️ <b>Modul <code>{}</code> kengaytirilgan konfiguratsiyasi</b>",
+        "true_false_button": "📟 True/False",
+        "true_false": "⚙️ <b>True yoki False ni tanlang</b>",
+        "add_value_to_list_button": "➕ Ro'yxatga qiymat qo'shing",
+        "remove_value_from_list_button": "➖ Ro'yxatdan qiymatni olib tashlang",
+        "true": "✅ True",
+        "false": "❌ False",
+        "add_delete": "⚙️ <b>Ro'yxat uchun qiymat</b>",
+        "add_delete_button": "🔌 Qo'shish/Olib tashlash",
+        "option_added": "⚙️ <b>Varianta </b><code>{}</code><b> qo'shildi!</b>",
+        "option_removed": "⚙️ <b>Varianta </b><code>{}</code><b> olib tashlandi!</b>",
+        "choose_button": "🎛 Tanlash",
     }
 
     strings_jp = {
@@ -80,6 +124,21 @@ class ShizuConfig(loader.Module):
         "close": "🚫 閉じる",
         "enter_value": "✍️ このオプションの新しい設定値を入力してください",
         "ent_value": "✍️ 値を入力",
+        "restore_def_button": "🦖 デフォルトに戻す",
+        "restored": "🦖 <b>設定がデフォルトに戻されました！</b>",
+        "advanced_button": "🔧 詳細",
+        "advanced": "⚙️ <b>モジュール <code>{}</code> の詳細設定</b>",
+        "true_false_button": "📟 True/False",
+        "true_false": "⚙️ <b>True または False を選択</b>",
+        "add_value_to_list_button": "➕ リストに値を追加",
+        "remove_value_from_list_button": "➖ リストから値を削除",
+        "true": "✅ True",
+        "false": "❌ False",
+        "add_delete": "⚙️ <b>リストの値</b>",
+        "add_delete_button": "🔌 追加/削除",
+        "option_added": "⚙️ <b>オプション </b><code>{}</code><b> が追加されました！</b>",
+        "option_removed": "⚙️ <b>オプション </b><code>{}</code><b> が削除されました！</b>",
+        "choose_button": "🎛 選択",
     }
 
     strings_ua = {
@@ -91,6 +150,21 @@ class ShizuConfig(loader.Module):
         "close": "🚫 Закрити",
         "enter_value": "✍️ Введіть нове значення конфігурації для цієї опції",
         "ent_value": "✍️ Введіть значення",
+        "restore_def_button": "🦖 Відновити за замовчуванням",
+        "restored": "🦖 <b>Конфігурації відновлено за замовчуванням!</b>",
+        "advanced_button": "🔧 Розширений",
+        "advanced": "⚙️ <b>Розширена конфігурація модуля <code>{}</code></b>",
+        "true_false_button": "📟 True/False",
+        "true_false": "⚙️ <b>Виберіть True або False</b>",
+        "add_value_to_list_button": "➕ Додати значення до списку",
+        "remove_value_from_list_button": "➖ Видалити значення зі списку",
+        "true": "✅ True",
+        "false": "❌ False",
+        "add_delete": "⚙️ <b>Значення для списку</b>",
+        "add_delete_button": "🔌 Додати/Видалити",
+        "option_added": "⚙️ <b>Опція </b><code>{}</code><b> додана!</b>",
+        "option_removed": "⚙️ <b>Опція </b><code>{}</code><b> видалена!</b>",
+        "choose_button": "🎛 Вибрати",
     }
 
     strings_kz = {
@@ -102,10 +176,56 @@ class ShizuConfig(loader.Module):
         "close": "🚫 Жабу",
         "enter_value": "✍️ Осы опция үшін жаңа конфигурация мәнін енгізіңіз",
         "ent_value": "✍️ Мәнді енгізіңіз",
+        "restore_def_button": "🦖 Әдепкіге қайта орнату",
+        "restored": "🦖 <b>Конфигурация әдепкіге қайтарылды!</b>",
+        "advanced_button": "🔧 Кеңейтілген",
+        "advanced": "⚙️ <b>Модуль <code>{}</code> кеңейтілген конфигурациясы</b>",
+        "true_false_button": "📟 True/False",
+        "true_false": "⚙️ <b>True не False таңдаңыз</b>",
+        "add_value_to_list_button": "➕ Тізімге мән қосу",
+        "remove_value_from_list_button": "➖ Тізімнен мәнді алып тастау",
+        "true": "✅ True",
+        "false": "❌ False",
+        "add_delete": "⚙️ <b>Тізім үшін мән</b>",
+        "add_delete_button": "🔌 Қосу/Алып тастау",
+        "option_added": "⚙️ <b>Опция </b><code>{}</code><b> қосылды!</b>",
+        "option_removed": "⚙️ <b>Опция </b><code>{}</code><b> алып тасталды!</b>",
+        "choose_button": "🎛 Таңдау",
     }
 
     async def inline__close(self, call: "aiogram.types.CallbackQuery") -> None:
         await call.delete()
+
+    async def inline__set_to_default(
+        self,
+        call: "aiogram.types.CallbackQuery",
+        mod: str,
+        option: str,
+        inline_message_id: str,
+    ) -> None:
+        for module in self.all_modules.modules:
+            if module.name == mod:
+                with contextlib.suppress(KeyError):
+                    del self.db.setdefault(module.name, {}).setdefault(
+                        "__config__", {}
+                    )[option]
+                self.reconfmod(module, self.db)
+                self.db.save()
+
+        await call.edit(
+            self.strings("restored"),
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back"),
+                        "callback": self.inline__configure_option,
+                        "args": (mod, option),
+                    },
+                    {"text": self.strings("close"), "callback": self.inline__close},
+                ]
+            ],
+            inline_message_id=inline_message_id,
+        )
 
     async def inline__set_config(
         self,
@@ -115,11 +235,12 @@ class ShizuConfig(loader.Module):
         option: str,
         inline_message_id: str,
     ) -> None:
+        with contextlib.suppress(ValueError, SyntaxError):
+            query = ast.literal_eval(query)
+
         for module in self.all_modules.modules:
             if module.name == mod:
                 if query:
-                    with contextlib.suppress(ValueError, SyntaxError):
-                        query = ast.literal_eval(query)
                     self.db.setdefault(module.name, {}).setdefault("__config__", {})[
                         option
                     ] = query
@@ -129,6 +250,7 @@ class ShizuConfig(loader.Module):
                         del self.db.setdefault(module.name, {}).setdefault(
                             "__config__", {}
                         )[option]
+
             self.reconfmod(module, self.db)
             self.db.save()
 
@@ -138,14 +260,329 @@ class ShizuConfig(loader.Module):
                 [
                     {
                         "text": self.strings("back"),
-                        "callback": self.inline__configure,
-                        "args": (mod,),
+                        "callback": self.inline__configure_option,
+                        "args": (mod, option),
                     },
                     {"text": self.strings("close"), "callback": self.inline__close},
                 ]
             ],
             inline_message_id=inline_message_id,
         )
+
+    async def inline__add_item(
+        self,
+        call: "aiogram.types.CallbackQuery",
+        query: str,
+        mod: str,
+        option: str,
+        inline_message_id: str,
+    ) -> None:
+        with contextlib.suppress(ValueError, SyntaxError):
+            query = ast.literal_eval(query)
+
+        for module in self.all_modules.modules:
+            if module.name == mod:
+                try:
+                    self.db.setdefault(module.name, {}).setdefault("__config__", {})[
+                        option
+                    ] += [query]
+
+                except KeyError:
+                    self.db.setdefault(module.name, {}).setdefault("__config__", {})[
+                        option
+                    ] = module.config[option] + [query]
+
+                self.reconfmod(module, self.db)
+                self.db.save()
+
+        await call.edit(
+            self.strings("option_added").format(query),
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back"),
+                        "callback": self.inline__add_delete,
+                        "args": (mod, option),
+                    },
+                    {"text": self.strings("close"), "callback": self.inline__close},
+                ]
+            ],
+            inline_message_id=inline_message_id,
+        )
+
+    async def inline__remove_item(
+        self,
+        call: "aiogram.types.CallbackQuery",
+        query: str,
+        mod: str,
+        option: str,
+        inline_message_id: str,
+    ) -> None:
+        with contextlib.suppress(ValueError, SyntaxError):
+            query = ast.literal_eval(query)
+
+        for module in self.all_modules.modules:
+            if module.name == mod:
+                try:
+                    self.db.setdefault(module.name, {}).setdefault("__config__", {})[
+                        option
+                    ].remove(query)
+
+                except KeyError:
+                    self.db.setdefault(module.name, {}).setdefault("__config__", {})[
+                        option
+                    ] = module.config[option].remove(query)
+
+                self.reconfmod(module, self.db)
+                self.db.save()
+
+        await call.edit(
+            self.strings("opeion_removed").format(query),
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("back"),
+                        "callback": self.inline__add_delete,
+                        "args": (mod, option),
+                    },
+                    {"text": self.strings("close"), "callback": self.inline__close},
+                ]
+            ],
+            inline_message_id=inline_message_id,
+        )
+
+    async def inline__true_false(
+        self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str
+    ) -> None:
+        for module in self.all_modules.modules:
+            if module.name == mod:
+                if isinstance(module.config[config_opt], bool):
+                    await call.edit(
+                        self.strings("configuring_option").format(
+                            utils.escape_html(config_opt),
+                            utils.escape_html(mod),
+                            utils.escape_html(module.config.getdoc(config_opt)),
+                            utils.escape_html(module.config.getdef(config_opt)),
+                            utils.escape_html(module.config[config_opt]),
+                        ),
+                        reply_markup=[
+                            [
+                                {
+                                    "text": self.strings("false")
+                                    if module.config[config_opt]
+                                    else self.strings("true"),
+                                    "callback": self.inline__true_false_set,
+                                    "args": (
+                                        not module.config[config_opt],
+                                        mod,
+                                        config_opt,
+                                        call.inline_message_id,
+                                    ),
+                                }
+                            ],
+                            [
+                                {
+                                    "text": self.strings("back"),
+                                    "callback": self.inline_advanced,
+                                    "args": (mod, config_opt),
+                                },
+                                {
+                                    "text": self.strings("close"),
+                                    "callback": self.inline__close,
+                                },
+                            ],
+                        ],
+                    )
+                else:
+                    return await call.answer("This option doesn't have a boolean type!")
+
+    async def inline__true_false_set(
+        self,
+        call: "aiogram.types.CallbackQuery",
+        query: bool,
+        mod: str,
+        option: str,
+        inline_message_id: str,
+    ) -> None:
+        for module in self.all_modules.modules:
+            if module.name == mod:
+                self.db.setdefault(module.name, {}).setdefault("__config__", {})[
+                    option
+                ] = query
+                module.config[option] = query
+                self.reconfmod(module, self.db)
+                self.db.save()
+
+        await self.inline__true_false(call, mod, option)
+
+    async def inline__add_delete(
+        self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str
+    ) -> None:
+        for module in self.all_modules.modules:
+            if module.name == mod:
+                if isinstance(module.config[config_opt], list):
+                    await call.edit(
+                        self.strings("configuring_option").format(
+                            utils.escape_html(config_opt),
+                            utils.escape_html(mod),
+                            utils.escape_html(module.config.getdoc(config_opt)),
+                            utils.escape_html(module.config.getdef(config_opt)),
+                            utils.escape_html(module.config[config_opt]),
+                        ),
+                        reply_markup=[
+                            [
+                                {
+                                    "text": self.strings("add_value_to_list_button"),
+                                    "input": self.strings("enter_value"),
+                                    "handler": self.inline__add_item,
+                                    "args": (mod, config_opt, call.inline_message_id),
+                                },
+                                {
+                                    "text": self.strings(
+                                        "remove_value_from_list_button"
+                                    ),
+                                    "input": self.strings("enter_value"),
+                                    "handler": self.inline__remove_item,
+                                    "args": (mod, config_opt, call.inline_message_id),
+                                },
+                            ],
+                            [
+                                {
+                                    "text": self.strings("back"),
+                                    "callback": self.inline_advanced,
+                                    "args": (mod, config_opt),
+                                },
+                                {
+                                    "text": self.strings("close"),
+                                    "callback": self.inline__close,
+                                },
+                            ],
+                        ],
+                    )
+                else:
+                    return await call.answer("This option doesn't have a list type!")  
+
+    async def inline_advanced(
+        self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str
+    ) -> None:
+        for module in self.all_modules.modules:
+            if module.name == mod:
+                await call.edit(
+                    self.strings("advanced").format(utils.escape_html(mod)),
+                    reply_markup=[
+                        [
+                            {
+                                "text": self.strings("true_false_button"),
+                                "callback": self.inline__true_false,
+                                "args": (mod, config_opt),
+                            },
+                            {
+                                "text": self.strings("add_delete_button"),
+                                "callback": self.inline__add_delete,
+                                "args": (mod, config_opt),
+                            },
+                        ],
+                        [
+                            {
+                                "text": self.strings("choose_button"),
+                                "callback": self.inline__choose,
+                                "args": (mod, config_opt),
+                            }
+                        ],
+                        [
+                            {
+                                "text": self.strings("back"),
+                                "callback": self.inline__configure_option,
+                                "args": (mod, config_opt),
+                            },
+                            {
+                                "text": self.strings("close"),
+                                "callback": self.inline__close,
+                            },
+                        ],
+                    ],
+                )
+
+    async def inline__choose(
+        self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str
+    ) -> None:
+        for module in self.all_modules.modules:
+            if module.name == mod:
+                if not isinstance(module.config[config_opt], list):
+                    return await call.answer("This option doesn't have a default list!")
+
+                if not self.db.get(module.name, "__config__", {}).get(config_opt):
+                    self.db.setdefault(module.name, {}).setdefault("__config__", {})[
+                        config_opt
+                    ] = module.config.getdef(config_opt)[:]
+
+                    self.reconfmod(module, self.db)
+                    self.db.save()
+
+                kb = []
+                ops = [str(i) for i in module.config[config_opt]]
+                v = module.config.getdef(config_opt)[:]
+
+                for mod_row in utils.chunks(v, 3):
+                    row = [
+                        {
+                            "text": f"{'✅' if btn in ops else '❌'} {btn}",
+                            "callback": self.inline__choose_set,
+                            "args": (mod, config_opt, btn),
+                        }
+                        for btn in mod_row
+                    ]
+                    kb += [row]
+
+                kb += [
+                    [
+                        {
+                            "text": self.strings["back"],
+                            "callback": self.inline_advanced,
+                            "args": (mod, config_opt),
+                        },
+                        {
+                            "text": self.strings["close"],
+                            "callback": self.inline__close,
+                        },
+                    ]
+                ]
+
+                await call.edit(
+                    self.strings("configuring_option").format(
+                        utils.escape_html(config_opt),
+                        utils.escape_html(mod),
+                        utils.escape_html(module.config.getdoc(config_opt)),
+                        utils.escape_html(module.config.getdef(config_opt)),
+                        utils.escape_html(module.config[config_opt]),
+                    ),
+                    reply_markup=kb,
+                )
+
+    async def inline__choose_set(
+        self,
+        call: "aiogram.types.CallbackQuery",
+        mod: str,
+        option: str,
+        value: str,
+    ) -> None:
+        for module in self.all_modules.modules:
+            if module.name == mod:
+                if value in module.config[option]:
+                    module.config[option] = [
+                        v for v in module.config[option] if v != value
+                    ]
+                else:
+                    module.config[option].append(value)
+
+                self.db.setdefault(module.name, {}).setdefault("__config__", {})[
+                    option
+                ] = module.config[option][:]
+
+                self.reconfmod(module, self.db)
+                self.db.save()
+
+                await self.inline__choose(call, mod, option)
 
     async def inline__configure_option(
         self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str
@@ -167,6 +604,18 @@ class ShizuConfig(loader.Module):
                                 "input": self.strings("enter_value"),
                                 "handler": self.inline__set_config,
                                 "args": (mod, config_opt, call.inline_message_id),
+                            },
+                            {
+                                "text": self.strings("restore_def_button"),
+                                "callback": self.inline__set_to_default,
+                                "args": (mod, config_opt, call.inline_message_id),
+                            },
+                        ],
+                        [
+                            {
+                                "text": self.strings("advanced_button"),
+                                "callback": self.inline_advanced,
+                                "args": (mod, config_opt),
                             }
                         ],
                         [
@@ -198,6 +647,7 @@ class ShizuConfig(loader.Module):
                                 "args": (mod, param),
                             }
                         ]
+
         await call.edit(
             self.strings("configuring_mod").format(utils.escape_html(mod)),
             reply_markup=list(utils.chunks(btns, 2))
@@ -235,6 +685,7 @@ class ShizuConfig(loader.Module):
 
     async def configcmd(self, app, message: Message) -> None:
         """Configure modules"""
+
         await self.inline__global_config(message)
 
     async def watcher(self, app, message: Message) -> None:

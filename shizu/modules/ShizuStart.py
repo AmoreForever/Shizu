@@ -53,6 +53,32 @@ class ShizuStart(loader.Module):
 
     """
 
+    START_TEXT = (
+        "🌘 <b><a href='https://github.com/AmoreForever/Shizu'>Shizu Userbot</a></b>\n\n\n"
+        "💫 A userbot can be characterized as a <b>third-party software application</b> that engages with the Telegram API in order to execute <b>automated operations on behalf of an end user</b>. These userbots possess the capability to streamline a variety of tasks, encompassing activities such as <b>dispatching messages, enrolling in channels, retrieving media files, and more</b>.\n\n"
+        "😎 Diverging from conventional Telegram bots, <b>userbots operate within the confines of a user's account</b> rather than within a dedicated bot account. This particular distinction empowers userbots with enhanced accessibility to a broader spectrum of functionalities and a heightened degree of flexibility in executing actions.\n\n"
+    )
+
+    strings = {
+        "cfg_doc_enable_start_text": "Enable or disable start text when smb starts bot",
+        "cfg_doc_start_text": "Start text when smb starts bot",
+    }
+
+    strings_ru = {
+        "cfg_doc_enable_start_text": "Включить или отключить стартовый текст при запуске бота",
+        "cfg_doc_start_text": "Стартовый текст при запуске бота",
+    }
+
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            "status",
+            True,
+            lambda m: self.strings("cfg_doc_enable_start_text"),
+            "custom text",
+            None,
+            lambda m: self.strings("cfg_doc_start_text"),
+        )
+
     async def on_load(self, app: Client):
         mymakr = self.bot._generate_markup(
             [
@@ -76,3 +102,30 @@ class ShizuStart(loader.Module):
                 reply_markup=mymakr,
             )
             self.db.set("shizu.me", "notified", True)
+
+    @loader.on_bot(lambda self, app, m: m.text == "/start" and m.chat.type == "private")
+    async def start_message_handler(self, app, message):
+        markup = self.bot._generate_markup(
+            [
+                [
+                    {
+                        "text": "🐈‍⬛ Source",
+                        "url": "https://github.com/AmoreForever/Shizu",
+                    },
+                    {
+                        "text": "🪭 Chief Developer",
+                        "url": "https://t.me/hikamoru",
+                    },
+                ],
+                [
+                    {
+                        "text": "👥 Support",
+                        "url": "https://t.me/shizu_talks",
+                    },
+                ],
+            ]
+        )
+
+        if self.config["status"]:
+            text = self.config["custom text"] or self.START_TEXT
+            await self.bot.bot.send_message(message.chat.id, text, reply_markup=markup)

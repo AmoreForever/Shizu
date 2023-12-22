@@ -122,7 +122,7 @@ class InformationMod(loader.Module):
     def __init__(self):
         self.config = loader.ModuleConfig(
             "custom_message",
-            False,
+            None,
             lambda: self.strings("custom_msg"),
             "custom_buttons",
             {"text": "🤝 Support", "url": "https://t.me/shizu_talks"},
@@ -131,7 +131,6 @@ class InformationMod(loader.Module):
             "https://github.com/AmoreForever/shizuassets/blob/master/shizubanner.jpg?raw=true",
             lambda: self.strings("photo_url"),
         )
-        
 
     def text_(self, me: types.User, username):
         """Get text"""
@@ -147,15 +146,13 @@ class InformationMod(loader.Module):
                 platform=utils.get_platform(),
             )
 
-        return (
-            self.strings("text").format(
-                mention=mention,
-                version=".".join(map(str, version.__version__)),
-                prefix=prefix,
-                branch=version.branch,
-                platform=utils.get_platform(),
-                username=username,
-            )
+        return self.strings("text").format(
+            mention=mention,
+            version=".".join(map(str, version.__version__)),
+            prefix=prefix,
+            branch=version.branch,
+            platform=utils.get_platform(),
+            username=username,
         )
 
     @loader.command()
@@ -163,9 +160,7 @@ class InformationMod(loader.Module):
         """Info about Shizu"""
         if self.config["custom_buttons"]:
             await message.answer(
-                response=self.text_(
-                    self.me, (await self.bot.bot.get_me()).username
-                ),
+                response=self.text_(self.me, (await self.bot.bot.get_me()).username),
                 reply_markup=[[self.config["custom_buttons"]]],
                 photo=self.config["photo_url"],
             )
@@ -173,7 +168,5 @@ class InformationMod(loader.Module):
             await message.answer(
                 response=self.config["photo_url"],
                 photo_=True,
-                caption=self.text_(
-                    self.me, (await self.bot.bot.get_me()).username
-                ),
+                caption=self.text_(self.me, (await self.bot.bot.get_me()).username),
             )

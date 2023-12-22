@@ -32,7 +32,7 @@ from pyrogram.raw.functions.auth.export_login_token import ExportLoginToken
 from telethon import TelegramClient
 
 from qrcode.main import QRCode
-from . import utils, database
+from . import utils
 
 Session.notice_displayed: bool = True
 
@@ -148,7 +148,7 @@ class Auth:
         except errors.AuthKeyUnregistered:
             cfg = cp.ConfigParser()
             cfg.read("config.ini")
-            qr = colored_input("Login with QR-CODE? y/n ").lower().split()
+            qr = colored_input("Login with QR-CODE? y/n").lower().split()
             if qr[0] == "y":
                 api_id = int(cfg.get("pyrogram", "api_id"))
                 api_hash = cfg.get("pyrogram", "api_hash")

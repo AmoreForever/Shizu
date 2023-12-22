@@ -14,7 +14,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import re
+import os
+import atexit
 import sys
+
+from loguru import logger
 from .. import loader, utils
 from pyrogram import Client, types
 
@@ -103,7 +107,7 @@ class ShizuSettings(loader.Module):
         "congratulations": "🎉 <b>おめでとうございます！ telethonを正常に有効にしました！</b>\n<i>ただし、変更を適用するにはボットを再起動する必要があります</i>",
         "already_enabled": "🧞 <b>telethonはすでに有効になっています</b>",
         "are_sure_to_stop": "🤔 <b>ボットを停止してもよろしいですか？ 次回は手動で起動する必要があります</b> ",
-        "shutted_down": "🩹 <b>ボットがシャットダウンされました</b>"
+        "shutted_down": "🩹 <b>ボットがシャットダウンされました</b>,,,"
     }
 
     strings_ua = {
@@ -176,7 +180,7 @@ class ShizuSettings(loader.Module):
     async def setprefix(self, app: Client, message: types.Message):
         """To change the prefix, you can have several pieces separated by a space. Usage: setprefix (prefix) [prefix, ...]"""
         args = utils.get_args_raw(message)
-        
+
         if not (args := args.split()):
             return await message.answer(self.strings("ch_prefix"))
 
@@ -187,9 +191,9 @@ class ShizuSettings(loader.Module):
     @loader.command()
     async def addalias(self, app: Client, message: types.Message):
         """Add an alias. Usage: addalias (new alias) (command)"""
-        
+
         args = utils.get_args_raw(message)
-        
+
         if not (args := args.lower().split(maxsplit=1)):
             return await message.answer(self.strings("which_alias"))
 
@@ -216,9 +220,9 @@ class ShizuSettings(loader.Module):
     @loader.command()
     async def delalias(self, app: Client, message: types.Message):
         """Delete the alias. Usage: delalas (alias)"""
-        
+
         args = utils.get_args_raw(message)
-        
+
         if not (args := args.lower()):
             return await message.answer(self.strings("which_delete"))
 

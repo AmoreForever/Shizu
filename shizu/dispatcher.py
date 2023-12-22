@@ -124,11 +124,7 @@ class DispatcherManager:
     async def _handle_watchers(
         self, app: Client, message: types.Message
     ) -> types.Message:
-        
-        if isinstance(raw.types, raw.types.UpdatesTooLong) or isinstance(
-            raw.functions,
-            raw.functions.updates.get_channel_difference.GetChannelDifference,
-        ):
+        if isinstance(raw.types, raw.types.UpdatesTooLong):
             return
 
         for watcher in self.modules.watcher_handlers:

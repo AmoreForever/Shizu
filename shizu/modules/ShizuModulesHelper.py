@@ -151,9 +151,9 @@ class ModulesLinkMod(loader.Module):
     @loader.command()
     async def ml(self, app: Client, message: types.Message):
         """Get a link or a module file. Usage: ml <module name or command>"""
-        
+
         args = message.get_args_raw()
-        
+
         if not args:
             return await message.answer(
                 self.strings("what_"),
@@ -190,7 +190,6 @@ class ModulesLinkMod(loader.Module):
         await m.delete()
         return await message.answer(source_code, doc=True, caption=caption)
 
-    
     async def aelis_(self, app, message):
         """Search module in Aelis API"""
         args = message.get_args_raw()

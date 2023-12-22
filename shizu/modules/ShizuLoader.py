@@ -586,4 +586,4 @@ class Loader(loader.Module):
         )
 
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
-        return sys.exit(0)
+        sys.exit(0)
