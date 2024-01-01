@@ -37,8 +37,7 @@ try:
     )
     logging.info(banner)
     
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main.main())
+    asyncio.run(main.main())
     
 except ModuleNotFoundError as module:
     print(f"🚫 Error: {module} is not installed")

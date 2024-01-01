@@ -255,15 +255,9 @@ class Loader(loader.Module):
 
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "repo",
-            "https://github.com/AmoreForever/ShizuMods",
-            "Repository link",
-            "private_repo",
-            None,
-            "Private repository link",
-            "private_token",
-            None,
-            "Private repository token",
+            "repo", "https://github.com/AmoreForever/ShizuMods", "Repository link",
+            "private_repo", None, "Private repository link",
+            "private_token", None, "Private repository token",
         )
 
     @loader.command(aliases=["dlm"])
@@ -335,7 +329,11 @@ class Loader(loader.Module):
         module_name: str = None
         is_private = False
 
-        if args not in modules and private[0] and private[1] and args not in modulesP:
+        if args not in modules and (
+            not self.config["private_repo"]
+            or not self.config["private_token"]
+            or args not in modulesP
+        ):
             r = await utils.run_sync(requests.get, args)
             if r.status_code != 200:
                 raise requests.exceptions.ConnectionError
@@ -391,7 +389,7 @@ class Loader(loader.Module):
         if error_text:
             return await message.answer(error_text)
 
-        if args in modules:
+        if not is_private:
             self.db.set(
                 "shizu.loader",
                 "modules",
