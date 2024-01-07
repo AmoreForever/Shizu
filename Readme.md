@@ -25,7 +25,7 @@
 </ul>
 
 <hr>
-<h2 id="installation">🎹 Installation</h2>
+<h2 id="installation"><img src="https://cdn-icons-png.flaticon.com/512/4961/4961662.png" alt="" style="width: 40px;" class="flag-icon"> Installation</h2>
 <p>Let's get Shizu up and running:</p>
 <ol>
 <li>Update and upgrade your system packages:</li>
@@ -48,7 +48,7 @@
 </ol>
 <p>Congratulations! Shizu is now ready to serve you.</p>
 <hr>
-<h2 id="basic-commands">⌨️ Basic Commands</h2>
+<h2 id="basic-commands"><img src="https://cdn-icons-png.flaticon.com/512/4007/4007683.png" alt="" style="width: 40px;" class="flag-icon"> Basic Commands</h2>
 <p>Enhance your Telegram experience with these commands:</p>
 <ul>
     <li><code>.help</code>: Get a list of available commands. </li>
@@ -62,34 +62,43 @@
 </ul>
 
 <hr>
-<h2 id="support">🆘 Support</h2>
+<h2 id="support"><img src="https://cdn-icons-png.flaticon.com/512/1948/1948375.png" alt="" style="width: 40px;" class="flag-icon"> Support</h2>
 <p>We're here to help! Join our <a href="https://t.me/shizu_talks">support chat</a> for any questions or assistance.</p>
 
 <hr>
-<h2 id="developer">🧑‍💻 Developer</h2>
+<h2 id="developer"><img src="https://cdn-icons-png.flaticon.com/512/7069/7069922.png" alt="" style="width: 40px;" class="flag-icon"> Developer</h2>
 <p>Shizu is developed by <a href="https://t.me/hikamoru">@hikamoru</a>. Feel free to reach out with your inquiries or suggestions.</p>
 
 <hr>
-<h2 id="advantages">💪 Advantages of Shizu</h2>
+<h2 id="advantages"><img src="https://cdn-icons-png.flaticon.com/512/5277/5277630.png" alt="" style="width: 40px;" class="flag-icon"> Advantages of Shizu</h2>
 <ul>
-    <li>💡 <strong>Convenience and User-Friendliness:</strong> Shizu prioritizes convenience and offers an easy-to-use interface for users. </li>
-    <li>🚀 <strong>Efficient Resource Utilization:</strong> Shizu is designed with low resource consumption in mind, ensuring smooth performance on various systems.</li>
-    <li>📚 <strong>Extensive Library of Pre-built Modules:</strong> Shizu provides a wide range of readily available modules, expanding your Telegram experience. </li>
-    <li>🏗️ <strong>Well-Structured Module Architecture:</strong> Each module in Shizu is meticulously crafted, ensuring a well-organized and efficient structure. </li>
-    <li>⚙️ <strong>Asynchronous Task Execution:</strong> Shizu executes tasks asynchronously, allowing for swift and efficient task processing. </li>
-    <li>🔄 <strong>Effortless Module Management:</strong> Shizu simplifies module loading and unloading, making customization a breeze. </li>
-    <li>🤖 <strong>Inline Bot Integration:</strong> Shizu seamlessly integrates an inline bot feature for enhanced functionality. </li>
-    <li>🛠️ <strong>Simple and Automated Installation:</strong> Installing Shizu is straightforward and automated, reducing setup complexities. </li>
-    <li>🌍 <strong>Multilingual Support:</strong> Shizu offers support for multiple languages, including:</li>
+    <li><img src="https://cdn-icons-png.flaticon.com/512/4983/4983190.png" alt="" class="flag-icon"> <strong>Convenience and User-Friendliness:</strong> Shizu prioritizes convenience and offers an easy-to-use interface for users. </li>
+    <li><img src="https://cdn-icons-png.flaticon.com/512/11803/11803127.png" alt="" class="flag-icon"> <strong>Efficient Resource Utilization:</strong> Shizu is designed with low resource consumption in mind, ensuring smooth performance on various systems.</li>
+    <li><img src="https://cdn-icons-png.flaticon.com/512/2997/2997576.png" alt="" class="flag-icon"> <strong>Extensive Library of Pre-built Modules:</strong> Shizu provides a wide range of readily available modules, expanding your Telegram experience. </li>
+    <li><img src="https://cdn-icons-png.flaticon.com/512/1673/1673848.png" alt="" class="flag-icon"> <strong>Well-Structured Module Architecture:</strong> Each module in Shizu is meticulously crafted, ensuring a well-organized and efficient structure. </li>
+    <li><img src="https://cdn-icons-png.flaticon.com/512/10215/10215628.png" alt="" class="flag-icon"><strong>Asynchronous Task Execution:</strong> Shizu executes tasks asynchronously, allowing for swift and efficient task processing. </li>
+    <li><img src="https://cdn-icons-png.flaticon.com/512/3281/3281295.png" alt="" class="flag-icon"><strong>Effortless Module Management:</strong> Shizu simplifies module loading and unloading, making customization a breeze. </li>
+    <li><img src="https://cdn-icons-png.flaticon.com/512/3558/3558860.png" alt="" class="flag-icon"><strong>Inline Bot Integration:</strong> Shizu seamlessly integrates an inline bot feature for enhanced functionality. </li>
+    <li><img src="https://cdn-icons-png.flaticon.com/512/12868/12868443.png" alt="" class="flag-icon"><strong>Simple and Automated Installation:</strong> Installing Shizu is straightforward and automated, reducing setup complexities. </li>
+    <li><img src="https://cdn-icons-png.flaticon.com/512/10426/10426132.png" alt="" class="flag-icon"><strong>Multilingual Support:</strong> Shizu offers support for multiple languages, including:</li>
         <ul>
-            <li>🇺🇸 English (us)</li>
-            <li>🇷🇺 Russian (ru)</li>
-            <li>🇰🇿 Kazakh (kz)</li>
-            <li>🇺🇦 Ukrainian (ua)</li>
-            <li>🇺🇿 Uzbek (uz)</li>
-            <li>🇯🇵 Japanese (jp)</li>
+            <li><img src="https://cdn-icons-png.flaticon.com/512/206/206626.png" alt="us-flag" class="flag-icon"> English (us)</li>
+            <li><img src="https://cdn-icons-png.flaticon.com/512/330/330437.png" alt="us-flag" class="flag-icon"> Russian (ru)</li>
+            <li><img src="https://cdn-icons-png.flaticon.com/512/206/206778.png" alt="us-flag" class="flag-icon"> Kazakh (kz)</li>
+            <li><img src="https://cdn-icons-png.flaticon.com/512/3373/3373317.png" alt="us-flag" class="flag-icon"> Ukrainian (ua)</li>
+            <li><img src="https://cdn-icons-png.flaticon.com/512/206/206662.png" alt="us-flag" class="flag-icon"> Uzbek (uz)</li>
+            <li><img src="https://cdn-icons-png.flaticon.com/512/555/555646.png" alt="us-flag" class="flag-icon"> Japanese (jp)</li>
+            <li><img src="https://cdn-icons-png.flaticon.com/512/206/206758.png" alt="us-flag" class="flag-icon"> Korean (kr)</li>
         </ul>
 </ul>
+<style>
+    .flag-icon {
+        width: 20px; /* Adjust the width as needed */
+        height: auto; /* Automatically adjust the height to maintain aspect ratio */
+        vertical-align: middle; /* Align the flags vertically with the text */
+        margin-right: 5px; /* Add some spacing between the flags and the text */
+    }
+</style>
 
 <hr>
 <p>Thank you for choosing Shizu as your ultimate Telegram companion! We hope you enjoy the enhanced convenience and features it provides. If you encounter any issues or have suggestions, please let us know in the support chat or by creating an issue on GitHub.</p>
