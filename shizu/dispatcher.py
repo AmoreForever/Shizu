@@ -46,7 +46,7 @@ async def check_filters(
         if not coro:
             return False
 
-    if message.chat.id == db.get("shizu.me", "me", None):
+    if message.from_user.is_self:
         return True
 
     if (

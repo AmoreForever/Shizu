@@ -150,6 +150,26 @@ class ShizuSettings(loader.Module):
         "shutted_down": "🩹 <b>Бот өшірілді</b>",
     }
 
+    strings_kr = {
+        "which_alias": "❔ 어떤 별칭을 추가 하시겠습니까?",
+        "ch_prefix": "❔ 어떤 접두사를 설정 하시겠습니까?",
+        "prefix_changed": "✅ 접두사가 변경되었습니다 {}",
+        "inc_args": "❌ 매개 변수가 잘못되었습니다.\n✅ 올바른: addalias <새 별칭> <명령>",
+        "alias_already": "❌ 그러한 별칭이 이미 있습니다",
+        "no_command": "❌ 그러한 명령이 없습니다",
+        "alias_done": "✅ 별칭 <code>{}</code> 이 명령을위한 것입니다 <code>{}</code>",
+        "which_delete": "❔ 어떤 별칭을 삭제 하시겠습니까?",
+        "no_such_alias": "❌ 그러한 별칭이 없습니다",
+        "alias_removed": "✅ 별칭 <code>{}</code> 이 삭제되었습니다",
+        "are_you_sure": "🚸 <b>telethon을 활성화 하시겠습니까? 당신의 행동에 대해 책임지지 않습니다. telethon을 활성화하면 의도하지 않은 결과 또는 당사의 정책 위반 사항이 발생할 수 있습니다. 신중하게 행동하고이 기능을 책임감 있게 사용하고 당사의 지침에 따라 사용하십시오. telethon의 오용은 계정 정지 또는 영구 차단을 포함한 징계 조치로 이어질 수 있습니다.</b>",
+        "yes_button": "✅ 완전히 확신",
+        "no_button": "❌ 아니",
+        "congratulations": "🎉 <b>축하합니다! telethon을 성공적으로 활성화했습니다!</b>\n<i>그러나 변경 사항을 적용하려면 봇을 다시 시작해야합니다</i>",
+        "already_enabled": "🧞 <b>telethon이 이미 활성화되었습니다</b>",
+        "are_sure_to_stop": "🤔 <b>봇을 중지 하시겠습니까? 다음 번에는 수동으로 시작해야합니다</b>",
+        "shutted_down": "🩹 <b>봇이 종료되었습니다</b>",
+    }
+
     async def on_load(self, app):
         if not self.db.get("shizu.me", "me", None):
             id_ = (await app.get_me()).id

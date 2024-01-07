@@ -16,6 +16,7 @@
 # some piece of code taken from: https://github.com/hikariatama/Hikka/blob/master/hikka/utils.py
 
 import asyncio
+import requests
 import functools
 import random
 import string
@@ -94,51 +95,10 @@ db = database.db
 def get_random_smartphone() -> str:
     """Returns a random smartphone model"""
 
-    return random.choice(
-        [
-            "Apple iPhone 13",
-            "Samsung Galaxy S21",
-            "Google Pixel 6",
-            "OnePlus 9 Pro",
-            "Xiaomi Mi 11",
-            "Huawei P40 Pro",
-            "Sony Xperia 1 III",
-            "LG Velvet",
-            "ASUS ROG Phone 5",
-            "OnePlus 8T",
-            "Oppo Find X3 Pro",
-            "Realme GT",
-            "Vivo X60 Pro",
-            "Motorola Edge+",
-            "Nokia 9 PureView",
-            "Lenovo Legion Phone Duel",
-            "Xiaomi Poco X3",
-            "Sony Xperia 5 III",
-            "Google Pixel 5",
-            "Samsung Galaxy Note 20",
-            "Apple iPhone 12 Pro",
-            "OnePlus Nord",
-            "Samsung Galaxy Z Fold 3",
-            "Xiaomi Redmi Note 10",
-            "Sony Xperia 10 III",
-            "Asus ZenFone 8",
-            "Oppo Reno 6 Pro",
-            "Realme Narzo 30",
-            "Motorola Moto G Power",
-            "Nokia 5.4",
-            "LG K92 5G",
-            "Vivo V21e",
-            "Xiaomi Redmi 9T",
-            "Google Pixel 4a",
-            "Samsung Galaxy A52",
-            "OnePlus 9R",
-            "Apple iPhone SE (2020)",
-            "Xiaomi Mi 10",
-            "Sony Xperia 1 II",
-            "Oppo Reno 5",
-            "Realme C21",
-        ]
-    )
+    devices = requests.get(
+        "https://gist.githubusercontent.com/AmoreForever/e5927fdd510097c37b5047fae333b8b4/raw/a8456cd97445b672fec6ac7a7aba843f73e3863c/phones.json"
+    ).json()
+    return random.choice(devices)
 
 
 def get_lang_flag(countrycode: str) -> str:
@@ -593,7 +553,13 @@ async def answer(
                     else await app.send_message(
                         message.chat.id,
                         response,
-                        reply_to_message_id=reply.id if reply else None,
+                        reply_to_message_id=(
+                            message.topic.id
+                            if message.topic
+                            else None or reply.id
+                            if reply
+                            else None
+                        ),
                         **kwargs,
                     )
                 )
@@ -693,7 +659,7 @@ def random_id(size: int = 10) -> str:
 
 def is_tl_enabled() -> bool:
     """Check if telethon is enabled"""
-    return any("shizu-tl.session" in i for i in os.listdir())
+    return any(("shizu-tl.session") in i for i in os.listdir())
 
 
 def available_branches() -> List[str]:

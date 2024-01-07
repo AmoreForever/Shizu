@@ -86,6 +86,12 @@ class UpdateMod(loader.Module):
         "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> Қайта іске қосу...</b>",
     }
 
+    strings_kr = {
+        "last_": "<emoji id=5188420746694633417>🌗</emoji> <b>최신 버전이 설치되어 있습니다</b>.",
+        "update_": "🔁 업데이트...",
+        "reboot_": "<b><emoji id=5328274090262275771>🔁</emoji> 재부팅...</b>",
+    }
+
     @loader.command()
     async def update(self, app: Client, message: types.Message):
         """Updates itself"""
@@ -113,7 +119,6 @@ class UpdateMod(loader.Module):
             await message.answer(self.strings("update_"))
 
             atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
-            return sys.exit(0)
         except Exception as error:
             await message.answer(f"An error occurred: {error}")
 
@@ -134,30 +139,3 @@ class UpdateMod(loader.Module):
         )
 
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
-        return sys.exit(0)
-    
-
-    # async def watcher(
-    #     self, app: Client, message: types.Message
-    # ):
-    #     with contextlib.suppress(Exception):
-    #         if (
-    #             message.from_user.username == "shizu_ubot"
-    #             or message.sender_chat.username == "shizu_ubot"
-    #         ) and message.text == "#force_update":
-    #             check_output("git stash", shell=True).decode()
-
-    #             output = check_output("git pull", shell=True).decode()
-
-    #             if "Already up to date." in output:
-    #                 return await self.app.send_message("@shizu_ubot", "#last")
-
-    #             self.db.set(
-    #                 "shizu.updater",
-    #                 "restart",
-    #                 {
-    #                     "type": "shizubot",
-    #                 },
-    #             )
-    #             atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
-    #             return sys.exit(0)

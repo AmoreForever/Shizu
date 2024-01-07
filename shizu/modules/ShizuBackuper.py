@@ -100,6 +100,17 @@ class BackupMod(loader.Module):
         "disabled": "<emoji id=5260416304224936047>✅</emoji> <b>Авторезерттеу <u>өшірілген</u></b>",
     }
 
+    strings_kr = {
+        "backup": "👉 <b>데이터베이스 백업</b>\n🕔 <b>{}</b>",
+        "done": "<emoji id=5260416304224936047>✅</emoji> 백업이 생성되었습니다\n백업 확인 <b>backups chat</b>",
+        "restoring": "<emoji id=5370706614800097423>🧐</emoji> <b>데이터베이스 복원...</</b>",
+        "invalid": "<emoji id=5413472879771658264>❌</emoji> 잘못된 파일 형식",
+        "loaded": "<emoji id=5870888735041655084>📁</emoji> <b>백업이 성공적으로 로드되었습니다</b>",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> 재시작...</b>",
+        "enabled": "<emoji id=5260416304224936047>✅</emoji> <b>자동 백업 <u>활성화</u></b>",
+        "disabled": "<emoji id=5260416304224936047>✅</emoji> <b>자동 백업 <u>비활성화</u></b>",
+    }
+
     @loader.command()
     async def backupdb(self, app: Client, message: types.Message):
         """Create database backup [will be sent in backups chat]"""

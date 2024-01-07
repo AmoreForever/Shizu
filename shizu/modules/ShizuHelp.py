@@ -112,6 +112,21 @@ class Help(loader.Module):
         ),
     }
 
+    strings_kr = {
+        "available": "{} <b>{} 모듈 사용 가능</b>\n{}",
+        "support": "🧑‍🔬 <b>질문, 제안 또는 버그 보고가 있으면 지원 채팅에서 알려주세요: @shizu_talks</b>",
+        "button": "🗼 지원 채팅",
+        "info_ub": (
+            "🐙 <b>Shizu-Userbot\n\n"
+            "• 저장소: <a href='https://github.com/AmoreForever/Shizu'>GitHub</a>\n"
+            "• 지원: <a href='https://t.me/shizu_talks'>Shizu Talks</a>\n"
+            "• 채널: <a href='https://t.me/shizuhub'>Shizu Hub</a>\n"
+            "• 모듈: <a href='https://t.me/shizumods'>Shizu Mods</a>\n"
+            "• 개발자: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
+            "© <b>Shizu-Userbot은 <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a> 라이선스 하에 배포됩니다</b>"
+        ),
+    }
+
     @loader.command()
     async def help(self, app: Client, message: types.Message):
         """Show help"""

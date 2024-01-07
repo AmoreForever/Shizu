@@ -193,6 +193,33 @@ class ShizuConfig(loader.Module):
         "choose_button": "🎛 Таңдау",
     }
 
+    strings_kr = {
+        "configure": "⚙️ <b>여기에서 모듈의 구성을 구성할 수 있습니다</b>",
+        "configuring_mod": "⚙️ <b>모듈의 구성 옵션을 선택</b> <code>{}</code>",
+        "configuring_option": "⚙️ <b>모듈 </b><code>{}</code><b> 의 구성 옵션을 선택</b><code>{}</code>\n<i>ℹ️ {}</i>\n\n<b>📔 기본값: </b><code>{}</code>\n\n<b>▫️ 현재: </b><code>{}</code>",
+        "option_saved": "⚙️ <b>모듈 </b><code>{}</code><b> 의 구성 옵션이 저장되었습니다!</b>\n<b>현재: </b><code>{}</code>",
+        "back": "⬅️ 뒤로",
+        "close": "🚫 닫기",
+        "enter_value": "✍️ 이 옵션에 대한 새 구성 값을 입력하십시오",
+        "ent_value": "✍️ 값을 입력하십시오",
+        "restore_def_button": "🦖 기본값으로 복원",
+        "restored": "🦖 <b>구성이 기본값으로 복원되었습니다!</b>",
+        "advanced_button": "🔧 고급",
+        "advanced": "⚙️ <b>모듈 <code>{}</code> 고급 구성</b>",
+        "true_false_button": "📟 True/False",
+        "true_false": "⚙️ <b>True 또는 False 선택</b>",
+        "add_value_to_list_button": "➕ 목록에 값 추가",
+        "remove_value_from_list_button": "➖ 목록에서 값 제거",
+        "true": "✅ True",
+        "false": "❌ False",
+        "add_delete": "⚙️ <b>목록 값</b>",
+        "add_delete_button": "🔌 추가/제거",
+        "option_added": "⚙️ <b>옵션 </b><code>{}</code><b> 추가되었습니다!</b>",
+        "option_removed": "⚙️ <b>옵션 </b><code>{}</code><b> 제거되었습니다!</b>",
+        "choose_button": "🎛 선택",
+    }
+
+
     async def inline__close(self, call: "aiogram.types.CallbackQuery") -> None:
         await call.delete()
 

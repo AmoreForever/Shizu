@@ -119,6 +119,21 @@ class InformationMod(loader.Module):
         ),
     }
 
+    strings_kr = {
+        "custom_msg": "사용자 정의 메시지에는 {mention}, {version}, {prefix}, {branch}, {platform} 키워드가 필요합니다",
+        "custom_button": "사용자 정의 버튼에는 텍스트와 URL이 필요합니다",
+        "photo_url": "사진 URL이 유효해야합니다",
+        "text": (
+            "🐙 <b>Shizu UserBot</b>\n\n"
+            "👩‍💼 <b>소유자</b>: {mention}\n"
+            "👩‍🎤 <b>인라인 봇</b>: @{username}\n\n"
+            "• <b>브랜치</b>: <code>{branch}</code>\n"
+            "• <b>버전</b>: <code>{version}</code>\n"
+            "• <b>접두사</b>: «<code>{prefix}</code>»\n\n"
+            "{platform}\n\n"
+        ),
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             "custom_message",

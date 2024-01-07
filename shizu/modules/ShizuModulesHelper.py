@@ -148,6 +148,23 @@ class ModulesLinkMod(loader.Module):
         "source": "📁 Мәнбе",
     }
 
+    strings_kr = {
+        "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> 인수가 없습니다 (모듈 이름 또는 명령)",
+        "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>모듈 검색...</b>",
+        "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>모듈을 찾을 수 없습니다</b>",
+        "module_": (
+            "🪭 <b><a href='{}'>{}</a></b>\n"
+            "ℹ️ <i>{}</i>\n\n"
+            "▫️ <b>명령</b>: {}\n\n"
+            "⛩ <b>다운로드 링크:</b> <code>{}</code>"
+        ),
+        "success": "✅ 설치됨",
+        "install": "🌘 설치",
+        "restart": "🔄 다시 시작 필요",
+        "error": "🚫 오류",
+        "source": "📁 소스",
+    }
+
     @loader.command()
     async def ml(self, app: Client, message: types.Message):
         """Get a link or a module file. Usage: ml <module name or command>"""

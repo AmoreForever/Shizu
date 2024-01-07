@@ -71,6 +71,15 @@ class ShizuLanguages(loader.Module):
         "downloading": "<emoji id=5361615491884398003>🔽</emoji> <b>Жүктелуде...</b>",
     }
 
+    strings_kr = {
+        "incorrect_language": "<emoji id=5807626765874499116>🚫</emoji> <b>잘못된 언어</b>",
+        "language_saved": "{} <b>언어가 저장되었습니다</b>",
+        "reply_to": "<emoji id=5870903672937911120>👀</emoji> <b>언어 팩에 응답</b>",
+        "must_be_json": "<emoji id=5257965810634202885>📁</emoji> <b>언어 팩은 json이어야합니다</b>",
+        "downloading": "<emoji id=5361615491884398003>🔽</emoji> <b>다운로드 중...</b>",
+    }
+
+
     async def setlangcmd(self, app, message):
         """Change default language"""
         args = utils.get_args_raw(message)
@@ -114,7 +123,7 @@ class ShizuLanguages(loader.Module):
     @loader.command()
     async def langs(self, app, message):
         """Available languages"""
-        langs = ["us", "ru", "kz", "ua", "uz", "jp"]
+        langs = ["us", "ru", "kz", "ua", "uz", "jp", "kr"]
         await message.answer(
             "🌍 <b>Available languages:</b>\n"
             + "\n".join(

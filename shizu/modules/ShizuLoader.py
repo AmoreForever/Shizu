@@ -253,11 +253,52 @@ class Loader(loader.Module):
         "unblocked": "<emoji id=5418159410646099061>🚫</emoji> <b>Модуль <code>{}</code> блоктауды бұзылды</b>",
     }
 
+    strings_kr = {
+        "invalid_repo": "❌ 잘못된 저장소.\n",
+        "no_all": "❌ all.txt 파일을 찾을 수 없습니다 <a href='{}'>repository</a>.\n",
+        "mods_in_repo": "{} <b>저장소의 사용 가능한 모듈 목록 <a href='{}'>repository</a></b>:\n\n",
+        "check": "<emoji id=5280506417478903827>🛡</emoji> 모듈 분석..",
+        "dep_installed_req_res": "✅ 종속성이 설치되었습니다. 재부팅이 필요합니다",
+        "not_module": "❌ 모듈을로드 할 수 없습니다. 자세한 내용은 로그를 참조하십시오",
+        "inc_link": "❌ 링크가 잘못되었습니다",
+        "not_aw_by_link": "❌ 모듈은 링크로 사용할 수 없습니다",
+        "unex_error": "❌ 예기치 않은 오류가 발생했습니다. 자세한 내용은 로그를 참조하십시오",
+        "loaded": (
+            "<emoji id=5267468588985363056>✔️</emoji> 모듈 <b>{}</b> 로드됨\n"
+            "<emoji id=5787544344906959608>ℹ️</emoji> {} \n\n"
+        ),
+        "repo_set": "✅ 저장소가 설정되었습니다",
+        "no_repy_to_file": "❌ 파일에 응답하지 않음",
+        "loading": "<emoji id=5215493819641895305>🚛</emoji> <b>모듈을로드 중..</b>",
+        "core_do": "❌ 코어 모듈을로드 할 수 없습니다",
+        "inc_module_name": "❌ 모듈 이름이 잘못되었습니다",
+        "core_unload": "<emoji id=5364241851500997604>⚠️</emoji> 코어 모듈을 언로드 할 수 없습니다",
+        "unloaded": "<emoji id=6334471265700546607>🧹</emoji> 모듈 <code>{}</code> 언로드됨",
+        "spec_action": "<emoji id=5188420746694633417>🌗</emoji> <b>동작을 지정하십시오</b>",
+        "not_for_this_account": "<emoji id=5352726898151534058>😢</emoji> <b>이 모듈은이 계정에서 사용할 수 없습니다</b>",
+        "all_unloaded": "<emoji id=6334471265700546607>🧹</emoji> 모든 모듈이 언로드됨",
+        "restart": "<b><emoji id=5328274090262275771>🔁</emoji> 다시 시작...</b>",
+        "only_telethon": "<b><emoji id=5818764548080930127>⛰</emoji>텔레톤 모드가 활성화되지 않았으므로 사용할 수 없습니다</b>",
+        "specify_to_block": "🫦 <b>차단 할 모듈을 지정하십시오. (응답 또는 링크)</b>",
+        "module_banned": "<emoji id=5258011861273551368>🌘</emoji> <b>모듈 <code>{}</code> 차단되었습니다. 다음 번에로드 할 수 없습니다</b>",
+        "loaded_banned": "<emoji id=5418159410646099061>🚫</emoji> <b>헤이, 헤이, 헤이,이 모듈을 차단했습니다.로드 할 수 없습니다</b>",
+        "no_banned": "<emoji id=5839434146912407382>🚫</emoji> <b>차단 된 모듈이 없습니다</b>",
+        "banned_list": "<emoji id=5780471598922337683>🌍</emoji> <b>차단 된 모듈 목록입니다:</b>\n\n {}",
+        "specify_to_unblock": "🫦 <b>차단 해제 할 모듈을 지정하십시오.</b>",
+        "unblocked": "<emoji id=5418159410646099061>🚫</emoji> <b>모듈 <code>{}</code> 차단 해제됨</b>",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
-            "repo", "https://github.com/AmoreForever/ShizuMods", "Repository link",
-            "private_repo", None, "Private repository link",
-            "private_token", None, "Private repository token",
+            "repo",
+            "https://github.com/AmoreForever/ShizuMods",
+            "Repository link",
+            "private_repo",
+            None,
+            "Private repository link",
+            "private_token",
+            None,
+            "Private repository token",
         )
 
     @loader.command(aliases=["dlm"])
@@ -584,4 +625,3 @@ class Loader(loader.Module):
         )
 
         atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
-        sys.exit(0)

@@ -69,6 +69,11 @@ class ShizuStart(loader.Module):
         "cfg_doc_start_text": "Стартовый текст при запуске бота",
     }
 
+    strings_kr = {
+        "cfg_doc_enable_start_text": "봇 시작시 시작 텍스트를 활성화 또는 비활성화합니다.",
+        "cfg_doc_start_text": "봇 시작시 시작 텍스트",
+    }
+
     def __init__(self):
         self.config = loader.ModuleConfig(
             "status",

@@ -156,6 +156,28 @@ class ShizuOwner(loader.Module):
         "close": "🚫 Закрити",
     }
 
+    strings_kr = {
+        "who": "<emoji id=5780801684338905670>🕶</emoji> <b>누구에게 소유자 권한을 부여해야합니까?</b>",
+        "whod": "<emoji id=5780801684338905670>🕶</emoji> <b>누구에게 소유자 권한을 제거해야합니까?</b>",
+        "done": "<emoji id=5780722455077196625>🔗</emoji> {} <b>사용자는 이제 소유자입니다!</b>",
+        "doned": "<emoji id=5780722455077196625>🔗</emoji> {} <b>사용자는 더 이상 소유자가 아닙니다!</b>",
+        "already": "<emoji id=5780689203440390462>1️⃣</emoji> <b>이 사용자는 이미 소유자입니다</b>",
+        "owners": "<emoji id=5467406098367521267>👑</emoji> <b>소유자:</b>\n{}",
+        "not_owner": "<emoji id=5780689203440390462>1️⃣</emoji> <b>이 사용자는 소유자가 아닙니다</b>",
+        "no_owners": "<emoji id=5963242192741863664>📝</emoji> <b>소유자가 없습니다</b>",
+        "owner_on": "👑 <b>소유자 모드가 활성화되었습니다</b>",
+        "owner_off": "👑 <b>소유자 모드가 비활성화되었습니다</b>",
+        "button_on": "🔓 활성화",
+        "button_off": "🔐 비활성화",
+        "add_owner": "➕ 소유자 추가",
+        "enter_id": "🆔 사용자 ID를 입력하십시오",
+        "back": "🔙 뒤로",
+        "successfull": "✅ 성공",
+        "advanced_security": "🌗 고급 보안",
+        "del_owner": "➖ 소유자 삭제",
+        "close": "🚫 닫기",
+    }
+
     async def close_(self, call):
         await call.delete()
 
