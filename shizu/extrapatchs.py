@@ -21,13 +21,14 @@ from .utils import (
     get_args_html,
 )
 
-
 logging = logging.getLogger(__name__)
 
 
 class MessageMagic:
-    def __init__(self, message) -> None:
+    def __init__(self, message, app) -> None:
         self.message = message
+        self.app = app
+        
         self._init_msg()
 
     def _init_msg(self):
@@ -56,6 +57,8 @@ class MessageMagic:
             self.message.get_args = get_args
             self.message.get_args_raw = get_args_raw
             self.message.get_args_html = get_args_html
+            self.message.inline = self.app._inline
+            
 
         except Exception as e:
             logging.error(f"Error initializing MessageMagic: {str(e)}")

@@ -24,32 +24,11 @@ import pyrogram
 from pyrogram import types
 from pyrogram.methods.utilities.idle import idle
 
-from . import auth, database, loader, utils, extrapatchs
+from . import auth, database, loader, utils
 
 
 async def main():
     """Main function"""
-
-    me, app, tapp = await auth.Auth().authorize()
-
-    await app.initialize()
-
-    db = database.db
-
-    modules = loader.ModulesManager(app, db, me)
-    extrapatchs.MessageMagic(types.Message)
-
-    if utils.is_tl_enabled():
-        asyncio.ensure_future(tapp.start())
-        app.tl = tapp
-    else:
-        app.tl = "Not enabled"
-
-    await modules.load(app)
-
-    if not db.get("shizu.me", "me", None):
-        id_ = (await app.get_me()).id
-        db.set("shizu.me", "me", id_)
 
     if pyrogram.__version__ != "2.0.106.21":
         logging.info("Installing shizu-pyrogram...")
@@ -64,6 +43,26 @@ async def main():
         logging.info("Restarting...")
 
         return atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
+
+    me, app, tapp = await auth.Auth().authorize()
+
+    await app.initialize()
+
+    db = database.db
+
+    modules = loader.ModulesManager(app, db, me)
+
+    if utils.is_tl_enabled():
+        asyncio.ensure_future(tapp.start())
+        app.tl = tapp
+    else:
+        app.tl = "Not enabled"
+
+    await modules.load(app)
+
+    if not db.get("shizu.me", "me", None):
+        id_ = (await app.get_me()).id
+        db.set("shizu.me", "me", id_)
 
     await idle()
 

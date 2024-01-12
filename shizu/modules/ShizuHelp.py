@@ -161,7 +161,7 @@ class Help(loader.Module):
                 )
 
                 if commands or inline:
-                    module_emoji = "🀄️" if module.name in self.cmodules else "🎴"
+                    module_emoji = "▫️" if module.name in self.cmodules else "👩‍🎤"
 
                     text += (
                         f"\n<b>{module_emoji} {module.name}</b> - [ "

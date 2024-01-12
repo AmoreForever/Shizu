@@ -52,7 +52,7 @@ from typing import Any, Callable, Dict, List, Union
 from functools import wraps
 
 from pyrogram import Client, filters, types
-from . import bot, database, dispatcher, utils, aelis, logger as logger_
+from . import bot, database, dispatcher, utils, aelis, logger as logger_, extrapatchs
 from .types import InfiniteLoop
 from .translator import Strings, Translator
 
@@ -332,6 +332,7 @@ class ModulesManager:
             "ShizuLanguages",
             "ShizuSettings",
             "ShizuOwner",
+            "ShizuOnload"
         ]
         self.hidden = []
         app.db = db
@@ -343,6 +344,8 @@ class ModulesManager:
 
         self.bot_manager = bot.BotManager(app, self._db, self)
         await self.bot_manager.load()
+
+        extrapatchs.MessageMagic(types.Message, app)
 
         try:
             app.inline_bot = self.bot_manager.bot

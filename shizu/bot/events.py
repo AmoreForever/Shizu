@@ -71,7 +71,6 @@ from .. import database
 logger = logging.getLogger(__name__)
 
 
-
 def array_sum(array: list) -> Any:
     """Performs basic sum operation on array"""
     result = []
@@ -206,7 +205,6 @@ class Events(Item):
         self._me = database.db.get("shizu.me", "me")
 
     async def _message_handler(self, message: Message) -> Message:
-        
         setattr(message, "answer", functools.partial(answer, app=self, message=message))
 
         for func in self._all_modules.message_handlers.values():
@@ -832,7 +830,7 @@ class Events(Item):
         disable_security: Optional[bool] = False,
         ttl: Optional[Union[int, bool]] = False,
         **kwargs,
-    ) -> Union[bool]:
+    ) -> bool:
         """
         Send inline list to chat
         :param message: Where to send list. Can be either `Message` or `int`
