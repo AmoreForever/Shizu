@@ -47,4 +47,4 @@ class TerminalMod(loader.Module):
             cwd=utils.get_base_dir(),
         )
         stdout, stderr = await process.communicate()
-        return str(stdout.decode().strip()) + str(stderr.decode().strip())
+        return str(stdout.strip()) + str(stderr.decode().strip())

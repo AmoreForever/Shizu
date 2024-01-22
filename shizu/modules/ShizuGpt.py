@@ -157,8 +157,8 @@ class ShizuGpt(loader.Module):
         token = self.config["GPT_KEY"]
         if not token:
             return await message.answer(self.strings("no_token"))
-        await message.answer(self.strings("pending").format(args))
+        msg = await message.answer(self.strings("pending").format(args))
         answer = await self._get_chat_completion(args, self.config["GPT_KEY"])
-        await message.answer(
-            self.strings("answer").format(args, self._process_code_tags(answer))
+        await utils.answer(
+            msg, self.strings("answer").format(args, self._process_code_tags(answer))
         )

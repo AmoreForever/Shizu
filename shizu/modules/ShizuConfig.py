@@ -126,7 +126,7 @@ class ShizuConfig(loader.Module):
         "ent_value": "✍️ 値を入力",
         "restore_def_button": "🦖 デフォルトに戻す",
         "restored": "🦖 <b>設定がデフォルトに戻されました！</b>",
-        "advanced_button": "🔧 詳細",
+        "advanced_button": "🔧 詳細-",
         "advanced": "⚙️ <b>モジュール <code>{}</code> の詳細設定</b>",
         "true_false_button": "📟 True/False",
         "true_false": "⚙️ <b>True または False を選択</b>",
@@ -218,7 +218,6 @@ class ShizuConfig(loader.Module):
         "option_removed": "⚙️ <b>옵션 </b><code>{}</code><b> 제거되었습니다!</b>",
         "choose_button": "🎛 선택",
     }
-
 
     async def inline__close(self, call: "aiogram.types.CallbackQuery") -> None:
         await call.delete()
@@ -487,7 +486,7 @@ class ShizuConfig(loader.Module):
                         ],
                     )
                 else:
-                    return await call.answer("This option doesn't have a list type!")  
+                    return await call.answer("This option doesn't have a list type!")
 
     async def inline_advanced(
         self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str

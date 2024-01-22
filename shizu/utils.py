@@ -16,9 +16,12 @@
 # some piece of code taken from: https://github.com/hikariatama/Hikka/blob/master/hikka/utils.py
 
 import asyncio
+import logging
 import requests
 import functools
 import random
+import atexit
+import sys
 import string
 import git
 import typing
@@ -91,6 +94,8 @@ ListLike = Union[list, set, tuple]
 
 db = database.db
 
+logger = logging.getLogger(__name__)
+
 
 def get_random_smartphone() -> str:
     """Returns a random smartphone model"""
@@ -162,6 +167,12 @@ def get_args(message: typing.Union[Message, str]) -> str:
 
     args = message.split()[1:]
     return " ".join(args) if args else ""
+
+def restart():
+    """Restart the bot"""
+
+    logging.info("Restarting Shizu...")
+    return atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
 
 
 def get_args_raw(message: typing.Union[Message, str]) -> str:

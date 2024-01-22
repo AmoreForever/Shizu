@@ -17,7 +17,7 @@ import contextlib
 import time
 import os
 import sys
-import atexit
+
 import logging
 
 from pyrogram import Client
@@ -123,7 +123,7 @@ class ShizuOnload(loader.Module):
             self.db.set("shizu.folder", "folder", True)
             self.db.set("shizu.chat", "logs", logs_id)
             self.db.set("shizu.chat", "backup", backup_id)
-            atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
+            utils.restart()
 
         if restart := self.db.get("shizu.updater", "restart"):
             if restart["type"] == "restart":

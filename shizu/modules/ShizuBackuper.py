@@ -17,14 +17,11 @@ import os
 import io
 import json
 import time
-import atexit
-import logging
-import sys
 
 from datetime import datetime
 from pyrogram import Client, types, enums
 
-from .. import loader, utils, database
+from .. import loader, utils
 
 
 LOADED_MODULES_DIR = os.path.join(os.getcwd(), "shizu/modules")
@@ -140,18 +137,18 @@ class BackupMod(loader.Module):
             return await message.answer(self.strings("invalid"))
 
         self.db.reset()
+
         self.db.update(**decoded_text)
+
         self.db.save()
+
         await app.send_message(
             message.chat.id,
             self.strings("loaded"),
         )
 
-        def restart() -> None:
-            """Start userbot"""
-            os.execl(sys.executable, sys.executable, "-m", "shizu")
-
         ms = await message.answer(self.strings("restart"))
+
         self.db.set(
             "shizu.updater",
             "restart",
@@ -165,5 +162,4 @@ class BackupMod(loader.Module):
             },
         )
 
-        atexit.register(restart)
-        return sys.exit(0)
+        utils.restart()

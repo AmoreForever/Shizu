@@ -32,11 +32,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-import atexit
+
 import logging
 import os
 import re
-import sys
 import time
 from typing import List
 
@@ -624,4 +623,4 @@ class Loader(loader.Module):
             },
         )
 
-        atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
+        utils.restart()

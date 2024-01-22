@@ -32,11 +32,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import contextlib
-import os
-import sys
+
 import time
-import atexit
 
 from subprocess import check_output
 
@@ -118,7 +115,7 @@ class UpdateMod(loader.Module):
 
             await message.answer(self.strings("update_"))
 
-            atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
+            utils.restart()
         except Exception as error:
             await message.answer(f"An error occurred: {error}")
 
@@ -138,4 +135,4 @@ class UpdateMod(loader.Module):
             },
         )
 
-        atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
+        utils.restart()

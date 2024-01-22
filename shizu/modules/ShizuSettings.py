@@ -15,7 +15,7 @@
 
 import re
 import os
-import atexit
+
 import sys
 
 from loguru import logger
@@ -316,7 +316,6 @@ class ShizuSettings(loader.Module):
         if purpose == "stopshizu":
             await call.edit(self.strings["shutted_down"])
             sys.exit(0)
-
     @loader.command()
     async def enabletlmode(self, app, message):
         """Enable telethon mode"""

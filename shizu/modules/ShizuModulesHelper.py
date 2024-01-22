@@ -50,6 +50,7 @@ class ModulesLinkMod(loader.Module):
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> No arguments are specified (module name or command)",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Module search...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Couldn't find the module</b>",
+        "core_file": "<emoji id=5870528606328852614>📁</emoji> Core file of shizu userbot, <code>{}</code>\n\n⚠️ You cannot load it or unload from the userbot",
         "module_": (
             "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
@@ -67,6 +68,7 @@ class ModulesLinkMod(loader.Module):
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> Нет аргументов (имя модуля или команда)",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Поиск модуля...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Не удалось найти модуль</b>",
+        "core_file": "<emoji id=5870528606328852614>📁</emoji> Файл ядра shizu userbot, <code>{}</code>\n\n⚠️ Вы не можете загрузить или выгрузить его из юзербота",
         "module_": (
             "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
@@ -84,6 +86,7 @@ class ModulesLinkMod(loader.Module):
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> Yozuv mavjud emas",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Qidiruv...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Qidiruv topilmadi</b>",
+        "core_file": "<emoji id=5870528606328852614>📁</emoji> Shizu userbotning asosiy fayli, <code>{}</code>\n\n⚠️ Siz uni yuklab olish yoki o'chirib tashlash mumkin emass",
         "module_": (
             "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
@@ -101,6 +104,7 @@ class ModulesLinkMod(loader.Module):
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> 引数がありません（モジュール名またはコマンド）",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>モジュール検索...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>モジュールが見つかりませんでした</b>",
+        "core_file": "<emoji id=5870528606328852614>📁</emoji> shizu userbotのコアファイル、<code>{}</code>\n\n⚠️ ユーザーボットからロードまたはアンロードすることはできません",
         "module_": (
             "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
@@ -118,6 +122,7 @@ class ModulesLinkMod(loader.Module):
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> Немає аргументів (ім'я модуля або команда)",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Пошук модуля...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Не вдалося знайти модуль</b>",
+        "core_file": "<emoji id=5870528606328852614>📁</emoji> Файл ядра shizu userbot, <code>{}</code>\n\n⚠️ Ви не можете завантажити або вивантажити його з юзербота",
         "module_": (
             "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
@@ -135,6 +140,7 @@ class ModulesLinkMod(loader.Module):
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> Аргументтер жоқ (модульдің атауы немесе команда)",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>Модульді іздеу...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>Модуль табылмады</b>",
+        "core_file": "<emoji id=5870528606328852614>📁</emoji> shizu userbot-тың негізгі файлы, <code>{}</code>\n\n⚠️ Сіз оны юзерботтан жүктеу немесе алып тастау мүмкін емесіз",
         "module_": (
             "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
@@ -152,6 +158,7 @@ class ModulesLinkMod(loader.Module):
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> 인수가 없습니다 (모듈 이름 또는 명령)",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>모듈 검색...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>모듈을 찾을 수 없습니다</b>",
+        "core_file": "<emoji id=5870528606328852614>📁</emoji> shizu userbot의 코어 파일, <code>{}</code>\n\n⚠️ 사용자 봇에서 로드하거나 언로드 할 수 없습니다",
         "module_": (
             "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"
@@ -167,13 +174,33 @@ class ModulesLinkMod(loader.Module):
 
     @loader.command()
     async def ml(self, app: Client, message: types.Message):
-        """Get a link or a module file. Usage: ml <module name or command>"""
+        """Get a link or a module file. Usage: ml <module name or command>  | -c <module name> get core file of project must be provided exact name of module"""
 
         args = message.get_args_raw()
 
         if not args:
             return await message.answer(
                 self.strings("what_"),
+            )
+
+        if "-c" in args:  # it will search from core files
+            args = args.replace("-c", "").strip()
+
+            try:
+                with open(f"shizu/{args}.py", "rb") as f:
+                    source = f.read()
+
+            except FileNotFoundError:
+                return await message.answer(
+                    self.strings("nope_"),
+                )
+
+            source_code = io.BytesIO(source)
+            source_code.name = f"{args}.py"
+            source_code.seek(0)
+
+            return await message.answer(
+                source_code, doc=True, caption=self.strings("core_file").format(args)
             )
 
         m = await message.answer(
@@ -206,72 +233,3 @@ class ModulesLinkMod(loader.Module):
 
         await m.delete()
         return await message.answer(source_code, doc=True, caption=caption)
-
-    async def aelis_(self, app, message):
-        """Search module in Aelis API"""
-        args = message.get_args_raw()
-
-        if not args:
-            return await message.answer(self.strings("what_"))
-
-        await message.answer(self.strings("search_"))
-
-        module = await self.aelis.search(args)
-
-        if not module:
-            return await message.answer(self.strings("nope_"))
-
-        text = self.strings("module_").format(
-            f"https://aelis.hikamoru.uz/view/{module['name']}",
-            module["name"],
-            module["description"],
-            ", ".join(
-                [f"<code>{self.prefix[0]}{i}</code>" for i in module["commands"]]
-            ),
-            module["link"],
-        )
-
-        return await message.answer(
-            text,
-            reply_markup=[
-                [
-                    {
-                        "text": self.strings("install"),
-                        "callback": self.module_load,
-                        "kwargs": {"link": module["link"], "text": text},
-                    },
-                ]
-            ],
-        )
-
-    async def module_load(self, call: CallbackQuery, link: str, text: str):
-        r = await utils.run_sync(requests.get, link)
-
-        mod = await self.all_modules.load_module(r.text, r.url)
-
-        module = self.all_modules.get_module(mod, True)
-
-        if module is True:
-            return await call.edit(
-                text,
-                reply_markup=[[{"text": self.strings("restart"), "data": "empty"}]],
-            )
-
-        if not module:
-            return await call.edit(
-                text, reply_markup=[[{"text": self.strings("error"), "data": "empty"}]]
-            )
-
-        if module == "DAR":
-            return await call.edit(
-                text, reply_markup=[[{"text": self.strings("error"), "data": "empty"}]]
-            )
-
-        self.db.set(
-            "shizu.loader",
-            "modules",
-            list(set(self.db.get("shizu.loader", "modules", []) + [link])),
-        )
-        return await call.edit(
-            text, reply_markup=[[{"text": self.strings("success"), "data": "empty"}]]
-        )

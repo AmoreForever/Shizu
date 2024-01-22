@@ -15,7 +15,7 @@
 
 import logging
 import os
-import atexit
+
 import sys
 import asyncio
 import subprocess
@@ -42,7 +42,7 @@ async def main():
         logging.info("Successfully installed shizu-pyrogram!")
         logging.info("Restarting...")
 
-        return atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
+        return utils.restart()
 
     me, app, tapp = await auth.Auth().authorize()
 
