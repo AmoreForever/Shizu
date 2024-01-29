@@ -910,11 +910,8 @@ class Events(Item):
         }
 
         default_map = (
-            (
-                {"ttl": self._forms[unit_id]["ttl"]}
-                if "ttl" in self._forms[unit_id]
-                else {}
-            )
+            {}
+            | ({"ttl": self._forms[unit_id]["ttl"]} if "ttl" in self._forms[unit_id] else {})
             | ({"always_allow": always_allow} if always_allow else {})
             | ({"force_me": force_me} if force_me else {})
             | ({"disable_security": disable_security} if disable_security else {})
