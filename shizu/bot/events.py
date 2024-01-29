@@ -909,15 +909,14 @@ class Events(Item):
             **({"message": message} if isinstance(message, Message) else {}),
         }
 
-        default_map = (
-            {}
-            | ({"ttl": self._forms[unit_id]["ttl"]} if "ttl" in self._forms[unit_id] else {})
-            | ({"always_allow": always_allow} if always_allow else {})
-            | ({"force_me": force_me} if force_me else {})
-            | ({"disable_security": disable_security} if disable_security else {})
-            | ({"perms_map": perms_map} if perms_map else {})
-            | ({"message": message} if isinstance(message, Message) else {})
-        )
+        default_map = {}
+        default_map.update({"ttl": self._forms[unit_id]["ttl"]} if "ttl" in self._forms[unit_id] else {})
+        default_map.update({"always_allow": always_allow} if always_allow else {})
+        default_map.update({"force_me": force_me} if force_me else {})
+        default_map.update({"disable_security": disable_security} if disable_security else {})
+        default_map.update({"perms_map": perms_map} if perms_map else {})
+        default_map.update({"message": message} if isinstance(message, Message) else {})
+
 
         markup = InlineKeyboardMarkup()
         markup.row(
