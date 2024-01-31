@@ -25,9 +25,8 @@ class TerminalMod(loader.Module):
 
     @loader.command(aliases=["t"])
     async def terminal(self, app: Client, message: types.Message):
-        
         args = message.get_args_raw()
-        
+
         await message.answer("<emoji id=5325822763447884498>💠</emoji> <b>wait...</b>")
         output = await self.run_command(args)
 
@@ -47,4 +46,4 @@ class TerminalMod(loader.Module):
             cwd=utils.get_base_dir(),
         )
         stdout, stderr = await process.communicate()
-        return str(stdout.strip()) + str(stderr.decode().strip())
+        return str(stdout.decode().strip()) + str(stderr.decode().strip())

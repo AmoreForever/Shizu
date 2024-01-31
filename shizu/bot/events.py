@@ -72,12 +72,7 @@ logger = logging.getLogger(__name__)
 
 
 def array_sum(array: list) -> Any:
-    """Performs basic sum operation on array"""
-    result = []
-    for item in array:
-        result += item
-
-    return result
+    return sum(array, [])
 
 
 async def delete(self: Any = None, form: Any = None, form_uid: Any = None) -> bool:
