@@ -102,7 +102,7 @@ async def delete(self: Any = None, form: Any = None, form_uid: Any = None) -> bo
 async def edit(
     text: str,
     reply_markup: List[List[dict]] = None,
-    force_me: Union[bool, None] = None,
+    force_me: Union[bool, None] = True,
     always_allow: Union[List[int], None] = None,
     self: Any = None,
     query: Any = None,
