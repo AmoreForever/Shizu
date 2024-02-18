@@ -29,6 +29,7 @@ class ShizuLanguages(loader.Module):
         "reply_to": "<emoji id=5870903672937911120>👀</emoji> <b>Reply to language pack</b>",
         "must_be_json": "<emoji id=5257965810634202885>📁</emoji> <b>Language pack must be json</b>",
         "downloading": "<emoji id=5361615491884398003>🔽</emoji> <b>Downloading...</b>",
+        "specify_lang": "<emoji id=5807626765874499116>🚫</emoji> <b>Specify language code</b>"
     }
 
     strings_ru = {
@@ -37,6 +38,7 @@ class ShizuLanguages(loader.Module):
         "reply_to": "<emoji id=5870903672937911120>👀</emoji> <b>Ответь на языковой пакет</b>",
         "must_be_json": "<emoji id=5257965810634202885>📁</emoji> <b>Языковой пакет должен быть json</b>",
         "downloading": "<emoji id=5361615491884398003>🔽</emoji> <b>Загрузка...</b>",
+        "specify_lang": "<emoji id=5807626765874499116>🚫</emoji> <b>Укажите код языка</b>"
     }
 
     strings_uz = {
@@ -45,6 +47,7 @@ class ShizuLanguages(loader.Module):
         "reply_to": "<emoji id=5870903672937911120>👀</emoji> <b>Til paketiga javob bering</b>",
         "must_be_json": "<emoji id=5257965810634202885>📁</emoji> <b>Til paketi json bo'lishi kerak</b>",
         "downloading": "<emoji id=5361615491884398003>🔽</emoji> <b>Yuklab olinmoqda...</b>",
+        "specify_lang": "<emoji id=5807626765874499116>🚫</emoji> <b>Til kodi ko'rsating</b>"
     }
 
     strings_jp = {
@@ -53,6 +56,7 @@ class ShizuLanguages(loader.Module):
         "reply_to": "<emoji id=5870903672937911120>👀</emoji> <b>言語パックに返信する</b>",
         "must_be_json": "<emoji id=5257965810634202885>📁</emoji> <b>言語パックはjsonである必要があります</b>",
         "downloading": "<emoji id=5361615491884398003>🔽</emoji> <b>ダウンロード中...</b>",
+        "specify_lang": "<emoji id=5807626765874499116>🚫</emoji> <b>言語コードを指定してください</b>"
     }
 
     strings_ua = {
@@ -61,6 +65,7 @@ class ShizuLanguages(loader.Module):
         "reply_to": "<emoji id=5870903672937911120>👀</emoji> <b>Відповідь на мовний пакет</b>",
         "must_be_json": "<emoji id=5257965810634202885>📁</emoji> <b>Мовний пакет повинен бути json</b>",
         "downloading": "<emoji id=5361615491884398003>🔽</emoji> <b>Завантаження...</b>",
+        "specify_lang": "<emoji id=5807626765874499116>🚫</emoji> <b>Вкажіть код мови</b>"
     }
 
     strings_kz = {
@@ -69,6 +74,7 @@ class ShizuLanguages(loader.Module):
         "reply_to": "<emoji id=5870903672937911120>👀</emoji> <b>Тіл пакетіне жауап беріңіз</b>",
         "must_be_json": "<emoji id=5257965810634202885>📁</emoji> <b>Тіл пакеті json болуы керек</b>",
         "downloading": "<emoji id=5361615491884398003>🔽</emoji> <b>Жүктелуде...</b>",
+        "specify_lang": "<emoji id=5807626765874499116>🚫</emoji> <b>Тіл кодын көрсетіңіз</b>"
     }
 
     strings_kr = {
@@ -77,6 +83,7 @@ class ShizuLanguages(loader.Module):
         "reply_to": "<emoji id=5870903672937911120>👀</emoji> <b>언어 팩에 응답</b>",
         "must_be_json": "<emoji id=5257965810634202885>📁</emoji> <b>언어 팩은 json이어야합니다</b>",
         "downloading": "<emoji id=5361615491884398003>🔽</emoji> <b>다운로드 중...</b>",
+        "specify_lang": "<emoji id=5807626765874499116>🚫</emoji> <b>언어 코드를 지정하십시오</b>"
     }
 
 
@@ -97,12 +104,17 @@ class ShizuLanguages(loader.Module):
         """Load language pack (reply to file .json and write language code)"""
         reply = message.reply_to_message
         args = utils.get_args_raw(message)
+
         if not reply or not reply.document:
             await utils.answer(message, self.strings("reply_to"))
             return
 
         if not reply.document.file_name.endswith(".json"):
             await utils.answer(message, self.strings("must_be_json"))
+            return
+        
+        if not args:
+            await utils.answer(message, self.strings("specify_lang"))
             return
 
         await message.answer(self.strings("downloading"))
