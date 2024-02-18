@@ -94,7 +94,7 @@ class ShizuLanguages(loader.Module):
         )
 
     async def loadlgpackcmd(self, app, message):
-        """Load language pack"""
+        """Load language pack (reply to file .json and write language code)"""
         reply = message.reply_to_message
         args = utils.get_args_raw(message)
         if not reply or not reply.document:
