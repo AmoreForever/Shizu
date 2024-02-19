@@ -233,3 +233,68 @@ class ModulesLinkMod(loader.Module):
 
         await m.delete()
         return await message.answer(source_code, doc=True, caption=caption)
+
+    @loader.command()
+    async def aeliscmd(self, app, message):
+        """Search module in Aelis API"""
+        args = message.get_args_raw()
+        if not args:
+            return await message.answer(self.strings("what_"))
+        await message.answer(self.strings("search_"))
+        module = requests.get(f"https://aelis.pythonanywhere.com/get/{args}").json()
+        if not module:
+            return await message.answer(self.strings("nope_"))
+        text = self.strings("module_").format(
+            f"https://aelis.pythonanywhere.com/view/{module['name']}",
+            module["name"],
+            module["description"],
+            ", ".join(
+                [f"<code>{self.prefix[0]}{i}</code>" for i in module["commands"]]
+            ),
+            module["link"],
+        )
+        return await message.answer(
+            text,
+            reply_markup=[
+                [
+                    {
+                        "text": self.strings("source"),
+                        "url": f"https://aelis.pythonanywhere.com/view/{module['name']}",
+                    },
+                    {
+                        "text": self.strings("install"),
+                        "callback": self.module_load,
+                        "kwargs": {"link": module["link"], "text": text},
+                    },
+                ]
+            ],
+        )
+
+    async def module_load(self, call: CallbackQuery, link: str, text: str):
+        r = await utils.run_sync(requests.get, link)
+        mod = await self.all_modules.load_module(r.text, r.url)
+        module = self.all_modules.get_module(mod, True)
+        if module is True:
+            return await call.edit(
+                text,
+                reply_markup=[[{"text": self.strings("restart"), "data": "empty"}]],
+            )
+
+        if not module:
+            return await call.edit(
+                text, reply_markup=[[{"text": self.strings("error"), "data": "empty"}]]
+            )
+
+        if module == "DAR":
+            return await call.edit(
+                text, reply_markup=[[{"text": self.strings("error"), "data": "empty"}]]
+            )
+
+        self.db.set(
+            "shizu.loader",
+            "modules",
+            list(set(self.db.get("shizu.loader", "modules", []) + [link])),
+        )
+        return await call.edit(
+            text, reply_markup=[[{"text": self.strings("success"), "data": "empty"}]]
+        )
