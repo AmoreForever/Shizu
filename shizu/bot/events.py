@@ -570,7 +570,6 @@ class Events(Item):
                         and query.from_user.id != self._me
                         and query.from_user.id
                         not in self._db.get("shizu.me", "owners", [])
-                        and self._db.get("shizu.owner", "status") is False
                     ):
                         await query.answer(
                             "🚫 You are not allowed to press this button!"
@@ -611,7 +610,6 @@ class Events(Item):
                 and query.from_user.id != self._me
                 and query.from_user.id
                 not in self._db.get("shizu.me", "owners", [])
-                not in self._custom_map[query.data].get("always_allow", [])
             ):
                 await query.answer("🚫 You are not allowed to press this button!")
                 return
