@@ -73,7 +73,7 @@ logger = logging.getLogger(__name__)
 
 def array_sum(array: list) -> Any:
     """Performs basic sum operation on array"""
-    
+
     result = []
     for item in array:
         result += item
@@ -445,9 +445,9 @@ class Events(Item):
                     func = button["callback"]
                     button["_callback"] = func
                     try:
-                        button[
-                            "callback"
-                        ] = f"{func.__self__.__class__.__name__}.{func.__func__.__name__}"
+                        button["callback"] = (
+                            f"{func.__self__.__class__.__name__}.{func.__func__.__name__}"
+                        )
                     except Exception:
                         logger.exception(
                             "Error while forming markup! "
@@ -464,9 +464,9 @@ class Events(Item):
                 if "handler" in button and not isinstance(button["handler"], str):
                     func = button["handler"]
                     try:
-                        button[
-                            "handler"
-                        ] = f"{func.__self__.__class__.__name__}.{func.__func__.__name__}"
+                        button["handler"] = (
+                            f"{func.__self__.__class__.__name__}.{func.__func__.__name__}"
+                        )
                     except Exception:
                         logger.exception(
                             "Error while forming markup! "
@@ -569,9 +569,8 @@ class Events(Item):
                         form["force_me"]
                         and query.from_user.id != self._me
                         and query.from_user.id
-                        and self._db.get("shizu.owner", "status")
-                        == False
                         not in self._db.get("shizu.me", "owners", [])
+                        and self._db.get("shizu.owner", "status") is False
                     ):
                         await query.answer(
                             "🚫 You are not allowed to press this button!"
@@ -611,8 +610,6 @@ class Events(Item):
                 self._custom_map[query.data].get("force_me", None)
                 and query.from_user.id != self._me
                 and query.from_user.id
-                and self._db.get("shizu.owner", "status")
-                == False
                 not in self._db.get("shizu.me", "owners", [])
                 not in self._custom_map[query.data].get("always_allow", [])
             ):
@@ -911,13 +908,18 @@ class Events(Item):
         }
 
         default_map = {}
-        default_map.update({"ttl": self._forms[unit_id]["ttl"]} if "ttl" in self._forms[unit_id] else {})
+        default_map.update(
+            {"ttl": self._forms[unit_id]["ttl"]}
+            if "ttl" in self._forms[unit_id]
+            else {}
+        )
         default_map.update({"always_allow": always_allow} if always_allow else {})
         default_map.update({"force_me": force_me} if force_me else {})
-        default_map.update({"disable_security": disable_security} if disable_security else {})
+        default_map.update(
+            {"disable_security": disable_security} if disable_security else {}
+        )
         default_map.update({"perms_map": perms_map} if perms_map else {})
         default_map.update({"message": message} if isinstance(message, Message) else {})
-
 
         markup = InlineKeyboardMarkup()
         markup.row(

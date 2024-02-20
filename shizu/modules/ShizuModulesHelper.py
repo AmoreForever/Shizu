@@ -268,6 +268,8 @@ class ModulesLinkMod(loader.Module):
                     },
                 ]
             ],
+            photo=module["banner"] or None,
+            force_me=True,
         )
 
     async def module_load(self, call: CallbackQuery, link: str, text: str):

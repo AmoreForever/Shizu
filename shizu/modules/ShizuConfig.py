@@ -715,11 +715,12 @@ class ShizuConfig(loader.Module):
         await self.inline__global_config(message)
 
     async def watcher(self, app, message: Message) -> None:
-        if (
-            not getattr(message, "via_bot", False)
-            or message.via_bot.id != (await self.bot.bot.get_me()).id
-            or "This message is gonna be deleted..." not in getattr(message, "text", "")
-        ):
-            return
+        with contextlib.suppress(Exception):
+            if (
+                not getattr(message, "via_bot", False)
+                or message.via_bot.id != (await self.bot.bot.get_me()).id
+                or "This message is gonna be deleted..." not in getattr(message, "text", "")
+            ):
+                return
 
-        await message.delete()
+            await message.delete()
