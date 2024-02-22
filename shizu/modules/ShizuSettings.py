@@ -48,6 +48,7 @@ class ShizuSettings(loader.Module):
         "already_enabled": "🧞 <b>Telethon is already enabled</b>",
         "are_sure_to_stop": "🤔 <b>Are you sure you want to stop the bot? Next time you will need to start it manually</b>",
         "shutted_down": "🩹 <b>Bot has been shutted down</b>",
+        "enter_2fa": "🔐 <b>Enter your 2FA code</b>",
     }
 
     strings_ru = {
@@ -68,6 +69,7 @@ class ShizuSettings(loader.Module):
         "already_enabled": "🧞 <b>Telethon уже включен</b>",
         "are_sure_to_stop": "🤔 <b>Вы уверены, что хотите остановить бота? В следующий раз вам придется запустить его вручную</b>",
         "shutted_down": "🩹 <b>Бот был выключен</b>",
+        "enter_2fa": "🔐 <b>Введите ваш 2FA код</b>",
     }
 
     strings_uz = {
@@ -88,6 +90,7 @@ class ShizuSettings(loader.Module):
         "already_enabled": "🧞 <b>Telethon allaqachon yoqingan</b>",
         "are_sure_to_stop": "🤔 <b>Siz botni to'xtatishga ishonchingiz komilmi? Keyingi safar uni ozingiz yoqishingiz kerak bo'ladi</b>",
         "shutted_down": "🩹 <b>Bot o'chirildi</b>",
+        "enter_2fa": "🔐 <b>2FA kodingizni kiriting</b>",
     }
 
     strings_jp = {
@@ -107,7 +110,8 @@ class ShizuSettings(loader.Module):
         "congratulations": "🎉 <b>おめでとうございます！ telethonを正常に有効にしました！</b>\n<i>ただし、変更を適用するにはボットを再起動する必要があります</i>",
         "already_enabled": "🧞 <b>telethonはすでに有効になっています</b>",
         "are_sure_to_stop": "🤔 <b>ボットを停止してもよろしいですか？ 次回は手動で起動する必要があります</b> ",
-        "shutted_down": "🩹 <b>ボットがシャットダウンされました</b>,,,"
+        "shutted_down": "🩹 <b>ボットがシャットダウンされました</b>",
+        "enter_2fa": "🔐 <b>2FAコードを入力してください</b>",
     }
 
     strings_ua = {
@@ -128,6 +132,7 @@ class ShizuSettings(loader.Module):
         "already_enabled": "🧞 <b>Telethon вже увімкнено</b>",
         "are_sure_to_stop": "🤔 <b>Ви впевнені, що хочете зупинити бота? Наступного разу вам доведеться запустити його вручну</b>",
         "shutted_down": "🩹 <b>Бот був вимкнений</b>",
+        "enter_2fa": "🔐 <b>Введіть свій 2FA код</b>",
     }
 
     strings_kz = {
@@ -148,6 +153,7 @@ class ShizuSettings(loader.Module):
         "already_enabled": "🧞 <b>Телетон әлі қосылған</b>",
         "are_sure_to_stop": "🤔 <b>Ботты тоқтатуға сенімдісіз бе? Келесі рет оны қолдану үшін оны қолдану қажет болады</b>",
         "shutted_down": "🩹 <b>Бот өшірілді</b>",
+        "enter_2fa": "🔐 <b>2FA кодыңызды енгізіңіз</b>",
     }
 
     strings_kr = {
@@ -168,6 +174,7 @@ class ShizuSettings(loader.Module):
         "already_enabled": "🧞 <b>telethon이 이미 활성화되었습니다</b>",
         "are_sure_to_stop": "🤔 <b>봇을 중지 하시겠습니까? 다음 번에는 수동으로 시작해야합니다</b>",
         "shutted_down": "🩹 <b>봇이 종료되었습니다</b>",
+        "enter_2fa": "🔐 <b>2FA 코드를 입력하십시오</b>",
     }
 
     async def on_load(self, app):
@@ -291,14 +298,15 @@ class ShizuSettings(loader.Module):
 
             code = re.findall(r"(\d{5})", t)[0]
 
-            client = TelegramClient(
+            global _client
+            _client = TelegramClient(
                 "shizu-tl", api_id, api_hash, device_model="Shizu-Tl"
             )
 
-            await client.connect()
+            await _client.connect()
 
             try:
-                await client.sign_in(
+                await _client.sign_in(
                     phone=f"+{(await self.app.get_me()).phone_number}",
                     code=code,
                     phone_code_hash=login.phone_code_hash,
@@ -310,19 +318,54 @@ class ShizuSettings(loader.Module):
 
             except SessionPasswordNeededError:
                 await call.edit(
-                    "\n\nPlease temporarily disable 2FA\n\n <i># Hikamoru too lazy to extend this module</i>"
+                    self.strings["enter_2fa"],
+                    reply_markup=[
+                        [
+                            {
+                                "text": "🔐 2FA",
+                                "input": "👓 Your 2FA code",
+                                "handler": self.twofa_handler,
+                                "args": (
+                                    login.phone_code_hash,
+                                    call.inline_message_id,
+                                ),
+                            },
+                        ],
+                    ],
                 )
 
         if purpose == "stopshizu":
             await call.edit(self.strings["shutted_down"])
             sys.exit(0)
+
+    async def twofa_handler(
+        self,
+        call: "aiogram.types.CallbackQuery",
+        query: str,
+        phone_code_hash: str,
+        inline_message_id: str,
+    ):
+        try:
+            await _client.sign_in(
+                phone=f"+{(await self.app.get_me()).phone_number}",
+                password=query,
+                phone_code_hash=phone_code_hash,
+            )
+            await call.edit(
+                self.strings["congratulations"], inline_message_id=inline_message_id
+            )
+        except Exception as e:
+            await _client.disconnect()
+            os.remove("shizu-tl.session")
+            await call.edit(f"❌ {e}", inline_message_id=inline_message_id)
+            
+
     @loader.command()
     async def enabletlmode(self, app, message):
         """Enable telethon mode"""
         if utils.is_tl_enabled() is False:
             return await message.answer(
-                self.strings["are_you_sure"]
-                + "\n\nPlease temporarily disable 2FA\n\n <i># Hikamoru too lazy to extend this module</i>",
+                self.strings["are_you_sure"],
                 reply_markup=self.markup_("enabletlmode"),
             )
 

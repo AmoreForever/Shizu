@@ -52,7 +52,7 @@ from typing import Any, Callable, Dict, List, Union
 from functools import wraps
 
 from pyrogram import Client, filters, types
-from . import bot, database, dispatcher, utils, aelis, logger as logger_, extrapatchs
+from . import bot, database, dispatcher, utils, logger as logger_, extrapatchs
 from .types import InfiniteLoop
 from .translator import Strings, Translator
 
@@ -332,7 +332,7 @@ class ModulesManager:
             "ShizuLanguages",
             "ShizuSettings",
             "ShizuOwner",
-            "ShizuOnload"
+            "ShizuOnload",
         ]
         self.hidden = []
         app.db = db
@@ -465,6 +465,12 @@ class ModulesManager:
         """Loads a third-party module"""
 
         module_name = f"shizu.modules.{self.me.id}-{''.join(random.choice(string.ascii_letters + string.digits) for _ in range(10))}"
+        pattern = re.compile(r"@loader\.module\((.*?)\)\nclass\s+(\w+)\(")
+
+        if match := pattern.search(module_source):
+            module_name = f"shizu.modules.{match[2]}"
+        else:
+            return logging.error("Module class not found")
 
         if match := re.search(r"# ?only: ?(.+)", module_source):
             allowed_accounts = match[1].split(",") if match else []
@@ -481,11 +487,11 @@ class ModulesManager:
                 module_name,
             )
             return "OTL"
-
         try:
             spec = ModuleSpec(
                 module_name, StringLoader(module_source, origin), origin=origin
             )
+
             instance = self.register_instance(module_name, spec=spec)
 
         except ImportError as error:

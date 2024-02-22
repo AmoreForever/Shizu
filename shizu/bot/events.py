@@ -608,8 +608,7 @@ class Events(Item):
             if (
                 self._custom_map[query.data].get("force_me", None)
                 and query.from_user.id != self._me
-                and query.from_user.id
-                not in self._db.get("shizu.me", "owners", [])
+                and query.from_user.id not in self._db.get("shizu.me", "owners", [])
             ):
                 await query.answer("🚫 You are not allowed to press this button!")
                 return

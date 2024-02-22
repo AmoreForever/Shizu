@@ -35,6 +35,8 @@ class Help(loader.Module):
             "• Developer: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
             "© <b>Shizu-Userbot is licensed under the <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a></b>"
         ),
+        "core_modules_emoji": "This emoji for core modules",
+        "custom_module_emoji": "This emoji for custom modules",
     }
 
     strings_ru = {
@@ -50,6 +52,8 @@ class Help(loader.Module):
             "• Разработчик: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
             "© <b>Shizu-Userbot распространяется под лицензией <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a></b>"
         ),
+        "core_modules_emoji": "Этот emoji для встроенных модулей",
+        "custom_module_emoji": "Этот emoji для кастом модулей",
     }
 
     strings_uz = {
@@ -65,6 +69,8 @@ class Help(loader.Module):
             "• Yaratuvchi: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
             "© <b>Shizu-Userbot <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a> litsenziyasi ostida tarqatilgan</b>"
         ),
+        "core_modules_emoji": "Bu ichki modullar uchun emoji",
+        "custom_module_emoji": "Bu maxsus modullar uchun emoji",
     }
 
     strings_jp = {
@@ -80,6 +86,8 @@ class Help(loader.Module):
             "• 開発者: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
             "© <b>Shizu-Userbot は <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a> ライセンスの下で配布されています</b>"
         ),
+        "core_modules_emoji": "この絵文字はコアモジュール用です",
+        "custom_module_emoji": "この絵文字はカスタムモジュール用です",
     }
 
     strings_ua = {
@@ -95,6 +103,8 @@ class Help(loader.Module):
             "• Розробник: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
             "© <b>Shizu-Userbot поширюється під ліцензією <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a></b>"
         ),
+        "core_modules_emoji": "Цей емодзі для ядерних модулів",
+        "custom_module_emoji": "Цей емодзі для користувацьких модулів",
     }
 
     strings_kz = {
@@ -110,6 +120,8 @@ class Help(loader.Module):
             "• Дамытушы: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
             "© <b>Shizu-Userbot <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a> лицензиясы бойынша жарияланады</b>"
         ),
+        "core_modules_emoji": "Бұл жүйелік модульдер үшін емоджи",
+        "custom_module_emoji": "Бұл қосымша модульдер үшін емоджи",
     }
 
     strings_kr = {
@@ -125,7 +137,19 @@ class Help(loader.Module):
             "• 개발자: <a href='https://t.me/hikamoru'>Hikamoru</a></b>\n\n"
             "© <b>Shizu-Userbot은 <a href='https://www.gnu.org/licenses/agpl-3.0.html'>GNU GPLv3</a> 라이선스 하에 배포됩니다</b>"
         ),
+        "core_modules_emoji": "이 이모지는 코어 모듈용입니다",
+        "custom_module_emoji": "이 이모지는 사용자 정의 모듈용입니다",
     }
+
+    def __init__(self):
+        self.config = loader.ModuleConfig(
+            "core_modules",
+            "▫️",
+            lambda m: self.strings("core_modules_emoji"),
+            "custom_modules",
+            "👩‍🎤",
+            lambda m: self.strings("custom_module_emoji"),
+        )
 
     @loader.command()
     async def help(self, app: Client, message: types.Message):
@@ -161,7 +185,11 @@ class Help(loader.Module):
                 )
 
                 if commands or inline:
-                    module_emoji = "▫️" if module.name in self.cmodules else "👩‍🎤"
+                    module_emoji = (
+                        self.config["core_modules"]
+                        if module.name in self.cmodules
+                        else self.config["custom_modules"]
+                    )
 
                     text += (
                         f"\n<b>{module_emoji} {module.name}</b> - [ "

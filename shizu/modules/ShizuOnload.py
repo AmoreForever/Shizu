@@ -68,11 +68,6 @@ class ShizuOnload(loader.Module):
             async for _ in app.get_dialogs():
                 pass
 
-            if not self.db.get("shizu.updater", "bot"):
-                ms = await app.send_message("@shizu_ubot", "/start")
-                await ms.delete()
-                self.db.set("shizu.updater", "bot", True)
-
         if not self.db.get("shizu.folder", "folder"):
             logging.info("Trying to create folder")
             app.me = await app.get_me()
@@ -130,19 +125,13 @@ class ShizuOnload(loader.Module):
                 restarted_text = self.strings("start_r").format(
                     round(time.time()) - int(restart["start"])
                 )
-            if restart["type"] == "shizubot":
-                await self.app.send_message("@shizu_ubot", "#updated")
+
             if restart["type"] == "update":
                 restarted_text = self.strings("start_u").format(
                     round(time.time()) - int(restart["start"])
                 )
-            try:
-                if restart["type"] != "shizubot":
-                    await app.edit_message_text(
-                        restart["chat"], restart["id"], restarted_text
-                    )
-            except Exception as why:
-                logging.error(f"Failed to edit message: {why}")
+
+            await app.edit_message_text(restart["chat"], restart["id"], restarted_text)
 
             self.db.pop("shizu.updater", "restart")
 

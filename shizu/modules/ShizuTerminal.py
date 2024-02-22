@@ -23,11 +23,50 @@ from .. import loader, utils
 class TerminalMod(loader.Module):
     """Terminal"""
 
+    strings = {
+        "no_args": "<emoji id=5325822763447884498>💠</emoji> <b>Enter the command to execute</b>",
+        "wait": "<emoji id=5325822763447884498>💠</emoji> <b>Wait...</b>"
+    }
+
+    strings_ru = {
+        "no_args": "<emoji id=5325822763447884498>💠</emoji> <b>Введите команду для выполнения</b>",
+        "wait": "<emoji id=5325822763447884498>💠</emoji> <b>Подожди...</b>"
+    }
+
+    strings_uz = {
+        "no_args": "<emoji id=5325822763447884498>💠</emoji> <b>Ijro uchun buyruq kiriting</b>",
+        "wait": "<emoji id=5325822763447884498>💠</emoji> <b>Kuting...</b>"
+    }
+
+    strings_jp = {
+        "no_args": "<emoji id=5325822763447884498>💠</emoji> <b>実行するコマンドを入力してください</b>",
+        "wait": "<emoji id=5325822763447884498>💠</emoji> <b>待って...</b>"
+    }
+
+    strings_ua = {
+        "no_args": "<emoji id=5325822763447884498>💠</emoji> <b>Введіть команду для виконання</b>",
+        "wait": "<emoji id=5325822763447884498>💠</emoji> <b>Зачекайте...</b>"
+    }
+
+    strings_kz = {
+        "no_args": "<emoji id=5325822763447884498>💠</emoji> <b>Орындалатын команданы енгізіңіз</b>",
+        "wait": "<emoji id=5325822763447884498>💠</emoji> <b>Күтіңіз...</b>"
+    }
+
+    strings_kr = {
+        "no_args": "<emoji id=5325822763447884498>💠</emoji> <b>실행할 명령을 입력하십시오</b>",
+        "wait": "<emoji id=5325822763447884498>💠</emoji> <b>기다려주세요...</b>"
+    }
+    
+
     @loader.command(aliases=["t"])
     async def terminal(self, app: Client, message: types.Message):
         args = message.get_args_raw()
 
-        await message.answer("<emoji id=5325822763447884498>💠</emoji> <b>wait...</b>")
+        if not args:
+            return await message.answer(self.strings("no_args"))
+
+        message = await message.answer(self.strings("wait"))
         output = await self.run_command(args)
 
         await message.answer(

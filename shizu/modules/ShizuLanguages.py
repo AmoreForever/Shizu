@@ -116,6 +116,10 @@ class ShizuLanguages(loader.Module):
         if not args:
             await utils.answer(message, self.strings("specify_lang"))
             return
+        
+        if len(args) != 2:
+            await utils.answer(message, self.strings("incorrect_language"))
+            return
 
         await message.answer(self.strings("downloading"))
         mm = await app.download_media(reply, f"{args.lower()}.json")
@@ -125,7 +129,6 @@ class ShizuLanguages(loader.Module):
         langpack_path = f"{utils.get_base_dir()}/langpacks/{args.lower()}.json"
         shutil.move(mm, langpack_path)
 
-        await message.answer("<b>Downloaded</b>")
         tr = translator.Translator(app, self.db)
         await tr.init()
         await message.answer(

@@ -42,14 +42,12 @@ class Translator:
         if os.path.isfile(langpack_path):
             with open(langpack_path, "r", encoding="utf-8") as f:
                 lang_data = json.load(f)
-                print(f"{utils.get_lang_flag(lang)} Loaded {lang} langpack")
                 return lang_data.get(key, False)
 
         return False
 
     def gettext(self, text):
         return self.getkey(text) or text
-
 
 class Strings:
     def __init__(self, mod, translator, db):
