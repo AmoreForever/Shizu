@@ -165,7 +165,8 @@ class Web:
                 return web.Response(status=421)
         else:
             try:
-                await self.client.sign_in(phone, password=password, phone_code_hash=self.api_token.phone_hash)
+                await self.client.check_password(password)
+                await self.client.sign_in(phone, phone_code_hash=self.api_token.phone_hash, phone_code=code)
             except errors.exceptions.PasswordHashInvalid:
                 return web.Response(status=403)  # Invalid 2FA password
             except errors.exceptions.FloodWait as e:

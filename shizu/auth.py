@@ -64,17 +64,17 @@ def colored_input(prompt: str = "", hide: bool = False) -> str:
         )
     )
 
+
 def argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Shizu - A modular Telegram userbot",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        usage="python3 -m shizu -[option]"
+        usage="python3 -m shizu -[option]",
     )
 
     parser.add_argument(
         "--no-web", action="store_false", help="Disable web interface", dest="web"
     )
-    
 
     return parser.parse_args()
 
@@ -166,24 +166,14 @@ class Auth:
                 logging.error("Incorrect password, please try again")
 
     async def authorize(self) -> Union[Tuple[types.User, Client], NoReturn]:
+
         await self.app.connect()
 
         try:
             me = await self.app.get_me()
         except errors.AuthKeyUnregistered:
             if args.web and web_available:
-                if web := (
-                    core.Web(
-                        api_token=None,
-                    )
-                ):
-                    
-                    web.port = random.randint(2000, 9999)   
-                    await web.start(web.port)
-                    logging.info(f"🌐 Web interface available at: {web.url}")
-                    await web.wait_for_api_token_setup()
-                    await web.wait_for_clients_setup()
-                    return utils.restart()
+                await self.web_auth()
 
             cfg = cp.ConfigParser()
             cfg.read("config.ini")
@@ -200,11 +190,14 @@ class Auth:
                             )
                         )
                     except errors.exceptions.unauthorized_401.SessionPasswordNeeded:
-                        me: types.User = (
-                            await self.app.get_me()
-                            if logged
-                            else await self.enter_2fa()
+                        print("2FA is enabled, please enter your password")
+                        passwd = colored_input(
+                            "Enter two-factor authentication password: ", True
                         )
+                        await self.app.check_password(passwd)
+
+                        me = await self.app.get_me()
+                        
                         break
                     if isinstance(
                         r, raw.types.auth.login_token_success.LoginTokenSuccess
@@ -226,7 +219,7 @@ class Auth:
             else:
                 phone, phone_code_hash = await self.send_code()
                 logged = await self.enter_code(phone, phone_code_hash)
-
+                
                 me: types.User = (
                     await self.app.get_me() if logged else await self.enter_2fa()
                 )
@@ -242,3 +235,25 @@ class Auth:
             return me, self.app, self.tapp
 
         return me, self.app, None
+
+    async def web_auth(self) -> NoReturn:
+        """Start the web interface for authentication"""
+
+        if args.web and web_available:
+
+            if web := (
+                core.Web(
+                    api_token=None,
+                )
+            ):
+
+                web.port = random.randint(2000, 9999)
+
+                await web.start(web.port)
+
+                logging.info(f"🌐 Web interface available at: {web.url}")
+
+                await web.wait_for_api_token_setup()
+                await web.wait_for_clients_setup()
+
+                return utils.restart()
