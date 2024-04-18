@@ -53,7 +53,7 @@ class TesterMod(loader.Module):
         "no_logs_": "❕ You don't have any logs at verbosity  {} ({})",
         "invalid_verb": "Invalid verbosity level",
         "suspend": "<emoji id=5452023368054216810>🥶</emoji> <b>Shizu has been suspended for {} seconds</b>",
-        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>Invalid time to suspend</b>"
+        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>Invalid time to suspend</b>",
     }
 
     strings_ru = {
@@ -61,7 +61,7 @@ class TesterMod(loader.Module):
         "no_logs_": "❕ У вас нет логов с уровнем {} ({})",
         "invalid_verb": "Недопустимый уровень вывода",
         "suspend": "<emoji id=5452023368054216810>🥶</emoji> <b>Shizu был приостановлен на {} секунд</b>",
-        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>Недопустимое время приостановки</b>"
+        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>Недопустимое время приостановки</b>",
     }
 
     strings_uz = {
@@ -69,7 +69,7 @@ class TesterMod(loader.Module):
         "no_logs_": "❕ <b>Shu xil xatolik mavjud emas</b> ({})",
         "invalid_verb": "Bunday xil xatolik yoq",
         "suspend": "<emoji id=5452023368054216810>🥶</emoji> <b>Shizu {} soniya uchun to'xtatildi</b>",
-        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>To'xtatish uchun noto'g'ri vaqt</b>"
+        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>To'xtatish uchun noto'g'ri vaqt</b>",
     }
 
     strings_jp = {
@@ -77,7 +77,7 @@ class TesterMod(loader.Module):
         "no_logs_": "❕ あなたは {} ({}) レベルのログを持っていません",
         "invalid_verb": "このようなエラーはありません",
         "suspend": "<emoji id=5452023368054216810>🥶</emoji> <b>Shizuは{}秒間停止されました</b>",
-        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>無効な一時停止時間</b>"
+        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>無効な一時停止時間</b>",
     }
 
     strings_ua = {
@@ -85,15 +85,15 @@ class TesterMod(loader.Module):
         "no_logs_": "❕ У вас немає логів з рівнем {} ({})",
         "invalid_verb": "Недопустимий рівень виводу",
         "suspend": "<emoji id=5452023368054216810>🥶</emoji> <b>Shizu був призупинений на {} секунд</b>",
-        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>Недопустимий час призупинення</b>"
+        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>Недопустимий час призупинення</b>",
     }
 
     strings_kz = {
         "ping": "<emoji id=5220226955206467824>⚡️</emoji> <b>Telegramға жауап беру тездігі:</b> <code>{}</code> <b>мс</b>",
         "no_logs_": "❕ <b>Сізде бұл деңгейдегі журналдар жоқ</b> {} ({})",
         "invalid_verb": "Бұлдай қате жоқ",
-        "suspend": "<emoji id=5452023368054216810>🥶</emoji> <b>Shizu {} секунд үшін тоқтатылды</b>",   
-        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>Тоқтату уақыты жарамсыз</b>"
+        "suspend": "<emoji id=5452023368054216810>🥶</emoji> <b>Shizu {} секунд үшін тоқтатылды</b>",
+        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>Тоқтату уақыты жарамсыз</b>",
     }
 
     strings_kr = {
@@ -101,15 +101,15 @@ class TesterMod(loader.Module):
         "no_logs_": "❕ {} ({}) 레벨의 로그가 없습니다",
         "invalid_verb": "이런 오류는 없습니다",
         "suspend": "<emoji id=5452023368054216810>🥶</emoji> <b>Shizu는 {} 초 동안 중지되었습니다</b>",
-        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>잘못된 일시 중지 시간</b>"
+        "suspend_invalid_time": "<emoji id=5807626765874499116>🚫</emoji> <b>잘못된 일시 중지 시간</b>",
     }
 
     @loader.command()
     async def logs(self, app: Client, message: types.Message):
         """To get logs. Usage: logs (verbosity level)"""
-        
+
         args = message.get_args()
-        
+
         lvl = 40
 
         if args and not (lvl := logger.get_valid_level(args)):
@@ -148,23 +148,15 @@ class TesterMod(loader.Module):
             self.strings("ping").format(ping),
         )
 
-
     @loader.command()
     async def suspend(self, app: Client, message: types.Message):
         """Suspend the userbot for a certain time (n seconds)"""
 
         try:
             await message.answer(
-                self.strings("suspend").format(
-                    int(message.get_args())
-                )
+                self.strings("suspend").format(int(message.get_args()))
             )
             time.sleep(int(message.get_args()))
-            
-        except ValueError:
-            await message.answer(
-                self.strings("suspend_invalid_time")
-            )
 
-        
-        
+        except ValueError:
+            await message.answer(self.strings("suspend_invalid_time"))

@@ -6,7 +6,6 @@
     Licensed under the GNU GPLv3
 """
 
-
 # Shizu Copyright (C) 2023-2024  AmoreForever
 
 # This program is free software: you can redistribute it and/or modify
@@ -394,9 +393,11 @@ class ShizuConfig(loader.Module):
                         reply_markup=[
                             [
                                 {
-                                    "text": self.strings("false")
-                                    if module.config[config_opt]
-                                    else self.strings("true"),
+                                    "text": (
+                                        self.strings("false")
+                                        if module.config[config_opt]
+                                        else self.strings("true")
+                                    ),
                                     "callback": self.inline__true_false_set,
                                     "args": (
                                         not module.config[config_opt],
@@ -719,7 +720,8 @@ class ShizuConfig(loader.Module):
             if (
                 not getattr(message, "via_bot", False)
                 or message.via_bot.id != (await self.bot.bot.get_me()).id
-                or "This message is gonna be deleted..." not in getattr(message, "text", "")
+                or "This message is gonna be deleted..."
+                not in getattr(message, "text", "")
             ):
                 return
 

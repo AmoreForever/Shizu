@@ -17,9 +17,11 @@
 import configparser as cp
 import asyncio
 import logging
+import random
 import base64
 import sys
 import os
+import argparse
 
 from datetime import datetime
 from getpass import getpass
@@ -34,7 +36,17 @@ from telethon import TelegramClient
 from qrcode.main import QRCode
 from . import utils
 
+try:
+    from .web import core
+except ImportError as e:
+    web_available = False
+    logging.exception("Unable to import web")
+else:
+    web_available = True
+
 Session.notice_displayed: bool = True
+
+loop = asyncio.get_event_loop()
 
 
 def colored_input(prompt: str = "", hide: bool = False) -> str:
@@ -51,6 +63,23 @@ def colored_input(prompt: str = "", hide: bool = False) -> str:
             prompt=prompt,
         )
     )
+
+def argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Shizu - A modular Telegram userbot",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        usage="python3 -m shizu -[option]"
+    )
+
+    parser.add_argument(
+        "--no-web", action="store_false", help="Disable web interface", dest="web"
+    )
+    
+
+    return parser.parse_args()
+
+
+args = argument_parser()
 
 
 class Auth:
@@ -75,11 +104,6 @@ class Auth:
             api_id=cfg.get("pyrogram", "api_id"),
             api_hash=cfg.get("pyrogram", "api_hash"),
             device_model=device_model,
-            session_string=(
-                cfg.get("pyrogram", "string_session")
-                if "JAMHOST" in os.environ
-                else None
-            ),
         )
 
         if utils.is_tl_enabled():
@@ -143,9 +167,24 @@ class Auth:
 
     async def authorize(self) -> Union[Tuple[types.User, Client], NoReturn]:
         await self.app.connect()
+
         try:
             me = await self.app.get_me()
         except errors.AuthKeyUnregistered:
+            if args.web and web_available:
+                if web := (
+                    core.Web(
+                        api_token=None,
+                    )
+                ):
+                    
+                    web.port = random.randint(2000, 9999)   
+                    await web.start(web.port)
+                    logging.info(f"🌐 Web interface available at: {web.url}")
+                    await web.wait_for_api_token_setup()
+                    await web.wait_for_clients_setup()
+                    return utils.restart()
+
             cfg = cp.ConfigParser()
             cfg.read("config.ini")
             qr = colored_input("Login with QR-CODE? y/n").lower().split()
@@ -191,13 +230,6 @@ class Auth:
                 me: types.User = (
                     await self.app.get_me() if logged else await self.enter_2fa()
                 )
-
-                if "JAMHOST" in os.environ:
-                    cfg["pyrogram"][
-                        "string_session"
-                    ] = await self.app.export_session_string()
-                    with open("./config.ini", "w", encoding="utf-8") as file:
-                        cfg.write(file)
 
         except errors.SessionRevoked:
             logging.error(

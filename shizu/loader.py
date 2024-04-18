@@ -375,7 +375,7 @@ class ModulesManager:
                 await self.load_module(r.text, r.url)
             except requests.exceptions.RequestException as error:
                 logging.exception(
-                    f"Ошибка при загрузке стороннего модуля {custom_module}: {error}"
+                    f"Error while downloading custom module {custom_module}: {error}"
                 )
 
         logging.info("Dialogs loaded")

@@ -168,10 +168,9 @@ def get_args(message: typing.Union[Message, str]) -> str:
     args = message.split()[1:]
     return " ".join(args) if args else ""
 
+
 def restart():
     """Restart the bot"""
-
-    logging.info("Restarting Shizu...")
     return atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
 
 
@@ -547,11 +546,11 @@ async def answer(
                     message=message,
                     text=response,
                     reply_markup=reply_markup,
-                    msg_id=reply.id
-                    if reply
-                    else message.topic.id
-                    if message.topic
-                    else None,
+                    msg_id=(
+                        reply.id
+                        if reply
+                        else message.topic.id if message.topic else None
+                    ),
                     **kwargs,
                 )
                 if reply_markup
@@ -567,9 +566,7 @@ async def answer(
                         reply_to_message_id=(
                             message.topic.id
                             if message.topic
-                            else None or reply.id
-                            if reply
-                            else None
+                            else None or reply.id if reply else None
                         ),
                         **kwargs,
                     )

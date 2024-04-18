@@ -1,6 +1,8 @@
 https://github.com/AmoreForever/Shizu-Pyro/archive/dev.zip
 telethon
 aiogram==2.25.1
+aiohttp_jinja2==1.5
+Jinja2==3.1.2
 TgCrypto
 psutil
 loguru

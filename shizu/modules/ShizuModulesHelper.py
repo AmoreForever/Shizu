@@ -158,7 +158,7 @@ class ModulesLinkMod(loader.Module):
         "what_": "<emoji id=5190748314026385859>🤷‍♂️</emoji> 인수가 없습니다 (모듈 이름 또는 명령)",
         "search_": "<emoji id=5188311512791393083>🔎</emoji> <b>모듈 검색...</b>",
         "nope_": "<emoji id=5346063050233360577>😮</emoji> <b>모듈을 찾을 수 없습니다</b>",
-        "core_file": "<emoji id=5870528606328852614>📁</emoji> shizu userbot의 코어 파일, <code>{}</code>\n\n⚠️ 사용자 봇에서 로드하거나 언로드 할 수 없습니다",
+        "core_file": "<emoji id=5870528606328852614>📁</emoji> shizu userbot 의 코어 파일, <code>{}</code>\n\n⚠️ 사용자 봇에서 로드하거나 언로드 할 수 없습니다",
         "module_": (
             "🪭 <b><a href='{}'>{}</a></b>\n"
             "ℹ️ <i>{}</i>\n\n"

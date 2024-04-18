@@ -198,7 +198,7 @@ class InlineCall:
 
 
 class Events(Item):
-    """Обработчик событий"""
+    """Events handler for inline forms and lists"""
 
     def __init__(self):
         self._forms = {}

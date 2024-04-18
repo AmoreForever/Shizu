@@ -24,7 +24,7 @@ from .. import database, types
 
 
 class Item:
-    """Элемент"""
+    """Base class for all classes"""
 
     def __init__(self) -> None:
         """Initializing a class"""

@@ -1,0 +1,578 @@
+<!--
+    █ █ ▀ █▄▀ ▄▀█ █▀█ ▀    ▄▀█ ▀█▀ ▄▀█ █▀▄▀█ ▄▀█
+    █▀█ █ █ █ █▀█ █▀▄ █ ▄  █▀█  █  █▀█ █ ▀ █ █▀█
+
+    Copyright 2022 t.me/hikariatama
+    Licensed under the GNU GPLv3
+
+  ---------------------------------------------
+
+    Shizu Copyright (C) 2023-2024  AmoreForever
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+
+{% extends "base.jinja2" %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/scrypt-async@2.0.1/scrypt-async.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Open+Sans:wght@300&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Hubballi&display=swap');
+
+  .button {
+    border-radius: 100px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .button :hover {
+    animation: fadeIn 2s infinite ease;
+  }
+
+
+  @keyframes fadeIn {
+    0% {
+      transform: scale(1.0);
+      -webkit-transform: scale(1.0);
+    }
+
+    50% {
+      transform: scale(1.2);
+      -webkit-transform: scale(1.2);
+
+    }
+
+    100% {
+      transform: scale(1.0);
+      -webkit-transform: scale(1.0);
+
+    }
+  }
+
+
+  .signin_block {
+    display: inline-block;
+  }
+
+  .signin_block ul {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+  }
+
+  .signin_block li {
+    width: 100%;
+  }
+
+  .signin_block h1 {
+    margin: 0;
+    color: #eee;
+    font-size: 22px;
+    padding: 10px;
+    font-family: "Open Sans";
+  }
+</style>
+
+<style type="text/css">
+  body,
+  html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    transition: all 2s ease;
+    background: #16181d;
+  }
+
+
+
+  .title {
+    font-size: 50px;
+    font-family: Hubballi;
+    text-align: center;
+    color: #8155BA;
+    width: 100%;
+    z-index: 2;
+    position: relative;
+    height: 50px;
+    line-height: 50px;
+  }
+
+  .description {
+    font-size: 24px;
+    color: white;
+    text-align: center;
+    width: 100%;
+    z-index: 2;
+    position: relative;
+    padding-top: 20px;
+    line-height: 1.3;
+    font-family: Hubballi;
+  }
+
+  .wrapper {
+    background-color: #0a0a0a;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+
+
+  #root {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    margin: auto;
+  }
+
+
+  .main_content {
+    display: none;
+  }
+
+  .center {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    position: relative;
+    z-index: 2;
+    transition: 0.5s;
+    margin-top: 20px;
+  }
+
+  .blur {
+    padding: 4rem 10rem;
+    border-radius: 10px;
+    background-color: #111112;
+    border: 1px solid #333333;
+    position: relative;
+    z-index: 99;
+    -webkit-box-shadow: 4px 4px 44px 12px rgba(129, 85, 186, 0.2);
+    -moz-box-shadow: 4px 4px 44px 12px rgba(129, 85, 186, 0.2);
+    box-shadow: 4px 4px 44px 12px rgba(129, 85, 186, 0.2);
+    animation: shine 5s infinite ease-in-out;
+  }
+
+  @keyframes shine {
+    0% {
+      -webkit-box-shadow: 0 0 10px 0px rgba(129, 85, 186, 0.2);
+      -moz-box-shadow: 0 0 10px 0px rgba(129, 85, 186, 0.2);
+      box-shadow: 0 0 10px 0px rgba(129, 85, 186, 0.2);
+    }
+
+    50% {
+      -webkit-box-shadow: 0 0 20px 10px rgba(129, 85, 186, 0.2);
+      -moz-box-shadow: 0 0 20px 10px rgba(129, 85, 186, 0.2);
+      box-shadow: 0 0 20px 10px rgba(129, 85, 186, 0.2);
+    }
+
+    100% {
+      -webkit-box-shadow: 0 0 10px 0px rgba(129, 85, 186, 0.2);
+      -moz-box-shadow: 0 0 10px 0px rgba(129, 85, 186, 0.2);
+      box-shadow: 0 0 10px 0px rgba(129, 85, 186, 0.2);
+    }
+  }
+
+  .bg {
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 80vw;
+    height: 60vh;
+    position: absolute;
+    z-index: 1;
+    background-position: center;
+    display: none;
+  }
+
+
+  @media screen and (max-width: 736px) {
+    .blur {
+      width: 100%;
+      height: 100%;
+      padding: 2rem;
+      box-sizing: border-box;
+      border-radius: 0%;
+      border: 0px solid #111112;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bg {
+      width: 100vh;
+      height: 100vw;
+      transform: rotate(90deg);
+    }
+  }
+
+  input {
+    background: transparent;
+    border: 1px solid #eee;
+    outline: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    color: #8155BA;
+    text-align: center;
+  }
+
+  label {
+    margin: 0 10px;
+    color: #eee;
+    user-select: none;
+  }
+
+  #continue_btn {
+    padding: 8.1px 12px;
+    background: transparent;
+    border-radius: 10px;
+    user-select: none;
+    color: #fff;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid #eee;
+    margin: 10px 0;
+    transition: all .3s ease;
+    margin-left: 5px;
+  }
+
+  #continue_btn:hover {
+    background-color: transparent;
+    color: #8155BA;
+  }
+
+  #continue_btn:active {
+    background-color: transparent;
+    color: #8155BA;
+  }
+
+  #continue_btn.error {
+    background-color: #c6282846;
+    transition: all .3s ease;
+  }
+
+  #continue_btn,
+  #block_api_id,
+  #block_api_hash,
+  #block_phone,
+  #block_2fa {
+    display: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+
+{% block after %}
+<div class="wrapper">
+  <div class="blur">
+    <div class="title">Shizu</div>
+    <div class="description">Find <span style="color: #8155BA;">joy</span> in the little things.</div>
+    <div class="center">
+      <div class="button" id="get_started"><img class="vector" src="{{ static('Vector.svg') }}" alt=""></div>
+      <span id="block_api_id">
+        <label class="api_id" for="api_id">API ID: </label>
+        <input class="api_id" id="api_id" placeholder="..." style="width: 12em;">
+      </span>
+      <span id="block_api_hash">
+        <label class="api_hash" for="api_hash">API HASH: </label>
+        <input class="api_hash" id="api_hash" placeholder="..." style="width: 12em;">
+      </span>
+      <span id="block_phone">
+        <label class="phone" for="phone">Phone: </label>
+        <input class="phone" id="phone" placeholder="..." style="width: 12em;">
+      </span>
+      <span id="block_2fa">
+        <label class="_2fa" for="_2fa">2FA Password: </label>
+        <input class="_2fa" id="_2fa" placeholder="..." style="width: 12em;" type="password">
+      </span>
+      <div id="continue_btn">Next</div>
+
+    </div>
+  </div>
+  <div id="root">
+
+
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.rings.min.js"></script>
+<script type="text/javascript">
+
+  $(document).ready(function () {
+    $('.bg').hide().delay(2000).fadeIn(500);
+  });
+  $("#get_started").click(() => {
+    $("#get_started").fadeOut(500, () => {
+      cnt_btn.setAttribute('current-step', 'api_id');
+      $("#block_api_id").hide().fadeIn(500);
+      $("#continue_btn").hide().fadeIn(500);
+    });
+  });
+
+  function isInt(value) {
+    var x = parseFloat(value);
+    return !isNaN(value) && (x | 0) === x;
+  }
+
+  function isValidPhone(p) {
+    var phoneRe = /^[+]?\d{11,13}$/;
+    return phoneRe.test(p);
+  }
+
+  var _api_id = "", _api_hash = "", _phone = "", _2fa_pass = "", _tg_pass = "";
+
+  const cnt_btn = document.querySelector('#continue_btn');
+  cnt_btn.onclick = (e) => {
+    if (cnt_btn.disabled) return;
+
+    let step = cnt_btn.getAttribute('current-step');
+    if (step == "api_id") {
+      let api_id = document.querySelector('#api_id').value;
+      if (api_id.length < 4 || !isInt(api_id)) {
+        $(".bg").addClass("red_state");
+        cnt_btn.disabled = true;
+        setTimeout(() => {
+          cnt_btn.disabled = false;
+          $(".bg").removeClass("red_state");
+        }, 1000);
+        return;
+      }
+
+      _api_id = parseInt(api_id);
+      cnt_btn.setAttribute('current-step', 'api_hash');
+      $("#block_api_id").fadeOut(() => {
+        $("#block_api_hash").hide().fadeIn();
+      });
+    } else if (step == "api_hash") {
+      let api_hash = document.querySelector('#api_hash').value;
+      if (api_hash.length != 32) {
+        $(".bg").addClass("red_state");
+        cnt_btn.disabled = true;
+        setTimeout(() => {
+          cnt_btn.disabled = false;
+          $(".bg").removeClass("red_state");
+        }, 1000);
+        return;
+      }
+
+      _api_hash = api_hash;
+      fetch("/setApi", {
+        method: "PUT",
+        body: _api_hash + _api_id,
+        credentials: "include"
+      })
+        .then(function (response) {
+          if (!response.ok) {
+            Swal.fire({
+              'icon': 'error',
+              'title': 'Error occured while saving credentials'
+            });
+          } else {
+            cnt_btn.setAttribute('current-step', 'phone');
+            $("#block_api_hash").fadeOut(() => {
+              $("#block_phone").hide().fadeIn();
+            });
+          }
+        })
+        .catch(function (response) {
+          Swal.fire({
+            'icon': 'error',
+            'title': 'Error occured while saving credentials'
+          });
+        });
+    } else if (step == "phone" || step == "2fa") {
+      if (step == "phone") {
+        let phone = document.querySelector('#phone').value;
+        if (!isValidPhone(phone)) {
+          $(".bg").addClass("red_state");
+          cnt_btn.disabled = true;
+          setTimeout(() => {
+            cnt_btn.disabled = false;
+            $(".bg").removeClass("red_state");
+          }, 1000);
+          return;
+        }
+
+        _phone = phone;
+        console.log(_phone);
+        fetch("/sendTgCode", { method: "POST", body: _phone, credentials: "include" })
+          .then(function (response) {
+            if (!response.ok) {
+              Swal.fire({
+                'icon': 'error',
+                'title': 'Code send failed'
+              });
+            } else {
+              Swal.fire({
+                title: 'Enter received code',
+                input: 'text',
+                inputAttributes: {
+                  autocapitalize: 'off'
+                },
+                showCancelButton: false,
+                confirmButtonText: 'Confirm',
+                showLoaderOnConfirm: true,
+                preConfirm: (login) => {
+                  _tg_pass = login
+                  return fetch("/tgCode", { method: "POST", body: _tg_pass + "\n" + _phone + "\n" + _2fa_pass })
+                    .then(function (response) {
+                      if (!response.ok) {
+                        console.log(response);
+                        if (response.status == 403) {
+                          Swal.showValidationMessage('Code is incorrect!');
+                        } else if (response.status == 401) {
+                          cnt_btn.setAttribute('current-step', '2fa');
+                          $("#block_phone").fadeOut(() => {
+                            $("#block_2fa").hide().fadeIn();
+                          });
+                        } else if (response.status == 404) {
+                          // Code expired, must re-send code request. Close dialog and wait for user action.
+                          Swal.showValidationMessage('Code is expired!');
+                        } else {
+                          Swal.showValidationMessage('Internal server error');
+                        }
+                      } else {
+                        return fetch("/finishLogin", { method: "POST", body: "", credentials: "include" })
+                          .then(function (response) {
+                            if (!response.ok) {
+                              Swal.fire({
+                                'icon': 'error',
+                                'text': 'Login confirmation error'
+                              })
+                            } else {
+                              Swal.fire({
+                                'icon': 'success',
+                                'text': 'Auth successful!',
+                                'timer': 1000
+
+                              });
+                              setTimeout(() => {
+                                $(".description").html("Your account is now connected to Shizu. Enjoy!");
+                                $("#block_phone").fadeOut(() => {
+                                  $("#block_2fa").fadeOut(() => {
+                                    $("#continue_btn").fadeOut();
+                                  });
+                                });
+
+
+                              }, 1500);
+                            }
+                          })
+                          .catch(function (response) {
+                            Swal.fire({
+                              'icon': 'error',
+                              'text': 'Login confirmation error'
+                            })
+                          });
+                      }
+                    })
+                    .catch(error => {
+                      Swal.showValidationMessage(
+                        'Auth failed: ' + error.toString()
+                      )
+                    })
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+              })
+            }
+          })
+          .catch(function (error) {
+            Swal.fire({
+              'icon': 'error',
+              'title': 'Code send failed'
+            });
+          });
+      } else {
+        let _2fa = document.querySelector('#_2fa').value;
+        _2fa_pass = _2fa;
+        fetch("/tgCode", { method: "POST", body: _tg_pass + "\n" + _phone + "\n" + _2fa_pass })
+          .then(function (response) {
+            if (!response.ok) {
+              console.log(response);
+              if (response.status == 403) {
+                Swal.showValidationMessage('Code is incorrect!');
+              } else if (response.status == 401) {
+                cnt_btn.setAttribute('current-step', '2fa');
+                $("#block_phone").fadeOut(() => {
+                  $("#block_2fa").hide().fadeIn();
+                });
+              } else if (response.status == 404) {
+                // Code expired, must re-send code request. Close dialog and wait for user action.
+                Swal.showValidationMessage('Code is expired!');
+              } else {
+                Swal.showValidationMessage('Internal server error');
+              }
+            } else {
+              fetch("/finishLogin", { method: "POST", body: '', credentials: "include" })
+                .then(function (response) {
+                  if (!response.ok) {
+                    Swal.fire({
+                      'icon': 'error',
+                      'text': 'Login confirmation error'
+                    })
+                  } else {
+                    Swal.fire({
+                      'icon': 'success',
+                      'text': 'Auth successful!',
+                      'timer': 1000
+                    });
+                    setTimeout(() => {
+                      $(".description").html("Your account is now connected to Shizu. Enjoy!");
+                      $("#block_phone").fadeOut(() => {
+                        $("#block_2fa").fadeOut(() => {
+                          $("#continue_btn").fadeOut();
+                        });
+                      });
+
+                    }, 1500);
+                  }
+                })
+                .catch(function (response) {
+                  Swal.fire({
+                    'icon': 'error',
+                    'text': 'Login confirmation error'
+                  })
+                });
+            }
+          })
+          .catch(error => {
+            Swal.showValidationMessage(
+              'Auth failed: ' + error.toString()
+            )
+          })
+      }
+    }
+  }
+</script>
+{% endblock %}

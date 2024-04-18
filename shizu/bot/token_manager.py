@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 class TokenManager(Item):
-    """Менеджер токенов"""
+    """Class for managing bot tokens"""
 
     async def _find_bot(self) -> Union[Tuple[str, str], None]:
         """Find the bot"""

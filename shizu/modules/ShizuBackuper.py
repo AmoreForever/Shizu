@@ -153,9 +153,11 @@ class BackupMod(loader.Module):
             "shizu.updater",
             "restart",
             {
-                "chat": message.chat.username
-                if message.chat.type == enums.ChatType.BOT
-                else message.chat.id,
+                "chat": (
+                    message.chat.username
+                    if message.chat.type == enums.ChatType.BOT
+                    else message.chat.id
+                ),
                 "id": ms.id,
                 "start": time.time(),
                 "type": "restart",

@@ -128,9 +128,11 @@ class CustomException:
 
         full_stack = "\n".join(
             [
-                format_line(line)
-                if re.search(line_regex, line)
-                else f"<code>{html.escape(line)}</code>"
+                (
+                    format_line(line)
+                    if re.search(line_regex, line)
+                    else f"<code>{html.escape(line)}</code>"
+                )
                 for line in full_stack.splitlines()
             ]
         )
@@ -153,7 +155,7 @@ class CustomException:
 
 
 class StreamHandler(logging.Handler):
-    """Обработчик логирования в поток"""
+    """Handler for logging to stream (console)"""
 
     def __init__(self, lvl: int = logging.INFO):
         super().__init__(lvl)
@@ -325,8 +327,8 @@ def override_text(exception: Exception) -> typing.Optional[str]:
         return "✈️ <b>You have problems with internet connection on your server.</b>"
 
     return None
-    
-        
+
+
 
 def setup_logger(level: Union[str, int], log_file_path: str = "shizu.log"):
     """Setup logger"""

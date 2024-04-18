@@ -358,7 +358,6 @@ class ShizuSettings(loader.Module):
             await _client.disconnect()
             os.remove("shizu-tl.session")
             await call.edit(f"❌ {e}", inline_message_id=inline_message_id)
-            
 
     @loader.command()
     async def enabletlmode(self, app, message):

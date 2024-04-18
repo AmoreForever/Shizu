@@ -40,6 +40,7 @@ from subprocess import check_output
 from pyrogram import Client, types, enums
 
 from .. import loader, utils
+from ..web import core
 from ..version import __version__, branch
 
 
@@ -100,7 +101,7 @@ class UpdateMod(loader.Module):
     async def update(self, app: Client, message: types.Message):
         """Updates itself"""
         try:
-            await message.answer("Update attempt...")
+            await message.answer(self.strings("attempt_"))
             check_output("git stash", shell=True).decode()
             output = check_output("git pull", shell=True).decode()
 
