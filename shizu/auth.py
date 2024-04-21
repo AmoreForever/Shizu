@@ -75,9 +75,7 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--no-web", action="store_false", help="Disable web interface", dest="web"
     )
-    parser.add_argument(
-        "--port", type=int, help="Port for web interface", dest="port"
-    )
+    parser.add_argument("--port", type=int, help="Port for web interface", dest="port")
 
     return parser.parse_args()
 
@@ -88,23 +86,21 @@ args = argument_parser()
 class Auth:
     def __init__(self, session_name: str = "../shizu") -> None:
 
+        self._check_api_tokens()
+
         cfg = cp.ConfigParser()
         cfg.read("./config.ini")
 
-        try:
-            device_model = cfg["pyrogram"]["device_model"]
-        except KeyError:
-            device_model = utils.get_random_smartphone()
-
-            cfg["pyrogram"]["device_model"] = device_model
-
-            with open("./config.ini", "w", encoding="utf-8") as file:
-                cfg.write(file)
+        device_model = cfg.get(
+            "pyrogram", "device_model", fallback=utils.get_random_smartphone()
+        )
+        api_id = cfg.get("pyrogram", "api_id", fallback="123")
+        api_hash = cfg.get("pyrogram", "api_hash", fallback="hash")
 
         self.app = Client(
             name=session_name,
-            api_id=cfg.get("pyrogram", "api_id"),
-            api_hash=cfg.get("pyrogram", "api_hash"),
+            api_id=api_id,
+            api_hash=api_hash,
             device_model=device_model,
         )
 
@@ -118,16 +114,7 @@ class Auth:
 
     def _check_api_tokens(self) -> bool:
         cfg = cp.ConfigParser()
-        if not cfg.read("./config.ini"):
-            cfg["pyrogram"] = {
-                "api_id": colored_input("Enter API ID: "),
-                "api_hash": colored_input("Enter API hash: "),
-                "device_model": utils.get_random_smartphone(),
-            }
-            with open("./config.ini", "w", encoding="utf-8") as file:
-                cfg.write(file)
-
-        return True
+        return bool(cfg.read("./config.ini"))
 
     async def send_code(self) -> Tuple[str, str]:
         while True:
@@ -188,6 +175,19 @@ class Auth:
     async def handle_auth_key_unregistered(self) -> None:
         cfg = cp.ConfigParser()
         cfg.read("config.ini")
+
+        api_id = colored_input("Enter API ID: ")
+        api_hash = colored_input("Enter API hash: ")
+
+        cfg["pyrogram"] = {
+            "api_id": api_id,
+            "api_hash": api_hash,
+            "device_model": utils.get_random_smartphone(),
+        }
+
+        with open("config.ini", "w", encoding="utf-8") as file:
+            cfg.write(file)
+
         qr = colored_input("Login with QR-CODE? y/n").lower().split()
         if qr[0] == "y":
             await self.login_with_qr_code(cfg)
@@ -205,16 +205,13 @@ class Auth:
         await self.app.disconnect()
 
     async def login_with_qr_code(self, cfg: cp.ConfigParser) -> None:
-        self._check_api_tokens()
         api_id = int(cfg.get("pyrogram", "api_id"))
         api_hash = cfg.get("pyrogram", "api_hash")
         tries = 0
         while True:
             try:
                 r = await self.app.invoke(
-                    ExportLoginToken(
-                        api_id=api_id, api_hash=api_hash, except_ids=[]
-                    )
+                    ExportLoginToken(api_id=api_id, api_hash=api_hash, except_ids=[])
                 )
             except errors.exceptions.unauthorized_401.SessionPasswordNeeded:
                 print("2FA is enabled, please enter your password")
@@ -224,14 +221,9 @@ class Auth:
                 await self.app.check_password(passwd)
                 me = await self.app.get_me()
                 break
-            if isinstance(
-                r, raw.types.auth.login_token_success.LoginTokenSuccess
-            ):
+            if isinstance(r, raw.types.auth.login_token_success.LoginTokenSuccess):
                 break
-            if (
-                isinstance(r, raw.types.auth.login_token.LoginToken)
-                and tries % 30 == 0
-            ):
+            if isinstance(r, raw.types.auth.login_token.LoginToken) and tries % 30 == 0:
                 print("Scan QR code below:")
                 qr = QRCode(error_correction=1)
                 qr.add_data(
@@ -253,9 +245,7 @@ class Auth:
                 )
             ):
 
-                web.port = (
-                    args.port or random.randint(2000, 9999)
-                )
+                web.port = args.port or random.randint(2000, 9999)
 
                 await web.start(web.port)
 
