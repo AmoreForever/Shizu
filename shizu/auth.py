@@ -87,7 +87,6 @@ args = argument_parser()
 
 class Auth:
     def __init__(self, session_name: str = "../shizu") -> None:
-        self._check_api_tokens()
 
         cfg = cp.ConfigParser()
         cfg.read("./config.ini")
@@ -206,6 +205,7 @@ class Auth:
         await self.app.disconnect()
 
     async def login_with_qr_code(self, cfg: cp.ConfigParser) -> None:
+        self._check_api_tokens()
         api_id = int(cfg.get("pyrogram", "api_id"))
         api_hash = cfg.get("pyrogram", "api_hash")
         tries = 0
