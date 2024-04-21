@@ -57,7 +57,7 @@ try:
         f"🐙 Shuzu v{'.'.join(map(str, __version__))} is starting...\n"
         f"🐍 Python v{platform.python_version()}\n"
         f"👾 Pyrogram v{pyrogram.__version__}\n"
-        "🤝 Support chat: @shizu_talks\n"
+        "🤝 Support chat: https://t.me/shizu_talks\n"
     )
     logging.info(banner)
     

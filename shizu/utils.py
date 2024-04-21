@@ -625,7 +625,6 @@ def get_platform() -> str:
     IS_TERMUX = "com.termux" in os.environ.get("PREFIX", "")
     IS_DOCKER = "DOCKER" in os.environ
     IS_WIN = "WINDIR" in os.environ
-    IS_GOORM = "GOORM" in os.environ
     IS_JAMHOST = "JAMHOST" in os.environ
     IS_WSL = False
 
@@ -643,8 +642,6 @@ def get_platform() -> str:
         platform = "🧱 WSL"
     elif IS_WIN:
         platform = "💻 Windows"
-    elif IS_GOORM:
-        platform = "🍊 Goorm"
     elif IS_JAMHOST:
         platform = "🍓 JamHost"
     else:

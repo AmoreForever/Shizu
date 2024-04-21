@@ -115,6 +115,8 @@ class TokenManager(Item):
                     seconds = response.text.split()[-2]
                     logger.error(f"Please repeat in {seconds} seconds")
 
+            time.sleep(1)
+
             await conv.ask(
                 f"🐙 Shizu UserBot of {utils.get_display_name(self._all_modules.me)[:45]}"
             )
@@ -143,6 +145,8 @@ class TokenManager(Item):
 
             await conv.ask_media("assets/bot.jpg", media_type="photo")
 
+            time.sleep(1)
+
             await conv.get_response()
 
             await conv.ask("/setinline")
@@ -154,17 +158,23 @@ class TokenManager(Item):
             await conv.ask("shizu>>")
             await conv.get_response()
 
+            time.sleep(1)
+
             await conv.ask("/setinlinefeedback")
             await conv.get_response()
 
             await conv.ask(f"@{bot_username}")
             await conv.get_response()
 
+            time.sleep(1)
+
             await conv.ask("1/1000")
             await conv.get_response()
 
             await conv.ask("/setinlinefeedback")
             await conv.get_response()
+
+            time.sleep(1)
 
             await conv.ask(f"@{bot_username}")
             await conv.get_response()

@@ -44,7 +44,7 @@ except ImportError as e:
 else:
     web_available = True
 
-Session.notice_displayed: bool = True
+Session.notice_displayed = True
 
 loop = asyncio.get_event_loop()
 
@@ -169,7 +169,6 @@ class Auth:
                 logging.error("Incorrect password, please try again")
 
     async def authorize(self) -> Union[Tuple[types.User, Client], NoReturn]:
-
         await self.app.connect()
 
         try:
@@ -177,67 +176,71 @@ class Auth:
         except errors.AuthKeyUnregistered:
             if args.web and web_available:
                 await self.web_auth()
-
-            cfg = cp.ConfigParser()
-            cfg.read("config.ini")
-            qr = colored_input("Login with QR-CODE? y/n").lower().split()
-            if qr[0] == "y":
-                api_id = int(cfg.get("pyrogram", "api_id"))
-                api_hash = cfg.get("pyrogram", "api_hash")
-                tries = 0
-                while True:
-                    try:
-                        r = await self.app.invoke(
-                            ExportLoginToken(
-                                api_id=api_id, api_hash=api_hash, except_ids=[]
-                            )
-                        )
-                    except errors.exceptions.unauthorized_401.SessionPasswordNeeded:
-                        print("2FA is enabled, please enter your password")
-                        passwd = colored_input(
-                            "Enter two-factor authentication password: ", True
-                        )
-                        await self.app.check_password(passwd)
-
-                        me = await self.app.get_me()
-
-                        break
-                    if isinstance(
-                        r, raw.types.auth.login_token_success.LoginTokenSuccess
-                    ):
-                        break
-                    if (
-                        isinstance(r, raw.types.auth.login_token.LoginToken)
-                        and tries % 30 == 0
-                    ):
-                        print("Scan QR code below:")
-                        qr = QRCode(error_correction=1)
-                        qr.add_data(
-                            f"tg://login?token={base64.urlsafe_b64encode(r.token).decode('utf-8').rstrip('=')}"
-                        )
-                        qr.make(fit=True)
-                        qr.print_ascii()
-                    tries += 1
-                    await asyncio.sleep(1)
-            else:
-                phone, phone_code_hash = await self.send_code()
-                logged = await self.enter_code(phone, phone_code_hash)
-
-                me: types.User = (
-                    await self.app.get_me() if logged else await self.enter_2fa()
-                )
-
+            await self.handle_auth_key_unregistered()
         except errors.SessionRevoked:
-            logging.error(
-                "Session has been revoked, delete the session and run the start command again"
-            )
-            await self.app.disconnect()
+            await self.handle_session_revoked()
             return sys.exit(64)
 
         if utils.is_tl_enabled():
             return me, self.app, self.tapp
 
         return me, self.app, None
+
+    async def handle_auth_key_unregistered(self) -> None:
+        cfg = cp.ConfigParser()
+        cfg.read("config.ini")
+        qr = colored_input("Login with QR-CODE? y/n").lower().split()
+        if qr[0] == "y":
+            await self.login_with_qr_code(cfg)
+        else:
+            phone, phone_code_hash = await self.send_code()
+            logged = await self.enter_code(phone, phone_code_hash)
+            me: types.User = (
+                await self.app.get_me() if logged else await self.enter_2fa()
+            )
+
+    async def handle_session_revoked(self) -> None:
+        logging.error(
+            "Session has been revoked, delete the session and run the start command again"
+        )
+        await self.app.disconnect()
+
+    async def login_with_qr_code(self, cfg: cp.ConfigParser) -> None:
+        api_id = int(cfg.get("pyrogram", "api_id"))
+        api_hash = cfg.get("pyrogram", "api_hash")
+        tries = 0
+        while True:
+            try:
+                r = await self.app.invoke(
+                    ExportLoginToken(
+                        api_id=api_id, api_hash=api_hash, except_ids=[]
+                    )
+                )
+            except errors.exceptions.unauthorized_401.SessionPasswordNeeded:
+                print("2FA is enabled, please enter your password")
+                passwd = colored_input(
+                    "Enter two-factor authentication password: ", True
+                )
+                await self.app.check_password(passwd)
+                me = await self.app.get_me()
+                break
+            if isinstance(
+                r, raw.types.auth.login_token_success.LoginTokenSuccess
+            ):
+                break
+            if (
+                isinstance(r, raw.types.auth.login_token.LoginToken)
+                and tries % 30 == 0
+            ):
+                print("Scan QR code below:")
+                qr = QRCode(error_correction=1)
+                qr.add_data(
+                    f"tg://login?token={base64.urlsafe_b64encode(r.token).decode('utf-8').rstrip('=')}"
+                )
+                qr.make(fit=True)
+                qr.print_ascii()
+            tries += 1
+            await asyncio.sleep(1)
 
     async def web_auth(self) -> NoReturn:
         """Start the web interface for authentication"""
