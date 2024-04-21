@@ -27,6 +27,7 @@ import logging
 
 from typing import Union
 from pyrogram.types import Message
+from aiogram.types import CallbackQuery
 
 from .. import loader, utils
 
@@ -218,12 +219,12 @@ class ShizuConfig(loader.Module):
         "choose_button": "🎛 선택",
     }
 
-    async def inline__close(self, call: "aiogram.types.CallbackQuery") -> None:
+    async def inline__close(self, call: CallbackQuery) -> None:
         await call.delete()
 
     async def inline__set_to_default(
         self,
-        call: "aiogram.types.CallbackQuery",
+        call: CallbackQuery,
         mod: str,
         option: str,
         inline_message_id: str,
@@ -254,7 +255,7 @@ class ShizuConfig(loader.Module):
 
     async def inline__set_config(
         self,
-        call: "aiogram.types.CallbackQuery",
+        call: CallbackQuery,
         query: str,
         mod: str,
         option: str,
@@ -296,7 +297,7 @@ class ShizuConfig(loader.Module):
 
     async def inline__add_item(
         self,
-        call: "aiogram.types.CallbackQuery",
+        call: CallbackQuery,
         query: str,
         mod: str,
         option: str,
@@ -337,7 +338,7 @@ class ShizuConfig(loader.Module):
 
     async def inline__remove_item(
         self,
-        call: "aiogram.types.CallbackQuery",
+        call: CallbackQuery,
         query: str,
         mod: str,
         option: str,
@@ -377,7 +378,7 @@ class ShizuConfig(loader.Module):
         )
 
     async def inline__true_false(
-        self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str
+        self, call: CallbackQuery, mod: str, config_opt: str
     ) -> None:
         for module in self.all_modules.modules:
             if module.name == mod:
@@ -425,7 +426,7 @@ class ShizuConfig(loader.Module):
 
     async def inline__true_false_set(
         self,
-        call: "aiogram.types.CallbackQuery",
+        call: CallbackQuery,
         query: bool,
         mod: str,
         option: str,
@@ -443,7 +444,7 @@ class ShizuConfig(loader.Module):
         await self.inline__true_false(call, mod, option)
 
     async def inline__add_delete(
-        self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str
+        self, call: CallbackQuery, mod: str, config_opt: str
     ) -> None:
         for module in self.all_modules.modules:
             if module.name == mod:
@@ -490,7 +491,7 @@ class ShizuConfig(loader.Module):
                     return await call.answer("This option doesn't have a list type!")
 
     async def inline_advanced(
-        self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str
+        self, call: CallbackQuery, mod: str, config_opt: str
     ) -> None:
         for module in self.all_modules.modules:
             if module.name == mod:
@@ -531,7 +532,7 @@ class ShizuConfig(loader.Module):
                 )
 
     async def inline__choose(
-        self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str
+        self, call: CallbackQuery, mod: str, config_opt: str
     ) -> None:
         for module in self.all_modules.modules:
             if module.name == mod:
@@ -588,7 +589,7 @@ class ShizuConfig(loader.Module):
 
     async def inline__choose_set(
         self,
-        call: "aiogram.types.CallbackQuery",
+        call: CallbackQuery,
         mod: str,
         option: str,
         value: str,
@@ -612,7 +613,7 @@ class ShizuConfig(loader.Module):
                 await self.inline__choose(call, mod, option)
 
     async def inline__configure_option(
-        self, call: "aiogram.types.CallbackQuery", mod: str, config_opt: str
+        self, call: CallbackQuery, mod: str, config_opt: str
     ) -> None:
         for module in self.all_modules.modules:
             if module.name == mod:
@@ -659,9 +660,7 @@ class ShizuConfig(loader.Module):
                     ],
                 )
 
-    async def inline__configure(
-        self, call: "aiogram.types.CallbackQuery", mod: str
-    ) -> None:
+    async def inline__configure(self, call: CallbackQuery, mod: str) -> None:
         btns = []
         with contextlib.suppress(Exception):
             for module in self.all_modules.modules:
@@ -689,9 +688,7 @@ class ShizuConfig(loader.Module):
             ],
         )
 
-    async def inline__global_config(
-        self, call: Union[Message, "aiogram.types.CallbackQuery"]
-    ) -> None:
+    async def inline__global_config(self, call: Union[Message, CallbackQuery]) -> None:
         to_config = [
             mod.name for mod in self.all_modules.modules if hasattr(mod, "config")
         ]

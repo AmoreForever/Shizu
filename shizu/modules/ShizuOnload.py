@@ -15,9 +15,6 @@
 
 import contextlib
 import time
-import os
-import sys
-
 import logging
 
 from pyrogram import Client
@@ -100,19 +97,20 @@ class ShizuOnload(loader.Module):
             await app.set_chat_photo(chat_id=logs_id, photo="assets/logs.jpg")
             await app.set_chat_photo(chat_id=backup_id, photo="assets/backups.jpg")
 
-            await app.invoke(
-                functions.messages.UpdateDialogFilter(
-                    id=folder_id,
-                    filter=typ.DialogFilter(
+            with contextlib.suppress(Exception):
+                await app.invoke(
+                    functions.messages.UpdateDialogFilter(
                         id=folder_id,
-                        title="Shizu",
-                        include_peers=[logs, backup],
-                        pinned_peers=[],
-                        exclude_peers=[],
-                        emoticon="❤️",
-                    ),
+                        filter=typ.DialogFilter(
+                            id=folder_id,
+                            title="Shizu",
+                            include_peers=[logs, backup],
+                            pinned_peers=[],
+                            exclude_peers=[],
+                            emoticon="❤️",
+                        ),
+                    )
                 )
-            )
 
             logging.info("Folder created")
             self.db.set("shizu.folder", "folder", True)

@@ -75,6 +75,9 @@ def argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--no-web", action="store_false", help="Disable web interface", dest="web"
     )
+    parser.add_argument(
+        "--port", type=int, help="Port for web interface", dest="port"
+    )
 
     return parser.parse_args()
 
@@ -197,7 +200,7 @@ class Auth:
                         await self.app.check_password(passwd)
 
                         me = await self.app.get_me()
-                        
+
                         break
                     if isinstance(
                         r, raw.types.auth.login_token_success.LoginTokenSuccess
@@ -219,7 +222,7 @@ class Auth:
             else:
                 phone, phone_code_hash = await self.send_code()
                 logged = await self.enter_code(phone, phone_code_hash)
-                
+
                 me: types.User = (
                     await self.app.get_me() if logged else await self.enter_2fa()
                 )
@@ -247,7 +250,9 @@ class Auth:
                 )
             ):
 
-                web.port = random.randint(2000, 9999)
+                web.port = (
+                    args.port or random.randint(2000, 9999)
+                )
 
                 await web.start(web.port)
 

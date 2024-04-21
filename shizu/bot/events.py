@@ -218,7 +218,7 @@ class Events(Item):
         return message
 
     async def _inline_handler(self, inline_query: InlineQuery) -> InlineQuery:
-        """Обработчик инлайн-хендеров"""
+        """Handles inline queries"""
         if inline_query.from_user.id != database.db.get(
             "shizu.me", "me"
         ) and inline_query.from_user.id not in database.db.get(
