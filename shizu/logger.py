@@ -274,12 +274,6 @@ class Telegramhandler(logging.Handler):
         if self.last_log_time is None:
             self.last_log_time = current_time
 
-        if (
-            "JAMHOST" in os.environ
-            and "The server sent an unknown constructor:" in record.msg
-        ):
-            return
-
         self.msgs.append(
             f"<code>{utils.escape_html(FORMAT_FOR_TGLOG.format(record))}</code>"
         )
