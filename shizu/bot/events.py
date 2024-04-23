@@ -405,7 +405,7 @@ class Events(Item):
                         and inline_query.from_user.id
                         in [self._me]
                         + form["always_allow"]
-                        + self._db.get("shizu.me", "owners", [])
+                        + self._db.get("shizu.me", "owners", []) + [self._me]
                     ):
                         await inline_query.answer(
                             [
@@ -568,8 +568,11 @@ class Events(Item):
                     if (
                         form["force_me"]
                         and query.from_user.id != self._me
-                        and query.from_user.id
-                        not in self._db.get("shizu.me", "owners", [])
+                        and (
+                            query.from_user.id
+                            not in form["always_allow"]
+                            + self._db.get("shizu.me", "owners", [] + [self._me])
+                        )
                     ):
                         await query.answer(
                             "🚫 You are not allowed to press this button!"
@@ -608,7 +611,7 @@ class Events(Item):
             if (
                 self._custom_map[query.data].get("force_me", None)
                 and query.from_user.id != self._me
-                and query.from_user.id not in self._db.get("shizu.me", "owners", [])
+                and query.from_user.id not in self._db.get("shizu.me", "owners", []) + [self._me] 
             ):
                 await query.answer("🚫 You are not allowed to press this button!")
                 return
@@ -631,7 +634,7 @@ class Events(Item):
                     and chosen_inline_query.from_user.id
                     in [self._me]
                     + form["always_allow"]
-                    + self._db.get("shizu.me", "owners", [])
+                    + self._db.get("shizu.me", "owners", []) + [self._me]
                 ):
                     query = query.split(maxsplit=1)[1] if len(query.split()) > 1 else ""
 
