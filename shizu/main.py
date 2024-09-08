@@ -30,20 +30,6 @@ from . import auth, database, loader, utils
 async def main():
     """Main function"""
 
-    if pyrogram.__version__ != "2.0.106.21":
-        logging.info("Installing shizu-pyrogram...")
-
-        subprocess.run(
-            "pip install https://github.com/AmoreForever/Shizu-Pyro/archive/dev.zip --force-reinstall",
-            shell=True,
-            check=True,
-        )
-
-        logging.info("Successfully installed shizu-pyrogram!")
-        logging.info("Restarting...")
-
-        return utils.restart()
-
     me, app, tapp = await auth.Auth().authorize()
 
     await app.initialize()
