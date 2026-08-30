@@ -8,7 +8,7 @@ psutil
 loguru
 lightDB
 GitPython
-aiohttp==3.10.11
+aiohttp==3.9.0
 pyyaml
 requests
 qrcode
