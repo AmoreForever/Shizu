@@ -20,7 +20,6 @@ import logging
 import requests
 import functools
 import random
-import atexit
 import sys
 import string
 import git
@@ -171,7 +170,9 @@ def get_args(message: typing.Union[Message, str]) -> str:
 
 def restart():
     """Restart the bot"""
-    return atexit.register(os.execl(sys.executable, sys.executable, "-m", "shizu"))
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os.execl(sys.executable, sys.executable, "-m", "shizu")
 
 
 def get_args_raw(message: typing.Union[Message, str]) -> str:
@@ -242,12 +243,15 @@ async def create_chat(
         chat = await app.create_supergroup(title, description)
 
     if inline_bot:
-        bot_ = (await app.bot.get_me()).username
-        await app.add_chat_members(chat.id, [bot_])
+        # best-effort: the chat already exists, so a failure here must not lose
+        # its id — the bot is invited later by invite_bot() when it is missing
+        with contextlib.suppress(Exception):
+            bot_ = (await app.bot.get_me()).username
+            await app.add_chat_members(chat.id, [bot_])
 
-        if promote:
-            await app.promote_chat_member(chat.id, bot_)
-            await app.set_administrator_title(chat.id, bot_, "Shizu Inline")
+            if promote:
+                await app.promote_chat_member(chat.id, bot_)
+                await app.set_administrator_title(chat.id, bot_, "Shizu Inline")
 
     return chat
 

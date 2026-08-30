@@ -1244,7 +1244,7 @@ class ModulesManager:
         try:
             await module.on_load(self._app)
         except Exception:
-            pass
+            logging.exception("on_load failed in module %s", module.name)
 
         try:
             if hasattr(module, "client_ready") and callable(module.client_ready):

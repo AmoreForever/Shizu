@@ -237,5 +237,16 @@
   "shizu.modules.ShizuPermissions.button_close": "❌ Закрыть",
   "shizu.modules.ShizuPermissions.button_back": "🔙 Назад",
   "shizu.modules.ShizuPermissions.button_enter_user": "📝 Ввести пользователя",
-  "shizu.modules.ShizuPermissions.button_enter_command": "📝 Ввести команду"
+  "shizu.modules.ShizuPermissions.button_enter_command": "📝 Ввести команду",
+  "shizu.modules.ShizuHelp.info_ub": "🐙 <b>Shizu</b> — модульный Telegram юзербот\n\n<emoji id=5188311512791393083>🔎</emoji> <b>Исходный код:</b> <a href=\"https://github.com/AmoreForever/Shizu\">GitHub</a>\n🗼 <b>Чат поддержки:</b> @shizu_talks\n📣 <b>Канал:</b> @shizu_talks",
+  "shizu.modules.ShizuInfo.text": "🐙 <b>Shizu</b>\n\n<b>👤 Владелец:</b> {mention}\n<b>🤖 Бот:</b> @{username}\n<b>⚙️ Версия:</b> <code>{version}</code>\n<b>🌿 Ветка:</b> <code>{branch}</code>\n<b>💬 Префикс:</b> <code>{prefix}</code>\n<b>🖥 Платформа:</b> {platform}",
+  "shizu.modules.ShizuModulesHelper.module_": "<emoji id=5870528606328852614>📁</emoji> <b><a href=\"{}\">{}</a></b>\n\n<emoji id=5787544344906959608>ℹ️</emoji> <i>{}</i>\n\n<b>📟 Команды:</b> {}\n\n<b>🔗 Ссылка:</b> <code>{}</code>",
+  "shizu.modules.ShizuTerminal.no_args": "<emoji id=5190748314026385859>🤷‍♂️</emoji> <b>Команда не указана</b>",
+  "shizu.modules.ShizuTerminal.wait": "⌨️ <b>Выполняю команду...</b>",
+  "shizu.modules.ShizuEval.name": "ShizuEval",
+  "shizu.modules.ShizuLoader.loaded": "<emoji id=5267468588985363056>✔️</emoji> Модуль <b>{}</b> загружен\n<emoji id=5787544344906959608>ℹ️</emoji>  {} \n\n",
+  "shizu.modules.wakatime.name": "Wakatime",
+  "shizu.modules.wakatime.set_waka": "Укажите свой токен Wakatime",
+  "shizu.modules.wakatime.no_token": "🚫 <b>У вас нет токена</b>",
+  "shizu.modules.birthdaywish.name": "BirthdayWish"
 }
