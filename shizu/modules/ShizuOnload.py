@@ -17,7 +17,7 @@ import contextlib
 import time
 import logging
 
-from pyrogram import Client
+from pyrogram import Client, enums
 from pyrogram.raw import functions, types as typ
 from pyrogram.errors import MessageIdInvalid, BadRequest
 
@@ -46,8 +46,6 @@ class ShizuOnload(loader.Module):
             app.me = await app.get_me()
             folder_id = 250
 
-            # each id is persisted right after its chat is created: anything
-            # failing later must not make the next start create a duplicate
             if not logs_id:
                 logs_id = (
                     await utils.create_chat(
@@ -124,23 +122,26 @@ class ShizuOnload(loader.Module):
                 try:
                     try:
                         await app.edit_message_caption(
-                            restart["chat"], restart["id"], caption=restarted_text, parse_mode="html"
+                            restart["chat"],
+                            restart["id"],
+                            caption=restarted_text,
+                            parse_mode=enums.ParseMode.HTML,
                         )
                     except (BadRequest, MessageIdInvalid):
                         await app.edit_message_text(
-                            restart["chat"], restart["id"], restarted_text, parse_mode="html"
+                            restart["chat"],
+                            restart["id"],
+                            restarted_text,
+                            parse_mode=enums.ParseMode.HTML,
                         )
-                except (MessageIdInvalid, BadRequest):
-                    try:
+                except Exception:
+                    logging.exception("Could not edit restart message, sending a new one")
+                    with contextlib.suppress(Exception):
                         await app.send_message(
                             restart["chat"],
                             restarted_text,
-                            parse_mode="html",
+                            parse_mode=enums.ParseMode.HTML,
                         )
-                    except Exception:
-                        pass
-                except Exception:
-                    pass
 
             self.db.pop("shizu.updater", "restart")
 

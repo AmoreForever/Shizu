@@ -243,8 +243,6 @@ async def create_chat(
         chat = await app.create_supergroup(title, description)
 
     if inline_bot:
-        # best-effort: the chat already exists, so a failure here must not lose
-        # its id — the bot is invited later by invite_bot() when it is missing
         with contextlib.suppress(Exception):
             bot_ = (await app.bot.get_me()).username
             await app.add_chat_members(chat.id, [bot_])

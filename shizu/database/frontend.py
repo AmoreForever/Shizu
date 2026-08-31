@@ -13,8 +13,7 @@ class Database(LightDB):
         return object.__repr__(self)
 
     def save(self) -> None:
-        """Atomic save: upstream truncates the file in place, so a restart
-        (os.execl) landing mid-write would leave an unparsable db.json"""
+        """Save the current state of the database to a JSON file"""
         tmp = self.location.with_name(self.location.name + ".tmp")
 
         with tmp.open("w", encoding="utf-8") as file:
