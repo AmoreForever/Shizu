@@ -48,14 +48,22 @@ class ShizuUpdateNotifier(loader.Module):
             lambda m: self.strings("cfg_doc_repo_name"),
         )
 
+    @staticmethod
+    def _fetch(git_repo: "git.Repo", branch_name: str):
+        """Fetch origin without ever prompting for credentials"""
+        env = {"GIT_TERMINAL_PROMPT": "0", "GIT_ASKPASS": "", "SSH_ASKPASS": ""}
+        try:
+            with git_repo.git.custom_environment(**env):
+                git_repo.remotes.origin.fetch(branch_name)
+        except Exception as e:
+            logging.warning("Fetch failed, using local refs: %s", e)
+
     async def _get_latest_commit(self, owner: str, repo_name: str, branch_name: str) -> dict:
         """Get the latest commit from git repository"""
         try:
             git_repo = git.Repo()
-            
-            for remote in git_repo.remotes:
-                remote.fetch()
-            
+            self._fetch(git_repo, branch_name)
+
             try:
                 latest_commit = next(
                     git_repo.iter_commits(f"origin/{branch_name}", max_count=1)
@@ -79,10 +87,8 @@ class ShizuUpdateNotifier(loader.Module):
         """Get all commits since a specific SHA"""
         try:
             git_repo = git.Repo()
-            
-            for remote in git_repo.remotes:
-                remote.fetch()
-            
+            self._fetch(git_repo, branch_name)
+
             try:
                 commits = list(
                     git_repo.iter_commits(f"{since_sha}..origin/{branch_name}")
